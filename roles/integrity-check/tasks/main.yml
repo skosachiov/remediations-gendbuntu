@@ -1,0 +1,46 @@
+- name: Ensure aide is active
+  block:
+    - name: Ensure aide is active State present
+      package:
+        name: aide
+        state: present
+    - name: Ensure aide is active Report syslog
+      lineinfile:
+        create: true
+        dest: /etc/aide/aide.conf
+        regexp: ^#?\s*report_url
+        line: "report_url=syslog:LOG_INFO"
+    - name: Ensure aide is active Disable mail
+      replace:
+        dest: /etc/cron.daily/aide
+        regexp: (mail\s*-s)
+        replace: /bin/true \1
+    - name: Ensure aide is active Database is up-to-date
+      stat:
+        path: /var/lib/aide/aide.db
+      register: file_aide
+    - name: Ensure aide is active Warning
+      debug:
+        msg: "aide database is not up-to-date"
+      when: file_aide.stat.mtime|int < (ansible_date_time.epoch|int - 60*60*48)
+      changed_when: file_aide.stat.mtime|int < (ansible_date_time.epoch|int - 60*60*48)
+      ignore_errors: "{{ansible_check_mode}}"
+  tags:
+    - ws
+    - sec
+    - mob
+    - aide_is_active
+
+- name: Aide config file section
+  blockinfile:
+    create: yes
+    dest: /etc/aide/aide.conf.d/99_aide_myrule
+    block: |
+      /temp R
+  tags:
+    - ws
+    - sec
+    - mob
+    - aide_config_file_section
+
+

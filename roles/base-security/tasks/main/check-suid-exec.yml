@@ -1,0 +1,19 @@
+- name: Check suid executable files
+  block:
+    - name: Check suid executable files Find
+      shell: find / -xdev -type f -perm -4000 
+      failed_when: false
+      check_mode: no
+      register: result
+      changed_when: false
+    - name: Check suid executable files Change permissions
+      changed_when: true
+      failed_when: false
+      file:
+        path: "{{item}}"
+        mode: ug-s
+      with_items: "{{result.stdout_lines}}"
+      when: item not in var_suid_whitelist
+  tags:
+    - ws
+    - check_suid_executable_files

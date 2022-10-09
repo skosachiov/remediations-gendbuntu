@@ -1,0 +1,26 @@
+- name: Set xdg-mime defaults
+  copy:
+    dest: /etc/profile.d/set-xdg-mime.sh
+    mode: a+x
+    content: |
+      #!/bin/bash
+      #
+      if [ $UID -gt {{var_min_domain_uid}} ]; then
+      FLAG=~/.set-xdg-mime.2021112501
+      if [ ! -f "$FLAG" ]; then
+          #
+          xdg-mime default libreoffice-writer.desktop application/msword &> /dev/null
+          xdg-mime default libreoffice-writer.desktop application/vnd.openxmlformats-officedocument.wordprocessingml.document &> /dev/null
+          xdg-mime default libreoffice-calc.desktop application/vnd.ms-excel &> /dev/null
+          xdg-mime default libreoffice-calc.desktop application/vnd.openxmlformats-officedocument.spreadsheetml.sheet &> /dev/null
+          xdg-mime default libreoffice-impress.desktop application/vnd.ms-powerpoint &> /dev/null
+          xdg-mime default libreoffice-impress.desktop application/vnd.openxmlformats-officedocument.presentationml.presentation &> /dev/null
+          xdg-mime default libreoffice-draw.desktop application/vnd.visio &> /dev/null
+          xdg-mime default libreoffice-draw.desktop application/vnd.ms-visio.drawing.main+xml &> /dev/null
+          #
+          touch $FLAG
+      fi
+      fi
+  tags:
+    - ws
+    - set_xdg_mime_defaults

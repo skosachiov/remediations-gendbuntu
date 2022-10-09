@@ -1,0 +1,81 @@
+- name: Sssd packages are present
+  package:
+    name:
+      - realmd
+      - sssd
+      - sssd-tools
+      - libnss-sss
+      - libpam-sss
+      - adcli
+    state: present
+  tags:
+    - ws
+    - sssd_packages_are_present
+
+- name: Sssd fine tuning Enabled
+  service:
+    name: sssd
+    enabled: yes
+  tags:
+    - ws
+    - sssd_service_enabled
+
+- name: Sssd fine turning Realm wrapper
+  template:
+    src: realm.sh.j2
+    dest: /root/realm.sh
+    mode: 0700
+  tags:
+    - ws
+    - copy_realm_wrapper
+
+- name: Sssd fine turning Realm conf
+  template:
+    src: realmd.conf.j2
+    dest: /etc/realmd.conf
+  tags:
+    - ws
+    - copy_realmd_conf
+
+- name: Sssd fine tuning Add block
+  template:
+    src: sssd.conf.j2
+    dest: /root/sssd.conf
+  tags:
+    - ws
+    - root_copy_sssd_conf
+
+- name: Sssd fine tuning Permissions
+  file:
+    path: /root/sssd.conf
+    mode: '0600'
+  tags:
+    - ws
+    - sec
+    - sssd_conf_permissions
+
+- name: Pam mkhomedir
+  lineinfile:
+    dest: /etc/pam.d/common-session
+    regexp: ^\s*session\s*optional\s*pam_mkhomedir.so
+    line: session optional pam_mkhomedir.so skel=/etc/skel umask=0077
+    insertbefore: ^\s*session\s*required\s*pam_unix.so 
+  tags:
+    - ws
+    - pam_mkhomedir
+
+- name: Check ad_gpo_access_control enforcing 
+  failed_when: false
+  check_mode: yes
+  lineinfile:
+    path: /etc/sssd/sssd.conf
+    create: no
+    regexp: ^\s*ad_gpo_access_control\s*=\s*enforcing
+    line: ad_gpo_access_control = enforcing
+    state: present
+  when:
+    - var_ad_gpo
+  tags:
+    - ws
+    - sec
+    - check_ad_gpo_access_control_enforcing

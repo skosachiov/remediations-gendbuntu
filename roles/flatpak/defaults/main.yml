@@ -1,0 +1,7 @@
+var_flathub_name: flathub
+var_flathub_url: https://flathub.org/repo/flathub.flatpakrepo
+
+var_fp_applications:
+  - org.chromium.Chromium
+  - com.jetbrains.PyCharm-Community
+  - com.vscodium.codium

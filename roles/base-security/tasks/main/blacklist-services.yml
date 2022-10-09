@@ -1,0 +1,9 @@
+- name: Ensure blacklist services are removed
+  package:
+    name: "{{item}}"
+    state: absent
+  with_items: "{{var_services_blacklist}}"
+  tags:
+    - ws
+    - sec
+    - remove_blacklist_services

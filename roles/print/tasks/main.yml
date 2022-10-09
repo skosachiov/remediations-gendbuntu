@@ -1,0 +1,76 @@
+- name: Enable service cupsd 
+  block: 
+    - name: Enable service cupsd facts 
+      package_facts: 
+        manager: auto
+    - name: Enable service cupsd Present
+      package:
+        name:
+          - cups
+          - printer-driver-gutenprint
+          - smbclient
+        state: present
+    - name: Enable service cupsd Started
+      service: 
+        name: cupsd 
+        enabled: yes 
+        state: started 
+      when: 
+        - '"cupsd" in ansible_facts.packages' 
+  tags: 
+    - ws
+    - service_cupsd_enabled
+
+- name: CUPS smb backend set
+  block:
+    - name: CUPS smb backend set Check
+      stat:
+        path: /usr/lib/cups/backend/smb
+      register: result
+    - name: CUPS smb backend set Backup
+      command: mv /usr/lib/cups/backend/smb /usr/lib/cups/backend/smb.orig
+      when: not (result.stat.islnk is defined and result.stat.islnk)
+    - name: CUPS smb backend Link
+      file:
+        src: /usr/lib/x86_64-linux-gnu/samba/smbspool_krb5_wrapper
+        dest: /usr/lib/cups/backend/smb
+        state: link
+  tags:
+    - ws
+    - cups_smb_backend_set
+
+- name: CUPS printers
+  block:
+    - name: CUPS printer Grep
+      shell: "cupsctl | grep DefaultAuthType=Negotiate"
+      failed_when: false
+      check_mode: no
+      register: result
+      changed_when: false
+    - name: CUPS printer Set auth 
+      command: cupsctl DefaultAuthType=Negotiate
+      when: result.stdout_lines|length != 1
+    - name: CUPS default printer Restart service
+      service:
+          name: cups
+          state: restarted
+      when: result.stdout_lines|length != 1
+    - name: CUPS printer Check
+      shell: "LANG=C lpstat -v | awk '{print $4}'"
+      failed_when: false
+      check_mode: no
+      register: result
+      changed_when: false
+    - name: CUPS printer Generic printer
+      become: false
+      command: lpadmin -p {{item | basename}} -E -v {{item}} -o auth-info-required=negotiate -m everywhere
+      with_items: "{{ var_smb_printers | difference(result.stdout_lines) }}"
+      register: service_conf
+      notify: Cups restarted
+    - name: CUPS printer Default
+      become: false    
+      command: lpadmin -d {{var_smb_printers[0] | basename}}
+      when: service_conf.changed 
+  tags:
+    - ws
+    - cups_printers

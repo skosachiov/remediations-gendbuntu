@@ -1,0 +1,70 @@
+# This file is part of Remediations-gendbuntu.
+#
+# Remediations-gendbuntu is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# Remediations-gendbuntu is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with Remediations-gendbuntu.  If not, see <https://www.gnu.org/licenses/>.
+
+---
+
+- hosts: all
+
+  environment:
+    PATH: "{{ansible_env.PATH}}:/sbin:/usr/sbin:/usr/local/sbin"
+  vars_files:
+    - inventories/subnets/subnets.yml
+
+  pre_tasks:
+    # Set installation type (workstation/mobile-device/flash-drive/distribution-point/server)
+    - name: Set installation type
+      set_fact:
+        var_installation_type: workstation
+      tags: always
+    - include_tasks: roles/pre-tasks/tasks/main.yml
+      tags: always
+    - include_tasks: roles/apt/tasks/set-local-repo.yml
+      tags: always       
+
+  roles:
+    - role: apt
+    - role: ad-client
+    - role: ansible-client
+      tags: always        
+    - role: antivirus
+    - role: audit
+    - role: base-security
+    - role: base-system
+    - role: browser
+    - role: common
+    - role: desktop
+    - role: dlp
+    - role: firewall
+    - role: flatpak
+    - role: integrity-check
+    - role: inventory
+    - role: mail-client
+    - role: mandatory-access
+    - role: office
+    - role: polkit-restrictions
+    - role: print
+      tags: always                       
+    - role: remote-assistance
+    - role: scap
+    - role: security-modules
+    - role: smb-client
+    - role: ssh
+    - role: terminal-server
+
+  post_tasks:
+    - name: Debug
+      debug:
+        msg: "{{ansible_facts}}"
+

@@ -1,0 +1,77 @@
+- name: Ensure usbguard is installed
+  package:
+    name:
+      - usbguard
+    state: present
+  tags:
+    - ws
+    - sec
+    - usbguard_is_installed
+
+- name: Usbguard allowed devices
+  block:
+    - name: Usbguard allowed devices Check empty
+      stat:
+        path: /etc/usbguard/rules.conf
+      register: result
+    - name: Usbguard allowed devices Init
+      shell: usbguard generate-policy >> /etc/usbguard/rules.conf 
+      when: result.stat.size == 0 
+    - name: Usbguard allowed devices Block
+      blockinfile:
+        dest: /etc/usbguard/rules.conf
+        marker: "{mark}"
+        marker_begin: block serial "ANSIBLE_BEGIN"
+        marker_end: block serial "ANSIBLE_END"
+        block: "{{var_usb_allowed_devices}}"
+      notify: Usbguard restarted
+  tags:
+    - ws
+    - sec
+    - usbguard_allowed_devices
+
+- name: Usbguard list devices
+  block:
+    - name: Usbguard list devices List
+      command: usbguard list-devices
+      register: command_output
+      failed_when: false
+      changed_when: false
+    - name: Usbguard list devices Debug
+      debug:
+        msg: "{{command_output.stdout.split('\n')}}"
+  tags:
+    - ws
+    - sec
+    - usbguad_list_devices
+
+- name: Ensure usbguard is active
+  block:
+    - name: Ensure usbguard is installed
+      package:
+        name: usbguard
+        state: present
+    - name: Enable service usbguard
+      block:
+        - name: Gather the package facts
+          package_facts:
+            manager: auto
+        - name: Enable service usbguard
+          service:
+            name: usbguard
+            enabled: 'yes'
+            state: started
+          when:
+            - '"usbguard" in ansible_facts.packages'
+    - name: Ensure usbguard is active Block
+      lineinfile:
+        dest: /etc/usbguard/usbguard-daemon.conf
+        regexp: ^ImplicitPolicyTarget
+        line: ImplicitPolicyTarget=block
+        state: present
+        create: true
+      notify: Usbguard restarted
+  tags:
+    - ws
+    - sec
+    - usbguard_is_active

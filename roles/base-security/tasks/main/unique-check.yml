@@ -1,0 +1,120 @@
+- name: Check non-unique gid
+  block:
+    - name: Check non-unique gid Find
+      shell: cut -f 3 -d ":" /etc/group | sort | uniq -d
+      failed_when: false
+      check_mode: no
+      register: result
+      changed_when: false
+    - name: Check non-unique gid Check
+      changed_when: true
+      failed_when: false
+      debug:
+        msg: "Non-unique gid: {{item}}"
+      with_items: "{{result.stdout_lines}}"
+      when: result.stdout_lines|length >= 0
+  tags:
+    - ws
+    - check_non_unique_gid
+
+- name: Check non-unique uid
+  block:
+    - name: Check non-unique uid Find
+      shell: cut -f 3 -d ":" /etc/passwd | sort | uniq -d
+      failed_when: false
+      check_mode: no
+      register: result
+      changed_when: false
+    - name: Check non-unique uid Check
+      changed_when: true
+      failed_when: false
+      debug:
+        msg: "Non-unique gid: {{item}}"
+      with_items: "{{result.stdout_lines}}"
+      when: result.stdout_lines|length >= 0
+  tags:
+    - ws
+    - check_non_unique_uid
+
+- name: Check non-unique group name
+  block:
+    - name: Check non-unique group name Find
+      shell: cut -f 1 -d ":" /etc/group | sort | uniq -d
+      failed_when: false
+      check_mode: no
+      register: result
+      changed_when: false
+    - name: Check non-unique group name Check
+      changed_when: true
+      failed_when: false
+      debug:
+        msg: "Non-unique gid: {{item}}"
+      with_items: "{{result.stdout_lines}}"
+      when: result.stdout_lines|length >= 0
+  tags:
+    - ws
+    - check_non_unique_group_name
+
+- name: Check non-unique user name
+  block:
+    - name: Check non-unique user name Find
+      shell: cut -f 1 -d ":" /etc/passwd | sort | uniq -d
+      failed_when: false
+      check_mode: no
+      register: result
+      changed_when: false
+    - name: Check non-unique user name Check
+      changed_when: true
+      failed_when: false
+      debug:
+        msg: "Non-unique gid: {{item}}"
+      with_items: "{{result.stdout_lines}}"
+      when: result.stdout_lines|length >= 0
+  tags:
+    - ws
+    - check_non_unique_user_name
+
+- name: Verify Only Root Has UID 0
+  block:
+    - name: Verify Only Root Has UID 0 Get list
+      command: awk -F ':' '($3 == "0") {print}' /etc/passwd
+      changed_when: false
+      check_mode: no
+      register: items
+    - name: Verify Only Root Has UID 0 Print result
+      changed_when: true
+      debug:
+        msg: "more than one user with UID 0"
+      when: items.stdout_lines|length > 1
+    - name: Verify Only Root Has UID 0 Root only
+      changed_when: true
+      debug:
+        msg: "no root user has UID 0"
+      when: items.stdout != "root:x:0:0:root:/root:/bin/bash"
+  tags:
+    - ws
+    - sec
+    - mob
+    - only_root_has_uid_0
+
+- name: Verify Only Root group Has GID 0
+  block:
+    - name: Verify Only Root group Has GID 0 Get list
+      command: awk -F ':' '($3 == "0") {print}' /etc/group
+      changed_when: false
+      check_mode: no
+      register: items
+    - name: Verify Only Root group Has GID 0 Print result
+      changed_when: true
+      debug:
+        msg: "more than one group Has GID 0"
+      when: items.stdout_lines|length > 1
+    - name: Verify Only Root group Has GID 0 Root only
+      changed_when: true
+      debug:
+        msg: "no root group Has GID 0"
+      when: items.stdout != "root:x:0:"
+  tags:
+    - ws
+    - sec
+    - only_root_group_has_uid_0

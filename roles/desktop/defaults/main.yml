@@ -1,0 +1,14 @@
+var_backgroung_image: example-1920x1080.jpg
+
+var_hidden_apps:
+  - "rhythmbox.desktop"
+  - "transmission-gtk.desktop"
+var_visible_apps:
+  - "libreoffice-base.desktop"
+  - "libreoffice-math.desktop"
+
+var_favorite_apps:
+  - "chromium-browser.desktop"
+  - "libreoffice-calc.desktop"
+  - "libreoffice-impress.desktop"
+

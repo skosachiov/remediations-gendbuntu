@@ -1,0 +1,20 @@
+- name: Apt http proxy
+  block:
+    - name: Apt http proxy Set
+      copy:
+        dest: /etc/apt/apt.conf
+        content: |
+          Acquire::http::Proxy "{{var_proxy_server}}"; 
+          Acquire::https::Verify-Peer "false"; 
+          Acquire::https::Verify-Host "false";
+      when: var_proxy_server|length > 0
+    - name: Apt http proxy Set
+      file:
+        state: absent
+        path: /etc/apt/apt.conf
+      when: var_proxy_server|length == 0
+  when:
+  tags:
+    - ws
+    - apt_http_proxy
+    - never

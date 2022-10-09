@@ -1,0 +1,40 @@
+- name: Comment out manual dhclient settings
+  block:
+    - name: Comment out manual dhclient settings Supersede
+      replace:
+        dest: /etc/dhcp/dhclient.conf
+        regexp: '^\s*supersede\s*domain-name'
+        replace: '# supersede domain-name'
+    - name: Comment out manual dhclient settings Prepend
+      replace:
+        dest: /etc/dhcp/dhclient.conf
+        regexp: '^\s*prepend\s*domain-name-servers'
+        replace: '# prepend domain-name-servers'
+  tags:
+    - ws
+    - comment_out_manual_dhclient
+
+- name: Dhclient send hardware id
+  lineinfile:
+    create: true
+    dest: /etc/dhcp/dhclient.conf
+    regexp: ^\s*send\s*dhcp-client-identifier
+    line: send dhcp-client-identifier = hardware;
+    insertafter: EOF
+  tags:
+    - ws
+    - dhclient_send_hardware_id
+
+    - ws
+    - comment_out_manual_dhclient
+
+- name: Dhclient send hardware id
+  lineinfile:
+    create: true
+    dest: /etc/dhcp/dhclient.conf
+    regexp: ^\s*send\s*dhcp-client-identifier
+    line: send dhcp-client-identifier = hardware;
+    insertafter: EOF
+  tags:
+    - ws
+    - dhclient_send_hardware_id

@@ -1,0 +1,11 @@
+{
+"ManagedBookmarks": [
+{"toplevel_name": "Gendarmerie nationale"},
+	{"name": "La gendarmerie recrute", "url": "https://www.gendarmerie.interieur.gouv.fr/recrutement"},
+	{"name": "Garde républicaine", "url": "https://www.gendarmerie.interieur.gouv.fr/garde-republicaine"},
+	{"name": "Les écoles", "url": "https://www.gendarmerie.interieur.gouv.fr/cegn"},
+	{"name": "Ecole Officiers", "url": "https://www.gendarmerie.interieur.gouv.fr/eogn"},
+	{"name": "GIGN", "url": "https://www.gendarmerie.interieur.gouv.fr/gign"},
+	{"name": "PJGN", "url": "https://www.gendarmerie.interieur.gouv.fr/pjgn"}
+]
+}

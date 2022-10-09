@@ -1,0 +1,5 @@
+var_usb_allowed_devices: |
+  allow id 03f0:1024 name "HP Basic USB Keyboard"
+  allow id 03f0:234a name "HP USB Optical Mouse"
+  allow id 17ef:7018 name "Lenovo USB Keyboard"
+  allow id 17ef:7019 name "Lenovo USB Optical Mouse"  

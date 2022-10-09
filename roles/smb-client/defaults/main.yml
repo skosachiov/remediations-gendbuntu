@@ -1,0 +1,6 @@
+var_dfs_mountpoint: "/media/%(USER)"
+var_min_domain_uid: 10000000
+var_max_domain_uid: 2000000000
+var_dfs:
+  - { service: dfs, server: dfs-a.example.test, dir: dfs-a }
+  - { service: dfs, server: dfs-b.example.test, dir: dfs-b }

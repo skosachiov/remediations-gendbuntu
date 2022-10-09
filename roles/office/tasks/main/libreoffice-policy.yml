@@ -1,0 +1,35 @@
+- name: Set Libreoffice config Autosave
+  block:
+    - name: Set Libreoffice config Autosave Find files
+      command: find /home -xdev -name registrymodifications.xcu
+      register: items
+      failed_when: false
+      changed_when: false
+    - name: Set Libreoffice config Autosave Set interval
+      lineinfile:
+        path: "{{ item }}"
+        line: '<item oor:path="/org.openoffice.Office.Common/Save/Document"><prop oor:name="AutoSaveTimeIntervall" oor:op="fuse"><value>5</value></prop></item><item oor:path="/org.openoffice.Office.Recovery/AutoSave"><prop oor:name="TimeIntervall" oor:op="fuse"><value>5</value></prop></item>'
+        insertbefore: "</oor:items>"
+      with_items: "{{ items.stdout_lines }}"
+  when: 
+  tags:
+    - ws
+    - set_libreoffice_autosave
+
+- name: Set Libreoffice set MacroSecurityLevel
+  block:
+    - name: Set Libreoffice set MacroSecurityLevel Find
+      command: find /home -xdev -name registrymodifications.xcu
+      register: items
+      failed_when: false
+      changed_when: false
+    - name: Set Libreoffice set MacroSecurityLevel Set
+      replace:
+        path: "{{item}}"
+        regexp: \<prop\s*oor:name=\"MacroSecurityLevel\"\s*oor:op=\"fuse\"\>\<value\>.\<\/value\>
+        replace: <prop oor:name="MacroSecurityLevel" oor:op="fuse"><value>2</value>
+      with_items: "{{ items.stdout_lines }}"
+  when: 
+  tags:
+    - ws
+    - set_libreoffice_macrosecuritylevel

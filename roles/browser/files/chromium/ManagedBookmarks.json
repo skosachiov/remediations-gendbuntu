@@ -1,0 +1,7 @@
+{
+"ManagedBookmarks": [
+{"toplevel_name": "Corporate zone"},
+	{"name": "Wiki", "url": "https://mediawiki.example.test/wiki"},
+	{"name": "Redmine", "url": "https://redmine.example.test"}
+]
+}

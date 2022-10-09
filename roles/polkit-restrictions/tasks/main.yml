@@ -1,0 +1,35 @@
+- name: Check lock-session policy
+  package:
+    name: python3-lxml
+    state: present
+  tags:
+    - ws
+    - sec
+    - install_python_lxml
+
+- name: Check lock-session policy Xml
+  xml:
+    path: /usr/share/polkit-1/actions/org.freedesktop.login1.policy
+    xpath: /policyconfig/action[@id="org.freedesktop.login1.lock-sessions"]/defaults/{{item}}
+    value: "auth_admin_keep"
+  with_items:
+    - allow_active
+    - allow_inactive
+    - allow_any
+  tags:
+    - ws
+    - sec
+    - check_lock_session_policy
+  
+- name: Disable NetworkManager for user
+  block:
+    - name: Disable NetworkManager for user Disallow
+      ignore_errors: true # workaround for ubuntu 20.04
+      xml:
+        path: /usr/share/polkit-1/actions/org.freedesktop.NetworkManager.policy
+        xpath: /policyconfig/action/defaults/allow_active
+        value: 'no'
+      notify: NetworkManager restarted
+  tags:
+    - ws
+    - nm_disallow_policy

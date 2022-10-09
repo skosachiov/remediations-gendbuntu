@@ -1,0 +1,32 @@
+- name: Printer cups-pdf and inotify
+  block:
+    - name: Printer cups-pdf and inotify Skel dir
+      file:
+          path: /etc/skel/.cups-pdf
+          state: directory
+    - name: Printer cups-pdf and inotify
+      copy:
+        dest: /etc/profile.d/inotify-print.sh
+        mode: a+x
+        content: |
+          #!/bin/bash 
+          sleep .$RANDOM 
+          ( 
+          if pgrep -U $UID inotifywait > /dev/null 
+          then 
+                 logger "inotifywait is already running" 
+          else 
+          inotifywait -m $HOME/.cups-pdf -e close_write -e moved_to | 
+             while read path action file; do 
+                 logger "The file '$file' appeared in directory '$path' via '$action'" 
+                 smbclient -k "{{var_smb_printers[0]}}" -c "print ${path}${file}" 
+                 rm -f ${path}${file} 
+             done 
+          fi 
+          )&
+  when:
+    - "{{var_inotify_printer}}"
+  tags:
+    - ws
+    - printer_cups_pdf_and_inotify
+    - never

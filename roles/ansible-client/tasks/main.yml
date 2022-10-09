@@ -1,0 +1,104 @@
+- name: Ansible package is present
+  package:
+    name:
+      - ansible
+    state: present
+  tags:
+    - ws
+    - ansible_package_is_present
+
+- name: Ansible cfg is present
+  block:
+    - name: Ansible cfg is present Folder
+      file:
+        path: /etc/ansible
+        state: directory
+    - name: Ansible cfg is present File
+      file:
+        path: /etc/ansible/ansible.cfg
+        state: touch
+        modification_time: preserve
+        access_time: preserve
+  tags:
+    - ws
+    - ansible_cfg_is_present
+
+- name: Config ansible environment
+  block:
+    - name: Config ansible environment Timeout
+      lineinfile:
+        dest: /etc/ansible/ansible.cfg
+        state: present
+        regexp: ^\s*gather_timeout
+        line: gather_timeout = 60
+        insertafter: \[defaults\] 
+    - name: Config ansible environment Log_path
+      lineinfile:
+        dest: /etc/ansible/ansible.cfg
+        state: present
+        regexp: ^\s*log_path
+        line: log_path = /var/log/ansible.log
+        insertafter: \[defaults\] 
+    - name: Config ansible environment Logrotate
+      copy:
+        dest: /etc/logrotate.d/ansible
+        mode: a+r
+        content: |
+          /var/log/ansible.log {
+            weekly
+            missingok
+            rotate 4
+            compress
+            delaycompress
+            copytruncate
+            maxsize 64M
+          }
+  tags:
+    - ws
+    - config_ansible_environment
+
+- name: Create ansible user
+  block:
+    - name: Create ansible user Useradd
+      user:
+        name: "{{var_ansible_username}}"
+        groups: sudo,shadow,lpadmin
+        shell: /bin/bash
+        append: yes
+        generate_ssh_key: yes
+        ssh_key_bits: 4096
+        ssh_key_file: .ssh/id_rsa
+    - name: Create ansible user Sudoers
+      lineinfile:
+        dest: /etc/sudoers
+        state: present
+        regexp: ^\s*ansible
+        line: "{{var_ansible_username}} ALL=(ALL) EXEC:ALL, NOPASSWD:ALL"
+        validate: /usr/sbin/visudo -cf %s
+    - name: Create ansible user Add cert to authorized keys
+      authorized_key:
+        user: "{{var_ansible_username}}"
+        state: present
+        key: "{{var_ansible_key}}"
+  tags:
+    - ws
+    - create_ansible_user
+
+- name: Cron ansible pull
+  block:
+    - name: Cron ansible pull Package present
+      package:
+        name: ansible
+        state: present
+    - name: Cron ansible pull Copy file
+      copy:
+        dest: /etc/cron.d/ansible-pull
+        content: |
+          {{var_ansible_daily_exec_time}} * * * root bash -c "/usr/bin/ansible-pull -i localhost -d /root/.ansible/pull/{{var_ansible_repo}} -U {{var_ansible_git}} {{var_ansible_playbook}}| logger -n {{var_rsyslog_server}}"
+          {{var_ansible_hourly_exec_time}} * * * * root bash -c "/usr/bin/ansible-pull -o -i localhost -d /root/.ansible/pull/{{var_ansible_repo}} -U {{var_ansible_git}} {{var_ansible_playbook}}| logger -n {{var_rsyslog_server}}"
+          # EOF
+      notify: Cron restarted
+  tags:
+    - ws
+    - cron_ansible_pull
+ 

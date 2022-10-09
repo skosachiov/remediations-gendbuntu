@@ -1,0 +1,21 @@
+- name: Ensure etckeeper active
+  block:
+    - name: Ensure etckeeper active Package present
+      package:
+        name: etckeeper
+        state: present
+      ignore_errors: yes
+      register: package_result
+    - debug:
+        msg: "{{package_result}}"
+    - name: Ensure etckeeper active Git folder exists
+      stat:
+        path: /etc/.git
+      register: stat_result
+      when: package_result
+    - name: Ensure etckeeper active Init
+      shell: 'etckeeper init -d /etc'
+      when: not stat_result.stat.exists and package_result.changed
+  tags:
+    - ws
+    - ensure_etckeeper_active

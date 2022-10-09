@@ -1,0 +1,14 @@
+var_pkg_versions_absent:
+  myspell-uk: 9.9-9
+
+var_special_applications:
+  - blender
+  - gimp
+  - ffmpeg
+
+var_username_applications:
+  - {username: "armelle.roche", applications: ["blender", "ffmpeg"]}
+  - {username: "maude.moulin", applications: ["gimp"]}
+
+var_hostname_applications:
+  - {username: "", applications: ["blender", "ffmpeg"]}

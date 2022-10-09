@@ -1,0 +1,6 @@
+var_local_domain: example.test
+var_ad_site: headquarters
+var_default_realm: EXAMPLE.TEST
+var_ad_gpo: false
+var_kdc: ad.example.test
+var_admin_server: ad.example.test

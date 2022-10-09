@@ -1,0 +1,92 @@
+- name: Enable service chronyd
+  block:
+    - name: Ensure ntp is removed
+      package:
+        name: ntp
+        state: absent
+      failed_when: false
+    - name: Ensure chrony is installed
+      package:
+        name: chrony
+        state: present
+      failed_when: false
+    - name: Gather the package facts
+      package_facts:
+        manager: auto
+  tags:
+    - ws
+    - sec
+    - mob
+    - service_chronyd_enabled
+
+- name: Chronyd set internal pool
+  block:
+    - name: Chrony remove external pools
+      replace:
+        path: /etc/chrony/chrony.conf
+        regexp: ^(pool\s*ntp.ubuntu.com)
+        replace: '# \1'
+    - name: Chrony remove external pools
+      replace:
+        path: /etc/chrony/chrony.conf
+        regexp: ^(pool\s*[0-9].ubuntu.pool.ntp.org)
+        replace: '# \1'
+    - name: Chrony remove external servers
+      replace:
+        path: /etc/chrony/chrony.conf
+        regexp: ^(server)
+        replace: '# \1'
+    - name: Chrony server set
+      lineinfile:
+        dest: /etc/chrony/chrony.conf
+        regexp: ^pool
+        line: 'pool {{var_kdc}} iburst'
+        create: true
+    - name: Enable service chronyd
+      service:
+        name: chronyd
+        enabled: 'yes'
+        state: started
+      failed_when: false
+      when:
+        - '"chrony" in ansible_facts.packages'
+  when: var_installation_type == "workstation" and var_internal_ansible_ip        
+  tags:
+    - ws
+    - sec
+    - mob
+    - chronyd_set_internal_pool
+
+- name: Chronyd tracking
+  block:
+    - name: Chronyd tracking
+      shell: 'chronyc tracking | grep "Leap\s*status\s*:\s*Normal"'
+      register: items
+      changed_when: items.stdout_lines|length != 1
+      failed_when: false
+  tags:
+    - ws
+    - sec
+    - mob
+    - service_chronyd_tracking
+
+- name: Ensure permission 0644 on /etc/chrony/chrony.conf
+  block:
+    - name: Ensure permission 0644 on /etc/chrony/chrony.conf Find
+      find:
+        path: /etc/chrony
+        file_type: file 
+        recurse: yes
+      register: result
+    - name: Ensure permission 0644 on /etc/chrony/chrony.conf Chmod
+      file:
+        path: "{{item.path}}"
+        mode: u-x,go-wx
+        owner: root
+        group: root
+      with_items: "{{result.files}}"
+  tags:
+    - ws
+    - sec
+    - mob
+    - file_0644_chrony_conf

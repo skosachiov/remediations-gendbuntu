@@ -1,0 +1,53 @@
+var_installation_type: workstation
+
+var_subnet: paris_36_rue_du_bastion
+
+var_ansible_server: paris-ansible
+var_ansible_server_network: 10.10.10.0/24
+var_enterprise_network: 10.0.0.0/8
+var_local_domain: si.mi
+var_default_realm: SI.MI
+var_ansible_fqdn: "{{var_ansible_server}}.{{var_local_domain}}"
+
+var_rsyslog_server: "{{var_ansible_fqdn}}"
+
+var_external_ansible_server: paris-ansible
+var_external_domain: gendarmerie.interieur.gouv.fr
+var_external_ansible_fqdn: "{{var_external_ansible_server}}.{{var_external_domain}}"
+
+var_min_domain_uid: 10000000
+
+var_proxy_server: "http://paris-proxy.si.mi:3128"
+var_internet_connectivity: false
+
+var_domain_admins_group: gend_admins
+
+var_clamav_server: paris-clamav.si.mi
+
+var_site_address: "default"
+
+var_admin_workstation: false
+
+var_no_proxy: "127.0.0.1,10.0.0.0/8,localhost,*.si.mi"
+
+var_ansible_repo: "remediations-gendbuntu"
+var_ansible_git: "https://{{var_ansible_fqdn}}/git/{{var_ansible_repo}}"
+#var_ansible_git_sec: "https://{{var_ansible_fqdn}}/git/{{var_ansible_repo_sec}}"
+var_ansible_tags: ws
+var_ansible_tags_sec: sec
+var_inotify_printer: false
+var_local_admins_group: gend_admins
+var_domain_users_group: domain\ users
+# var_domain_users_group_access: LOCAL
+var_domain_users_group_access: ALL
+var_local_debian_repo: |
+  deb http://{{var_ansible_fqdn}}/debian/ bullseye main contrib non-free
+  deb http://{{var_ansible_fqdn}}/debian-security bullseye-security main contrib non-free
+  deb [arch=amd64] http://{{var_ansible_fqdn}}/repos/bullseye/third-party/ main
+
+
+
+
+
+
+

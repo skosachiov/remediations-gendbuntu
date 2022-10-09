@@ -1,0 +1,19 @@
+[Autoconfig]
+Revision=001
+
+[Data Source]
+DisplayName=${USER}@si.mi
+Enabled=true
+Parent=0-ews-001
+
+Populated=true
+
+[Refresh]
+Enabled=true
+IntervalMinutes=10
+
+[Mail Account]
+BackendName=ews
+IdentityUid=0-ews-003
+ArchiveFolder=
+NeedsInitialSetup=false

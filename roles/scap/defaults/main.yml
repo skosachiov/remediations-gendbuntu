@@ -1,0 +1,5 @@
+var_oval_definitions_url: "http://{{var_ansible_fqdn}}/security/oval/oval-definitions-buster.xml"
+var_cve_whitelist:
+  - "203824553375729722101732549695430382987"
+  - "22190019071643468033891038031899076588"
+  - "225754379034016764631132978661251091910"

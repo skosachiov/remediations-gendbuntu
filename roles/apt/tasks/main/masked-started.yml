@@ -1,0 +1,60 @@
+- name: Connman masked
+  block:
+    - name: Connman masked Stop
+      failed_when: false
+      service:
+        name: connman
+        state: stopped
+    - name: Connman masked Masked
+      failed_when: false
+      service:
+        name: connman
+        masked: yes 
+      notify: Networking restarted
+    - name: Connman wait online masked Stop
+      failed_when: false
+      service:
+        name: connman-wait-online
+        state: stopped
+    - name: Connman wait online masked Masked
+      failed_when: false
+      service:
+        name: connman-wait-online
+        masked: yes 
+      notify: Networking restarted
+  tags:
+    - ws
+    - connman_masked
+
+- name: Packagekit started
+  block:
+    - name: Packagekit masked Masked
+      failed_when: false
+      systemd:
+        name: packagekit
+        masked: no
+    - name: Packagekit masked Stopped
+      failed_when: false
+      service:
+        name: packagekit
+        state: started
+  tags:
+    - ws
+    - packagekit_started
+
+- name: Apt-daily.timer masked
+  block:
+    - name: Apt-daily.timer masked Stopped
+      failed_when: false
+      service:
+        name: apt-daily.timer
+        state: stopped
+    - name: Apt-daily.timer masked Masked
+      failed_when: false
+      service:
+        name: apt-daily.timer
+        masked: yes 
+  tags:
+    - ws
+    - apt_daily_masked
+

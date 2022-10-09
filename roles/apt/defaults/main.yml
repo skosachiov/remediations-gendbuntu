@@ -1,0 +1,10 @@
+var_local_repo_fpr_whitelist:
+  - "7A7A24A559D1F7A9C9FA1F9A7DB1E284F89C2969"
+  - "8009D2A37D32FF606ADCC67A8066572A509D4DB9"
+  - "A922618CF9B60C305E080573E24588A6E75F8E69"
+var_local_repo: |
+  deb http://{{var_ansible_fqdn}}/debian/ bullseye main contrib non-free
+  deb http://{{var_ansible_fqdn}}/debian-security bullseye-security main contrib non-free
+  deb [arch=amd64] http://{{var_ansible_fqdn}}/repos/bullseye/third-party/ main
+var_pkg_versions_absent:
+  myspell-uk: 9.9-9

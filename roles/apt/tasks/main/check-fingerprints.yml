@@ -1,0 +1,18 @@
+- name: Check repo fingerprints
+  block:
+    - name: Check repo fingerprints Get
+      shell: apt-key list --fingerprint --with-colons 2> /dev/null | grep "^fpr" | cut -f 10 -d ":"
+      failed_when: false
+      check_mode: no
+      register: result
+      changed_when: false
+    - name: Check repo fingerprints Check
+      changed_when: true
+      failed_when: false
+      debug:
+        msg: "{{item}}"
+      with_items: "{{result.stdout_lines}}"
+      when: item not in var_local_repo_fpr_whitelist
+  tags:
+  - ws
+  - check_repo_fingerprints

@@ -1,0 +1,18 @@
+- name: Direct root Logins Not Allowed
+  copy:
+    dest: /etc/securetty
+    content: ''
+  tags:
+    - ws
+    - sec
+    - no_direct_root_logins
+
+- name: Restrict Virtual Console Root Logins
+  lineinfile:
+    dest: /etc/securetty
+    regexp: ^vc
+    state: absent
+  tags:
+    - ws
+    - sec
+    - securetty_root_login_console_only

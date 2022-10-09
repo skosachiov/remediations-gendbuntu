@@ -1,0 +1,4 @@
+- name: Cups restarted
+  service:
+    name: cups
+    state: restarted

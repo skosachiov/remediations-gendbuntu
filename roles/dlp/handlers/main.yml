@@ -1,0 +1,10 @@
+- name: Depmod
+  command: depmod -ae
+
+- name: Update initramfs
+  command: update-initramfs -k all -u
+
+- name: Usbguard restarted
+  service:
+    name: usbguard
+    state: restarted

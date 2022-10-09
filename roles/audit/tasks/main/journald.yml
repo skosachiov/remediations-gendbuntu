@@ -1,0 +1,28 @@
+- name: Set journald config
+  block:
+    - name: Set journald config ForwardToSyslog
+      lineinfile:
+        create: true
+        dest: /etc/systemd/journald.conf
+        regexp: ^#?\s*ForwardToSyslog
+        line: ForwardToSyslog=yes
+        insertafter: [Journal]
+    - name: Set journald config Compress
+      lineinfile:
+        create: true
+        dest: /etc/systemd/journald.conf
+        regexp: ^#?\s*Compress
+        line: Compress=yes
+        insertafter: [Journal]
+    - name: Set journald config Storage
+      lineinfile:
+        create: true
+        dest: /etc/systemd/journald.conf
+        regexp: ^#?\s*Storage
+        line: Storage=auto
+        insertafter: [Journal]
+  tags:
+    - ws
+    - sec
+    - mob
+    - set_journald_config

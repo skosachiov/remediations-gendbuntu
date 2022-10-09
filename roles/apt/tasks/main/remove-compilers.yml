@@ -1,0 +1,15 @@
+- name: Ensure compilers are removed
+  package:
+    name:
+      - g++
+      - gcc
+      - g++-6
+      - gcc-6
+      - gcc-8
+    state: absent
+  tags:
+    - ws
+    - sec
+    - mob
+    - compilers_are_removed
+    - never

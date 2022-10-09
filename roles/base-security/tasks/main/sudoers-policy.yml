@@ -1,0 +1,125 @@
+- name: Set sudoers default noexec
+  lineinfile:
+    path: /etc/sudoers
+    create: true
+    regexp: '^\s*Defaults\s*noexec'
+    line: "Defaults noexec"
+    state: present
+    insertafter: ^\s*Defaults
+  tags:
+    - ws
+    - sec
+    - set_sudoers_default_noexec
+
+- name: Set sudoers groups
+  block:
+    - name: Set sudoers groups User
+      blockinfile:
+        dest: /etc/sudoers
+        marker_begin: BEGIN_GROUPS
+        marker_end: END_GROUPS
+        block: |
+          %{{var_local_admins_group}} ALL=(ALL) EXEC:ALL, PASSWD:ALL
+          %{{var_domain_admins_group}} ALL=(ALL) EXEC:ALL, PASSWD:ALL
+        insertafter: EOF
+      when: var_admin_workstation|bool == false
+    - name: Set sudoers groups Admin
+      blockinfile:
+        dest: /etc/sudoers
+        marker_begin: BEGIN_GROUPS
+        marker_end: END_GROUPS
+        block: |
+          %{{var_local_admins_group}} ALL=(ALL) EXEC:ALL, PASSWD:ALL
+        insertafter: EOF
+      when: var_admin_workstation|bool == true
+  tags:
+    - ws
+    - sec
+    - set_sudoers_groups
+
+- name: Check sudoers users
+  block:
+    - name: Check sudoers users Get groups
+      shell: awk '{print $1}' /etc/sudoers | grep "%" | cut -c 2- | xargs -I {} grep {} /etc/group
+      failed_when: false
+      check_mode: no
+      register: result
+      changed_when: false
+    - name: Check sudoers users Whitelist compare
+      changed_when: true
+      failed_when: false
+      debug:
+        msg: "{{item}}"
+      with_items: "{{result.stdout_lines}}"
+      when: item not in var_sudoers_groups_whitelist
+  tags:
+    - ws
+    - sec
+    - check_sudoers_users
+
+- name: Remove lines containing NOPASSWD from sudoers files
+  block:
+    - name: Find /etc/sudoers.d/ files
+      find:
+        paths:
+          - /etc/sudoers.d/
+      register: sudoers
+    - name: Remove lines containing NOPASSWD
+      replace:
+        regexp: '(^(?!#).*^(?!.*({{var_ansible_username}})).*[\s]+NOPASSWD[\s]*\:.*$)'
+        replace: '# \g<1>'
+        path: '{{ item.path }}'
+        validate: /usr/sbin/visudo -cf %s
+      with_items:
+        - path: /etc/sudoers
+        - '{{ sudoers.files }}'
+  tags:
+    - ws
+    - sec
+    - sudo_remove_nopasswd
+
+- name: Ensure env_reset and timeout is enabled in /etc/sudoers
+  lineinfile:
+    path: /etc/sudoers
+    regexp: ^[\s]*Defaults.*\benv_reset\b.*$
+    line: Defaults env_reset, timestamp_timeout=0
+    validate: /usr/sbin/visudo -cf %s
+  tags:
+    - ws
+    - sec
+    - sudo_add_env_reset_and_timeout
+
+- name: Ensure use_pty is enabled in /etc/sudoers
+  lineinfile:
+    path: /etc/sudoers
+    regexp: ^[\s]*Defaults.*\buse_pty\b.*$
+    line: Defaults use_pty
+    insertafter: Defaults
+    validate: /usr/sbin/visudo -cf %s
+  tags:
+    - ws
+    - sec
+    - sudo_add_use_pty
+
+- name: Ensure tty_tickets is enabled in /etc/sudoers
+  lineinfile:
+    path: /etc/sudoers
+    regexp: ^[\s]*Defaults.*\btty_tickets\b.*$
+    line: Defaults tty_tickets
+    insertafter: Defaults
+    validate: /usr/sbin/visudo -cf %s
+  tags:
+    - ws
+    - sec
+    - sudo_add_tty_tickets
+
+- name: Enable logfile option with appropriate value in /etc/sudoers
+  lineinfile:
+    path: /etc/sudoers
+    line: Defaults logfile={{ var_sudo_logfile }}
+    validate: /usr/sbin/visudo -cf %s
+  tags:
+    - ws
+    - sec
+    - mob
+    - sudo_custom_logfile

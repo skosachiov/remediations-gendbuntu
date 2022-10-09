@@ -1,0 +1,15 @@
+var_auditd_exceptions: |
+  -a never,exit -S all -F exe=/opt/Citrix/ICAClient/wfica
+  -a never,exit -S all -F exe=/usr/lib/chromium/chromium
+  -a never,exit -S all -F exe=/lib/systemd/systemd-journald
+  -a never,exit -S all -F exe=/usr/sbin/cupsd
+  -a never,exit -S all -F path=/bin/sleep
+  -a never,exit -S all -F path=/sbin/killall5
+  -a never,exit -S all -F dir=/dev/shm/
+  -a never,exclude -F msgtype=EOE
+  -a never,exclude -F msgtype=PROCTITLE
+  -a never,exclude -F msgtype=CWD
+var_auditd_rules_count: 125
+var_logstash_server: dummy
+var_rsyslog_filter: |
+  :msg, contains, "dummystring" @{{ var_rsyslog_server }}

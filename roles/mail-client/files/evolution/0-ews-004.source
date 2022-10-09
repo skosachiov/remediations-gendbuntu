@@ -1,0 +1,12 @@
+[Autoconfig]
+Revision=001
+
+[Data Source]
+DisplayName=${USER}@example.test
+Enabled=true
+Parent=0-ews-001
+
+Populated=true
+
+[Mail Transport]
+BackendName=ews

@@ -1,0 +1,11 @@
+- name: Ensure kernel modules are disabled
+  template:
+    src: 50-blacklist.conf.j2
+    dest: /etc/modprobe.d/50-blacklist.conf
+  notify:
+    - Depmod
+    - Update initramfs
+  tags:
+    - ws
+    - sec
+    - kernel_modules_are_disabled

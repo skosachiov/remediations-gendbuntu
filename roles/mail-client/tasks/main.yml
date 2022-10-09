@@ -1,0 +1,34 @@
+- name: Set gsettings
+  block:
+    - name: Set gsettings Mkdir
+      file:
+        path: /usr/local/etc/evolution
+        state: directory
+        mode: ugo+rx
+    - name: Set gsettings Copy
+      copy:
+        src: "{{item}}"
+        dest: /usr/local/etc/evolution/
+        mode: go+r
+      with_fileglob:
+        - "{{playbook_dir}}/inventories/all/files/mail-client/*"
+    - name: Set gsettings Set
+      copy:
+        dest: /etc/profile.d/set-gsettings.sh
+        mode: a+x
+        content: |
+          #!/bin/bash
+          #
+          if [ $UID -gt {{var_min_domain_uid}} ]; then
+          FLAG=~/.set-gsettings.2021121401
+          if [ ! -f "$FLAG" ]; then
+              #
+              gsettings set org.gnome.evolution-data-server autoconfig-directory "/usr/local/etc/evolution"
+              #
+              touch $FLAG
+          fi
+          fi
+  when: var_installation_type == "workstation"
+  tags:
+    - ws
+    - set_gsettings

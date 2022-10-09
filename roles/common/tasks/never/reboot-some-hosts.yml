@@ -1,0 +1,11 @@
+
+- name: Reboot some hosts
+  command: reboot
+  when: ansible_default_ipv4.address == item
+  with_items:
+    - 99.99.99.99
+    - 88.88.88.88
+  tags:
+    - ws
+    - reboot_some_hosts
+    - never

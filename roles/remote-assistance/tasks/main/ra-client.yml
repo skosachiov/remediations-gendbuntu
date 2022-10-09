@@ -1,0 +1,87 @@
+- name: Install client dependencies
+  block:
+    - name: Install client dependencies x11
+      package:
+        name:
+          - x11vnc
+          - zenity
+          - sshpass
+        state: present
+    - name: Install client dependencies Tigervnc rpm
+      package:
+        name:
+          - tigervnc
+          - tigervnc-server-minimal
+        state: present
+      when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+    - name: Install client dependencies Tigervnc deb
+      package:
+        name:
+          - tigervnc-viewer
+          - tigervnc-common
+        state: present
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  tags:
+    - ws
+    - ra_install_client_dependencies
+
+- name: Init known hosts
+  block:
+    - name: Init known hosts Shell
+      shell: sshpass -p '{{var_no_shell_pass}}' ssh -o StrictHostKeyChecking=no no-shell@{{var_fqdn_sshserver}} "/bin/false"
+      failed_when: false
+      changed_when: false
+    - name: Init known hosts Copy
+      copy:
+        src: ~/.ssh/known_hosts
+        dest: /etc/ssh/known_hosts
+        remote_src: yes
+      ignore_errors: yes
+  tags:
+    - ws
+    - ra_init_known_hosts
+
+- name: Install client desktop files
+  block:
+    - name: Install client desktop files Full control
+      set_fact:
+        var_view_only: ""
+    - name: Install client desktop files Full control
+      copy:
+        dest: /usr/share/applications/remote-assistance-full-control.desktop
+        content: |
+          [Desktop Entry]
+          Type=Application
+          Name=RA Full control
+          Comment=Remote Assistance Full control
+          Exec=/bin/bash -c '{{var_remote_assistance_exec}}'
+          Icon=audio-headset
+          StartupNotify=false
+    - name: Install client desktop files View only
+      set_fact:
+        var_view_only: "--viewonly"
+    - name: Install client desktop files View only
+      copy:
+        dest: /usr/share/applications/remote-assistance-view-only.desktop
+        content: |
+          [Desktop Entry]
+          Type=Application
+          Name=RA View only
+          Comment=Remote Assistance View only
+          Exec=/bin/bash -c '{{var_remote_assistance_exec}}'
+          Icon=audio-headset
+          StartupNotify=false
+    - name: Install client desktop files Helpdesk
+      copy:
+        dest: /usr/share/applications/remote-assistance-helpdesk.desktop
+        content: |
+          [Desktop Entry]
+          Type=Application
+          Name=RA Helpdesk
+          Comment=Remote Assistance Helpdesk
+          Exec=/bin/bash -c '{{var_helpdesk_exec}}'
+          Icon=preferences-system-network
+          StartupNotify=false
+  tags:
+    - ws
+    - ra_install_client_desktop_files

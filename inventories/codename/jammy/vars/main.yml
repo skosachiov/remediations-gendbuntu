@@ -1,0 +1,53 @@
+var_local_repo: |
+  deb http://{{var_dp_fqdn}}/ubuntu/ jammy main restricted
+  deb http://{{var_dp_fqdn}}/ubuntu/ jammy-updates main restricted
+  deb http://{{var_dp_fqdn}}/ubuntu/ jammy universe
+  deb http://{{var_dp_fqdn}}/ubuntu/ jammy-updates universe
+  deb http://{{var_dp_fqdn}}/ubuntu/ jammy multiverse
+  deb http://{{var_dp_fqdn}}/ubuntu/ jammy-updates multiverse
+  deb http://{{var_dp_fqdn}}/ubuntu/ jammy-backports main restricted universe multiverse
+  deb http://{{var_dp_fqdn}}/ubuntu jammy-security main restricted
+  deb http://{{var_dp_fqdn}}/ubuntu jammy-security universe
+  deb http://{{var_dp_fqdn}}/ubuntu jammy-security multiverse
+var_external_repo: |
+  deb http://{{var_external_ansible_fqdn}}/ubuntu/ jammy main restricted
+  deb http://{{var_external_ansible_fqdn}}/ubuntu/ jammy-updates main restricted
+  deb http://{{var_external_ansible_fqdn}}/ubuntu/ jammy universe
+  deb http://{{var_external_ansible_fqdn}}/ubuntu/ jammy-updates universe
+  deb http://{{var_external_ansible_fqdn}}/ubuntu/ jammy multiverse
+  deb http://{{var_external_ansible_fqdn}}/ubuntu/ jammy-updates multiverse
+  deb http://{{var_external_ansible_fqdn}}/ubuntu/ jammy-backports main restricted universe multiverse
+  deb http://{{var_external_ansible_fqdn}}/ubuntu jammy-security main restricted
+  deb http://{{var_external_ansible_fqdn}}/ubuntu jammy-security universe
+  deb http://{{var_external_ansible_fqdn}}/ubuntu jammy-security multiverse
+var_public_repo:
+  deb http://ke.archive.ubuntu.com/ubuntu/ jammy main restricted
+  deb http://ke.archive.ubuntu.com/ubuntu/ jammy-updates main restricted
+  deb http://ke.archive.ubuntu.com/ubuntu/ jammy universe
+  deb http://ke.archive.ubuntu.com/ubuntu/ jammy-updates universe
+  deb http://ke.archive.ubuntu.com/ubuntu/ jammy multiverse
+  deb http://ke.archive.ubuntu.com/ubuntu/ jammy-updates multiverse
+  deb http://ke.archive.ubuntu.com/ubuntu/ jammy-backports main restricted universe multiverse
+  deb http://security.ubuntu.com/ubuntu jammy-security main restricted
+  deb http://security.ubuntu.com/ubuntu jammy-security universe
+  deb http://security.ubuntu.com/ubuntu jammy-security multiverse
+var_local_repo_fpr_whitelist:
+  - "790BC7277767219C42C86F933B4FE6ACC0B21F32"
+  - "843938DF228D22F7B3742BC0D94AA3F0EFE21092"
+  - "F6ECB3762474EDA9D21B7022871920D1991BC93C"
+var_external_repo_fpr_whitelist:
+  - "790BC7277767219C42C86F933B4FE6ACC0B21F32"
+  - "843938DF228D22F7B3742BC0D94AA3F0EFE21092"
+  - "F6ECB3762474EDA9D21B7022871920D1991BC93C"
+var_public_repo_fpr_whitelist:
+  - "790BC7277767219C42C86F933B4FE6ACC0B21F32"
+  - "843938DF228D22F7B3742BC0D94AA3F0EFE21092"
+  - "F6ECB3762474EDA9D21B7022871920D1991BC93C"
+
+var_libreoffice_version: "1:7.3.6-0ubuntu0.22.04.1"
+var_libreoffice_version_prev: "1:7.3.6-0ubuntu0.22.04"
+
+var_pam_faillock: pam_faillock.so
+
+
+

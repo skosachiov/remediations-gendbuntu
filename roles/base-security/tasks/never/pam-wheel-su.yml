@@ -1,0 +1,9 @@
+- name: restrict usage of su command only to members of wheel group
+  replace:
+    path: /etc/pam.d/su
+    regexp: ^[\s]*#[\s]*auth[\s]+required[\s]+pam_wheel\.so$
+    replace: auth             required        pam_wheel.so use_uid
+  tags:
+    - ws
+    - use_pam_wheel_for_su
+    - never

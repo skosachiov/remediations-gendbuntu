@@ -1,0 +1,19 @@
+var_subnets:
+  - 10.37.68.0/24
+  - 10.40.8.64/26
+var_contacts:
+  - francoise.denis
+  - bernadette.descoteaux
+var_ad_site: orleans-site
+var_kdc: orleans-dc.si.mi
+var_admin_server: orleans-dc.si.mi
+var_ad_gpo: false
+var_dfs:
+  - { service: dfs, server: orleans-dc.si.mi, dir: dfs }
+var_proxy_server: "http://paris-proxy.si.mi:3128"
+var_smb_printers:
+  - ipp://orleans-prn.si.mi/prn
+var_domain_admins_group: gend_admins
+var_clamav_server: orleans-clamav.si.mi
+var_site_address: "orleans_63_rue_du_faubourg_saint_jean"
+var_dp_fqdn: "{{var_ansible_fqdn}}"

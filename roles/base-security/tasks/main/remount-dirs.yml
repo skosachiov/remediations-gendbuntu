@@ -1,0 +1,58 @@
+- name: Remount with safe options
+  block:
+    - name: Remount tmp and home with noexec Edit rc.local
+      blockinfile:
+        dest: /etc/rc.local
+        create: yes
+        mode: u=rwx,g=x,o=x
+        owner: root 
+        marker_begin: BEGIN_REMOUNT
+        marker_end: END_REMOUNT
+        block: |
+          if ! mountpoint -q /tmp; then
+            mount -o bind /tmp /tmp
+            mount -o remount,noexec,nodev,nosuid /tmp
+          fi
+          if ! mountpoint -q /var/tmp; then
+            mount -o bind /var/tmp /var/tmp
+            mount -o remount,noexec,nodev,nosuid /var/tmp
+          fi
+          if ! mountpoint -q /home; then
+            mount -o bind /home /home
+            mount -o remount,noexec,nodev,nosuid /home
+          fi
+          if ! mountpoint -q tmpfs; then
+            mount -o remount,noexec,nodev,nosuid tmpfs
+          fi
+          # if ! mountpoint -q /dev/shm; then
+            mount -o remount,noexec,nodev,nosuid /dev/shm
+          # fi
+      notify: Rc-local restarted
+  tags:
+    - ws
+    - sec
+    - mob
+    - remount_with_safe_options
+
+- name: Check mount with options
+  vars:
+    var_dir:
+      - "/dev/shm"
+      - "/tmp"
+      - "/home"
+      - "/var/tmp"
+    var_option:
+      - "nodev"
+      - "noexec"
+      - "nosuid"
+  shell: findmnt {{item.0}} | grep {{item.1}}
+  register: items
+  changed_when: items.stdout_lines|length != 1
+  failed_when: false
+  with_nested:
+    - "{{var_dir}}"
+    - "{{var_option}}"
+  tags:
+    - ws
+    - sec
+    - check_mount_options

@@ -1,0 +1,78 @@
+- name: Libreoffice add ppa
+  shell: add-apt-repository ppa:libreoffice/libreoffice-still -y
+  tags:
+    - ws
+    - libreoffice_still_ppa
+
+- name: Libreoffice update
+  block:
+    - name: Libreoffice update Cache
+      command: apt update
+      failed_when: false
+      changed_when: false
+    - name: Libreoffice update Install
+      # failed_when: false
+      apt:
+        name:
+          - libreoffice={{var_libreoffice_version}}
+          - libreoffice-base={{var_libreoffice_version}}
+          - libreoffice-base-core={{var_libreoffice_version}}
+          - libreoffice-base-drivers={{var_libreoffice_version}}
+          - libreoffice-calc={{var_libreoffice_version}}
+          - libreoffice-common={{var_libreoffice_version}}
+          - libreoffice-core={{var_libreoffice_version}}
+          - libreoffice-draw={{var_libreoffice_version}}
+          - libreoffice-evolution={{var_libreoffice_version}}
+          - libreoffice-gnome={{var_libreoffice_version}}
+          - libreoffice-help-en-us={{var_libreoffice_version}}
+          - libreoffice-help-fr={{var_libreoffice_version}}
+          - libreoffice-impress={{var_libreoffice_version}}
+          - libreoffice-java-common={{var_libreoffice_version}}
+          - libreoffice-l10n-fr={{var_libreoffice_version}}
+          - libreoffice-l10n-uk={{var_libreoffice_version}}
+          - libreoffice-pdfimport={{var_libreoffice_version}}
+          - libreoffice-plasma={{var_libreoffice_version}}
+          - libreoffice-qt5={{var_libreoffice_version}}
+          - libreoffice-report-builder={{var_libreoffice_version}}
+          - libreoffice-script-provider-js={{var_libreoffice_version}}
+          - libreoffice-script-provider-python={{var_libreoffice_version}}
+          - libreoffice-style-breeze={{var_libreoffice_version}}
+          - libreoffice-style-colibre={{var_libreoffice_version}}
+          - libreoffice-style-elementary={{var_libreoffice_version}}
+          - libreoffice-style-galaxy={{var_libreoffice_version}}
+          - libreoffice-style-oxygen={{var_libreoffice_version}}
+        state: present
+    - name: Libreoffice update Remove
+      apt:
+        name:
+          - libreoffice={{var_libreoffice_version_prev}}
+          - libreoffice-base={{var_libreoffice_version_prev}}
+          - libreoffice-base-core={{var_libreoffice_version_prev}}
+          - libreoffice-base-drivers={{var_libreoffice_version_prev}}
+          - libreoffice-calc={{var_libreoffice_version_prev}}
+          - libreoffice-common={{var_libreoffice_version_prev}}
+          - libreoffice-core={{var_libreoffice_version_prev}}
+          - libreoffice-draw={{var_libreoffice_version_prev}}
+          - libreoffice-evolution={{var_libreoffice_version_prev}}
+          - libreoffice-gnome={{var_libreoffice_version_prev}}
+          - libreoffice-help-en-us={{var_libreoffice_version_prev}}
+          - libreoffice-help-fr={{var_libreoffice_version_prev}}
+          - libreoffice-impress={{var_libreoffice_version_prev}}
+          - libreoffice-java-common={{var_libreoffice_version_prev}}
+          - libreoffice-l10n-fr={{var_libreoffice_version_prev}}
+          - libreoffice-l10n-uk={{var_libreoffice_version_prev}}
+          - libreoffice-pdfimport={{var_libreoffice_version_prev}}
+          - libreoffice-plasma={{var_libreoffice_version_prev}}
+          - libreoffice-qt5={{var_libreoffice_version_prev}}
+          - libreoffice-report-builder={{var_libreoffice_version_prev}}
+          - libreoffice-script-provider-js={{var_libreoffice_version_prev}}
+          - libreoffice-script-provider-python={{var_libreoffice_version_prev}}
+          - libreoffice-style-breeze={{var_libreoffice_version_prev}}
+          - libreoffice-style-colibre={{var_libreoffice_version_prev}}
+          - libreoffice-style-elementary={{var_libreoffice_version_prev}}
+          - libreoffice-style-galaxy={{var_libreoffice_version_prev}}
+          - libreoffice-style-oxygen={{var_libreoffice_version_prev}}
+        state: absent
+  tags:
+    - ws
+    - libreoffice_update

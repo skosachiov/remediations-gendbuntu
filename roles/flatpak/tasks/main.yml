@@ -1,0 +1,29 @@
+- name: Flatpak installed
+  package:
+    name: flatpak
+    state: latest
+  tags:
+    - ws
+    - flatpak_intsalled
+
+- name: Ensure flathub installed in system space
+  shell: "flatpak remote-add --system --if-not-exists {{var_flathub_name}} {{var_flathub_url}}"
+  register: result
+  changed_when: result.rc != 0
+  tags:
+    - ws
+    - flatpak_remote_add
+
+- name: Flatpak apps install
+  block:
+    - name: Flatpak apps install List
+      changed_when: false
+      shell: "flatpak --columns=application list"
+      register: fp_installed
+    - name: Flatpak apps install Install diff
+      shell: "flatpak install --system --noninteractive -y {{item}}"
+      with_items: "{{var_fp_applications | difference(fp_installed.stdout_lines)}}"
+  tags:
+    - ws
+    - flatpak_apps_install      
+

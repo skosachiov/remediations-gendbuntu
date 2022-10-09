@@ -1,0 +1,9 @@
+- name: Ensure third-party packages are installed
+  failed_when: false
+  package:
+    name:
+      - ganttproject
+    state: latest
+  tags:
+    - ws
+    - third_party_packages_are_installed

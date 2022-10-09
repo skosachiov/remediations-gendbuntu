@@ -1,0 +1,9 @@
+
+- name: Restrict Serial Port Root Logins
+  lineinfile:
+    dest: /etc/securetty
+    regexp: ttyS[0-9]
+    state: absent
+  tags:
+    - ws
+    - restrict_serial_port_logins

@@ -1,0 +1,24 @@
+- name: Ensure kernel module some fs is disabled
+  block:
+    - name: Ensure kernel module 'cramfs' is disabled
+      lineinfile:
+        create: true
+        dest: /etc/modprobe.d/cramfs.conf
+        regexp: cramfs
+        line: install cramfs /bin/true
+    - name: Ensure kernel module 'squashfs' is disabled
+      lineinfile:
+        create: true
+        dest: /etc/modprobe.d/squashfs.conf
+        regexp: squashfs
+        line: install squashfs /bin/true
+    - name: Ensure kernel module 'udf' is disabled
+      lineinfile:
+        create: true
+        dest: /etc/modprobe.d/udf.conf
+        regexp: udf
+        line: install udf /bin/true
+  tags:
+    - ws
+    - sec
+    - kernel_module_some_fs_disabled

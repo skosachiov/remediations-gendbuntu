@@ -1,0 +1,2 @@
+# git clone  gitolite3@paris-ansible.si.mi:remediations-gendbuntu
+*/14 * * * * root bash -c "cd /var/www/html/git/remediations-gendbuntu; git pull origin master"

@@ -1,0 +1,54 @@
+- name: Krb5 conf
+  # kdc = {{var_kdc}}
+  # admin_server = {{var_admin_server}}
+  copy:
+    dest: /etc/krb5.conf
+    content: |
+      [libdefaults]
+         rdns = false
+         default_realm = {{var_default_realm}}
+         kdc_timesync = 1
+         ccache_type = 4
+         forwardable = true
+         proxiable = true
+         fcc-mit-ticketflags = true
+         default_ccache_name = KEYRING:persistent:%{uid}
+      [realms]
+         {{var_default_realm}} = {
+           default_domain = {{var_local_domain}}
+           max_life = 10h
+           max_renewable_life = 7d
+           ticket_lifetime = 10h
+         }
+      [domain_realm]
+         .{{var_local_domain}} = {{var_default_realm}}
+         {{var_local_domain}} = {{var_default_realm}}
+  tags:
+    - ws
+    - sec
+    - krb5_conf
+
+- name: Set krb5 trace
+  block:
+    - name: Set krb5 trace in /etc/profile
+      lineinfile:
+        dest: /etc/profile
+        line: export KRB5_TRACE="/var/log/krb5_trace.log"
+        regexp: export\s*KRB5_TRACE
+        state: present
+        create: true
+    - name: Set krb5 trace in /etc/rc.local
+      blockinfile:
+        dest: /etc/rc.local
+        marker_begin: BEGIN_KRB5_TRACE
+        marker_end: END_KRB5_TRACE
+        block: |
+          touch /var/log/krb5_trace.log
+          chown root:root /var/log/krb5_trace.log 
+          chmod o=w /var/log/krb5_trace.log
+        state: present
+        create: true
+  tags:
+    - ws
+    - sec
+    - set_krb5_trace

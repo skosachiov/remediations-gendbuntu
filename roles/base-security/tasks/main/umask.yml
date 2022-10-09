@@ -1,0 +1,21 @@
+- name: Set user umask in the etc files
+  block:
+    - name: Set user umask in /etc/profile
+      lineinfile:
+        dest: /etc/profile
+        line: umask 027
+        regexp: ^\s*umask.*
+        state: present
+        create: true
+    - name: Set user umask in /etc/bash.bashrc
+      lineinfile:
+        dest: /etc/bash.bashrc
+        line: umask 027
+        regexp: ^\s*umask.*
+        state: present
+        create: true
+  tags:
+    - ws
+    - sec
+    - mob
+    - accounts_umask_etc

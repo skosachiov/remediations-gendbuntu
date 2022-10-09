@@ -1,0 +1,25 @@
+- name: Disable autofs
+  block:
+    - name: Gather the service facts
+      service_facts: null
+    - name: Disable service autofs
+      systemd:
+        name: autofs.service
+        enabled: 'no'
+        state: stopped
+        masked: 'yes'
+      when: '"autofs.service" in ansible_facts.services'
+    - name: Unit Socket Exists - autofs.socket
+      command: systemctl list-unit-files autofs.socket
+      args:
+        warn: false
+      register: socket_file_exists
+      changed_when: false
+      ignore_errors: true
+      check_mode: false
+  when: var_installation_type != "workstation"
+  tags:
+    - ws
+    - sec
+    - mob
+    - autofs_disabled

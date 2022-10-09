@@ -1,0 +1,24 @@
+#!/bin/bash
+#
+realm "$@"
+SRC=/root/sssd.conf
+DST=/etc/sssd/sssd.conf
+if [ -f "$SRC" ] && [ -f "$DST" ]; then
+    sleep 1
+    echo "Stop sssd ..."
+    systemctl stop sssd
+    sleep 1
+    echo "Move sssd.conf ..."
+    mv -f $SRC $DST
+    sleep 1
+    echo "Remove sssd cache ..."
+    rm -f /var/lib/sss/db/*
+    sleep 1
+    echo "Start sssd ..."
+    systemctl start sssd
+    echo "PAM auth update ..."
+    pam-auth-update --package --enable mkhomedir --remove cracklib --force
+    echo
+    echo "Please reboot your computer"
+    echo
+fi

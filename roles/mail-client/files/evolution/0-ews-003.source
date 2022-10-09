@@ -1,0 +1,32 @@
+[Autoconfig]
+Revision=001
+
+[Data Source]
+DisplayName=${USER}@example.test
+Enabled=true
+Parent=0-ews-001
+
+Populated=false
+
+[Mail Composition]
+Bcc=
+Cc=
+ReplyStyle=default
+SignImip=true
+StartBottom=inconsistent
+TopSignature=inconsistent
+DraftsFolder=folder://0-ews-002/Drafts
+
+[Mail Identity]
+Address=${USER}@example.test
+Aliases=
+Name=${USER}
+Organization=
+ReplyTo=
+SignatureUid=none
+
+[Mail Submission]
+TransportUid=0-ews-004
+RepliesToOriginFolder=false
+UseSentFolder=true
+SentFolder=folder://0-ews-002/Sent

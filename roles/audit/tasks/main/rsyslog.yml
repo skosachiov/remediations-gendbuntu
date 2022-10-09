@@ -1,0 +1,104 @@
+- name: Enable service rsyslog
+  block:
+    - name: Ensure rsyslog is installed
+      package:
+        name: rsyslog
+        state: present
+    - name: Gather the package facts
+      package_facts:
+        manager: auto
+    - name: Enable service rsyslog
+      service:
+        name: rsyslog
+        enabled: 'yes'
+        state: started
+      when:
+        - '"rsyslog" in ansible_facts.packages'
+  tags:
+    - ws
+    - sec
+    - mob
+    - service_rsyslog_enabled
+
+- name: Remove rsyslog all to remote loghost
+  lineinfile:
+    dest: /etc/rsyslog.conf
+    regexp: ^\*\.\*
+    line: '*.* @{{ var_rsyslog_server }}'
+    state: absent
+  when: ansible_facts.nodename != var_rsyslog_server
+  tags:
+    - ws
+    - sec
+    - remove_rsyslog_all_remote
+
+- name: Set rsyslog access to remote loghost
+  block:
+    - name: Set rsyslog access to remote loghost Remove line
+      lineinfile:
+        dest: /etc/rsyslog.conf
+        regexp: ^\*\.\*
+        state: absent
+      notify: Rsyslog restarted
+    - name: Set rsyslog access to remote loghost Replace
+      replace:
+        path: /etc/rsyslog.conf
+        regexp: ^user\.\*
+        replace: '#user.*'
+      notify: Rsyslog restarted
+    - name: Set rsyslog access to remote loghost Replace
+      replace:
+        path: /etc/rsyslog.conf
+        regexp: ^#cron\.\*
+        replace: 'cron.*'
+      notify: Rsyslog restarted
+    - name: Set rsyslog access to remote loghost Replace
+      replace:
+        path: /etc/rsyslog.conf
+        regexp: ^\*\.=info;\*\.=notice;\*\.=warn;
+        replace: '*.=notice;*.=warn;'
+      notify: Rsyslog restarted
+    - name: Set rsyslog access to remote loghost Block
+      blockinfile:
+        dest: /etc/rsyslog.conf
+        marker_begin: BEGIN_REMOTE
+        marker_end: END_REMOTE
+        insertafter: auth,authpriv\.\*\s*\/var\/log\/auth\.log
+        block: |
+          {{var_rsyslog_filter}}        
+          auth.* @{{ var_rsyslog_server }}
+          authpriv.* @{{ var_rsyslog_server }}
+          daemon.* @{{ var_rsyslog_server }}
+          *.info @{{ var_rsyslog_server }}
+        create: true
+      notify: Rsyslog restarted
+  when: ansible_facts.nodename != var_rsyslog_server
+  tags:
+    - ws
+    - sec
+    - rsyslog_access_remote_loghost
+
+- name: Set rsyslog remote loghost
+  lineinfile:
+    dest: /etc/rsyslog.conf
+    regexp: ^\*\.\*
+    line: '*.* @{{ var_logstash_server }}'
+    create: true
+  when: ansible_facts.nodename == var_rsyslog_server
+  tags:
+    - ws
+    - sec
+    - logstash_remote_loghost
+
+- name: Set rsyslog FileCreateMode
+  lineinfile:
+    dest: /etc/rsyslog.conf
+    regexp: ^\$FileCreateMode
+    line: $FileCreateMode 0640
+    create: true
+  when: ansible_facts.nodename != var_rsyslog_server
+  tags:
+    - ws
+    - sec
+    - set_rsyslog_filecreatemode
+

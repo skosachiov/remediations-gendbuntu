@@ -1,0 +1,85 @@
+- name: Hide unused desktop apps home
+  block:
+    - name: Hide unused desktop apps home Find
+      shell: find /home -xdev -name "*.desktop" | grep -e Desktops -e startmenu
+      register: items
+      failed_when: false
+      changed_when: false
+    - name: Hide unused desktop apps home Hide
+      failed_when: false
+      lineinfile:
+        dest: "{{item}}"
+        state: present
+        regexp: ^\s*Hidden=
+        line: Hidden=true
+        insertafter: \[Desktop Entry\]
+      with_items: "{{ items.stdout_lines }}"
+      when: item|basename in var_hidden_apps
+  tags:
+    - ws
+    - hide_unused_desktop_apps_home
+
+- name: Unhide desktop apps home
+  block:
+    - name: Unhide desktop apps home Find
+      shell: find /home -xdev -name "*.desktop" | grep -e Desktops -e startmenu
+      register: items
+      failed_when: false
+      changed_when: false
+    - name: Unhide desktop apps home Hide
+      failed_when: false
+      lineinfile:
+        dest: "{{item}}"
+        state: present
+        regexp: ^\s*Hidden=
+        line: Hidden=false
+        insertafter: \[Desktop Entry\]
+      with_items: "{{ items.stdout_lines }}"
+      when: item|basename in var_visible_apps
+  tags:
+    - ws
+    - unhide_desktop_apps_home
+
+- name: Hide unused desktop apps share
+  block:
+    - name: Hide unused desktop apps share Find
+      find:
+        paths: /usr/share/applications
+        patterns: "*.desktop"
+        recurse: yes
+      register: result
+    - name: Hide unused desktop apps share Hide
+      lineinfile:
+        dest: "{{item.path}}"
+        state: present
+        regexp: ^\s*Hidden=
+        line: Hidden=true
+        insertafter: \[Desktop Entry\]
+      with_items: "{{ result.files }}"
+      when: item.path|basename in var_hidden_apps
+  tags:
+    - ws
+    - hide_unused_desktop_apps_share
+
+- name: Unhide unused desktop apps share
+  block:
+    - name: Unhide unused desktop apps share Find
+      find:
+        paths: /usr/share/applications
+        patterns: "*.desktop"
+        recurse: yes
+      register: result
+    - name: Unhide unused desktop apps share Hide
+      lineinfile:
+        dest: "{{item.path}}"
+        state: present
+        regexp: ^\s*Hidden=
+        line: Hidden=false
+        insertafter: \[Desktop Entry\]
+      with_items: "{{ result.files }}"
+      when: item.path|basename in var_visible_apps
+  tags:
+    - ws
+    - unhide_desktop_apps_share
+
+

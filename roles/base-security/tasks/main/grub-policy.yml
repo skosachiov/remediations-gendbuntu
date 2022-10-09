@@ -1,0 +1,57 @@
+- name: Set grub2 password
+  block:
+    - name: Set grub2 password Hash focal
+      blockinfile:
+        dest: /etc/grub.d/07_password
+        block: |
+            cat << EOF
+            set superusers="{{var_superusers}}"
+            password_pbkdf2 "{{var_superusers}}" "{{var_password_pbkdf2}}"
+            EOF
+        create: true
+      notify: Update grub
+    - name: Set grub2 password for Begin
+      lineinfile:
+        dest: /etc/grub.d/10_linux
+        line: 'CLASS="--class gnu-linux --class gnu --class os --unrestricted"'
+        insertbefore: ^SUPPORTED_INITS=.*
+        state: present
+        create: true
+      notify: Update grub      
+    - name: Set grub2 password for Recovery
+      lineinfile:
+        dest: /etc/grub.d/10_linux
+        line: '    CLASS="--class gnu-linux --class gnu --class os"'
+        insertafter: if \[ \"x\$\{GRUB_DISABLE_RECOVERY\}\" != \"xtrue\" \]; then
+        state: present
+        create: true
+      notify: Update grub
+    - name: Set grub2 password for Recovery end
+      lineinfile:
+        dest: /etc/grub.d/10_linux
+        line: '    CLASS="--class gnu-linux --class gnu --class os --unrestricted"'
+        insertafter: \"\$\{GRUB_CMDLINE_LINUX_RECOVERY\} \$\{GRUB_CMDLINE_LINUX\}\"
+        state: present
+        create: true
+      notify: Update grub
+  tags:
+    - ws
+    - sec
+    - mob
+    - set_grub2_password
+
+- name: Set grub cmdline
+  block:
+    - name: Set grub splash /etc/default/grub
+      lineinfile:
+        dest: /etc/default/grub
+        line: GRUB_CMDLINE_LINUX_DEFAULT="quiet net.ifnames=0 audit=1 audit_backlog_limit=8192 splash"
+        regexp: ^#?\s*GRUB_CMDLINE_LINUX_DEFAULT
+        state: present
+      notify: Update grub
+  tags:
+    - ws
+    - sec
+    - mob
+    - set_grub_cmdline
+

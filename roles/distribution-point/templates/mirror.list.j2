@@ -1,0 +1,30 @@
+############# config ##################
+#
+# set base_path    /var/spool/apt-mirror
+#
+# set mirror_path  $base_path/mirror
+# set skel_path    $base_path/skel
+# set var_path     $base_path/var
+# set cleanscript $var_path/clean.sh
+# set defaultarch  <running host architecture>
+# set postmirror_script $var_path/postmirror.sh
+# set run_postmirror 0
+set nthreads     1
+set limit_rate 1024k
+
+set _tilde 0
+#
+############# end config ##############
+
+deb http://{{var_ansible_fqdn}}/ubuntu/ focal main restricted
+deb http://{{var_ansible_fqdn}}/ubuntu/ focal-updates main restricted
+deb http://{{var_ansible_fqdn}}/ubuntu/ focal universe
+deb http://{{var_ansible_fqdn}}/ubuntu/ focal-updates universe
+deb http://{{var_ansible_fqdn}}/ubuntu/ focal multiverse
+deb http://{{var_ansible_fqdn}}/ubuntu/ focal-updates multiverse
+deb http://{{var_ansible_fqdn}}/ubuntu/ focal-backports main restricted universe multiverse
+deb http://{{var_ansible_fqdn}}/ubuntu focal-security main restricted
+deb http://{{var_ansible_fqdn}}/ubuntu focal-security universe
+deb http://{{var_ansible_fqdn}}/ubuntu focal-security multiverse
+
+clean http://{{var_ansible_fqdn}}/ubuntu/ 

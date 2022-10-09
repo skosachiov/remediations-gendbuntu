@@ -1,0 +1,18 @@
+var_subnets:
+  - 10.34.210.0/24
+var_contacts:
+  - francoise.denis
+  - bernadette.descoteaux
+var_ad_site: rennes-site
+var_kdc: rennes-dc.si.mi
+var_admin_server: rennes-dc.si.mi
+var_ad_gpo: false
+var_dfs:
+  - { service: dfs, server: rennes-dc.si.mi, dir: dfs }
+var_proxy_server: "http://paris-proxy.si.mi:3128"
+var_smb_printers:
+  - ipp://rennes-prn.si.mi/prn
+var_domain_admins_group: gend_admins
+var_clamav_server: paris-clamav.si.mi
+var_site_address: "rennes_22_boulevard_de_la_tour_d_auvergne"
+var_dp_fqdn: "{{var_ansible_fqdn}}"

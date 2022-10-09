@@ -1,0 +1,5 @@
+var_mandatory_access: false
+var_mandatory_access_mcs: false
+var_mandatory_access_mls: true
+var_mandatory_access_ima: true
+var_mandatory_access_gpg_pub_key: "inventories/all/files/mandatory-access/christian_rodriguez.gpg.key"

@@ -1,0 +1,5 @@
+var_usb_allowed_devices: |
+  allow id 03f0:9024 name "HP Basic USB Keyboard"
+  allow id 03f0:914a name "HP Elite USB Keyboard"
+  allow id 03f0:924a name "HP USB Optical Mouse"
+  allow id 03f0:934a name "HP USB Slim Keyboard"

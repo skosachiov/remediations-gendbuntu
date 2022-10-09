@@ -1,0 +1,18 @@
+var_subnets:
+  - 10.32.0.0/22
+var_contacts:
+  - francoise.denis
+  - bernadette.descoteaux
+var_ad_site: lyon-site
+var_kdc: lyon-dc.si.mi
+var_admin_server: lyon-dc.si.mi
+var_ad_gpo: false
+var_dfs:
+  - { service: dfs, server: lyon-dc.si.mi, dir: dfs }
+var_proxy_server: "http://paris-proxy.si.mi:3128"
+var_smb_printers:
+  - ipp://lyon-prn.si.mi/prn
+var_domain_admins_group: gend_admins
+var_clamav_server: lyon-clamav.si.mi
+var_site_address: "lyon_40_rue_marius_berliet"
+var_dp_fqdn: "{{var_ansible_fqdn}}"

@@ -1,0 +1,79 @@
+- name: Install openscap client dependencies focal
+  package:
+    name: 
+      - libopenscap8
+    state: present
+  ignore_errors: yes
+  when: ansible_lsb.codename == "focal"
+  tags:
+    - ws
+    - sec
+    - install_openscap_dependencies_focal
+
+- name: Install openscap client dependencies bullseye
+  package:
+    name: openscap
+    state: present
+  when: ansible_lsb.codename == "bullseye"
+  tags:
+    - ws
+    - sec
+    - install_openscap_dependencies_bullseye
+
+- name: OpenSCAP CVE vulnerability scan focal
+  block:
+    - name: OpenSCAP CVE vulnerability scan Get_url
+      changed_when: false
+      get_url:
+        url: https://security-metadata.canonical.com/oval/com.ubuntu.{{ansible_lsb.codename}}.usn.oval.xml.bz2
+        dest: "/home/{{var_ansible_username}}/"
+        mode: go+r
+    - name: OpenSCAP CVE vulnerability scan Remove
+      changed_when: false    
+      file:
+        name: "/home/{{var_ansible_username}}/com.ubuntu.{{ansible_lsb.codename}}.usn.oval.xml"
+        state: absent
+    - name: OpenSCAP CVE vulnerability scan Bunzip2
+      changed_when: false    
+      shell: "bunzip2 -k /home/{{var_ansible_username}}/com.ubuntu.{{ansible_lsb.codename}}.usn.oval.xml.bz2"
+    - name: OpenSCAP CVE vulnerability scan focal Scan
+      check_mode: no
+      shell: 'oscap oval eval --skip-valid  /home/{{var_ansible_username}}/com.ubuntu.{{ansible_lsb.codename}}.usn.oval.xml | grep true | grep -o "[0-9]*" | sort' 
+      register: cve
+      changed_when: false
+      failed_when: false
+    - name: OpenSCAP CVE vulnerability scan focal Check cve
+      changed_when: true
+      failed_when: false
+      debug:
+        msg: "{{item}}"
+      with_items: "{{cve.stdout_lines}}"
+      when: item not in var_cve_whitelist
+  tags:
+    - ws
+    - oscap_oval_eval_focal
+
+- name: OpenSCAP CVE vulnerability scan bullseye
+  block:
+    - name: OpenSCAP CVE vulnerability scan Copy https://www.debian.org/security/oval/oval-definitions-bullseye.xml
+      copy:
+        src: "inventories/codename/bullseye/files/oval-definitions-bullseye.xml"
+        dest: "/home/{{var_ansible_username}}/"
+        mode: go+r
+    - name: OpenSCAP CVE vulnerability scan bullseye Scan
+      check_mode: no
+      shell: 'oscap oval eval --skip-valid /home/{{var_ansible_username}}/oval-definitions-bullseye.xml | grep true | grep -o "[0-9]*" | sort' 
+      register: cve
+      changed_when: false
+      failed_when: false
+    - name: OpenSCAP CVE vulnerability scan bullseye Check cve
+      changed_when: true
+      failed_when: false
+      debug:
+        msg: "{{item}}"
+      with_items: "{{cve.stdout_lines}}"
+      when: item not in var_cve_whitelist
+  when: ansible_lsb.codename == 'bullseye'
+  tags:
+    - ws
+    - oscap_oval_eval_bullseye

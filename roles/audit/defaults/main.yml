@@ -1,0 +1,15 @@
+var_auditd_exceptions: |
+  -a never,exit -S all -F exe=/usr/lib/chromium/chromium
+  -a never,exit -S all -F exe=/lib/systemd/systemd-journald
+  -a never,exit -S all -F exe=/usr/sbin/cupsd
+  -a never,exit -S all -F path=/bin/sleep
+  -a never,exit -S all -F path=/sbin/killall5
+  -a never,exit -S all -F dir=/dev/shm/
+  -a never,exclude -F msgtype=EOE
+  -a never,exclude -F msgtype=PROCTITLE
+  -a never,exclude -F msgtype=CWD
+var_auditd_rules_count: 120
+var_logstash_server: logstash.example.test
+var_rsyslog_filter: |
+  :msg, contains, "SOME USELESS TEXT" stop
+  :msg, contains, "SOME TEXT" @{{ var_rsyslog_server }}

@@ -1,0 +1,17 @@
+- name: Verify No netrc Files Exist
+  block:
+    - name: Verify No netrc Files Exist Find
+      command: find /home -xdev -name .netrc
+      register: items
+      failed_when: false
+      changed_when: false
+    - name: Verify No netrc Files Exist Absent
+      file:
+        path: "{{item}}"
+        state: absent
+      with_items: "{{items.stdout_lines}}"
+      when: items.stdout is defined
+  tags:
+    - ws
+    - sec
+    - no_netrc_files_exist

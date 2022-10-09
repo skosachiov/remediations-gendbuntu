@@ -1,0 +1,14 @@
+- name: Remove compilers execution bit
+  file:
+    path: "{{item}}"
+    mode: o-rwx
+  failed_when: false
+  with_items:
+    - /usr/bin/x86_64-linux-gnu-cpp-8
+    - /usr/bin/x86_64-linux-gnu-gcc-8
+    - /usr/bin/x86_64-linux-gnu-g++-8
+  tags:
+    - ws
+    - sec
+    - mob
+    - remove_compilers_execution_bit

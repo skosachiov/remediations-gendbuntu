@@ -1,0 +1,15 @@
+- name: Dpkg configure all
+  check_mode: no
+  changed_when: false
+  shell: 'dpkg --configure -a'
+  ignore_errors: yes
+  tags:
+    - ws
+    - dpkg_configure_all
+
+- name: Apt update
+  command: apt update
+  changed_when: false
+  tags:
+    - ws
+    - apt_update

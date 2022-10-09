@@ -1,0 +1,132 @@
+- name: Enable service autofs Present
+  package:
+    name: autofs
+    state: present
+
+- name: Set symlinks in home folder
+  copy:
+    dest: /etc/profile.d/set-symlinks.sh
+    mode: a+x
+    content: |
+      #!/bin/bash
+      #
+      username=$(echo $USER | sed -e 's/^.*\\//g' -e 's/@.*$//g' -e 's/\(.*\)/\L\1/')
+      find /media/$username/* -maxdepth 0 -type d -exec sh -c 'ln -s {} ~/$(basename {})' \; 2>/dev/null
+  when: 
+  tags:
+    - ws
+    - set_symlinks_in_home_folder
+
+- name: Set gtk bookmarks
+  copy:
+    dest: /etc/profile.d/set-gtk-bookmarks.sh
+    mode: a+x
+    content: |
+      #!/bin/bash
+      #
+      username=$(echo $USER | sed -e 's/^.*\\//g' -e 's/@.*$//g' -e 's/\(.*\)/\L\1/')
+      GTKCONFIG=~/.config/gtk-3.0
+      BOOKMARKS=$GTKCONFIG/bookmarks
+      MEDIA=file:///media/$username/dfs
+      if [ -d ~/.config ]; then
+        if [ ! -d "$GTKCONFIG" ]; then
+          mkdir $GTKCONFIG
+        fi
+        if [ ! -f "$BOOKMARKS" ]; then
+          touch $BOOKMARKS
+        else
+          if ! grep -Fxq "$MEDIA" "$BOOKMARKS"; then
+            echo $MEDIA >> "$BOOKMARKS"
+          fi
+        fi
+      fi
+      #
+  tags:
+    - ws
+    - set_gtk_bookmarks
+    - never
+
+- name: Set autofs volume definitions
+  block:
+    - name: Set autofs volume definitions Create auto.master.d
+      file:
+        path: /etc/auto.master.d
+        state: directory
+    - name: Set autofs volume definitions Remove line
+      lineinfile:
+        dest: /etc/auto.media
+        state: absent
+        regexp: '^\*'
+    - name: Set autofs volume definitions Copy
+      blockinfile:
+        dest: /etc/auto.media
+        create: yes
+        marker: "# {mark} ANSIBLE MANAGED BLOCK {{item.dir}}"
+        content: |
+          {{item.dir}} -fstype=cifs,sec=krb5,user=&,uid=$UID,gid=$GID,cruid=$UID,file_mode=0600,dir_mode=0700,cache=loose ://{{item.server}}/{{item.service}}
+      with_items: "{{var_dfs}}"
+    - name: Set autofs volume definitions Browse
+      lineinfile:
+        dest: /etc/autofs.conf
+        regexp: ^\s*browse_mode
+        line: browse_mode = yes 
+    - name: Set autofs volume definitions Copy script
+      copy:
+        dest: /usr/local/bin/autofs-media.sh
+        mode: a+rx
+        content: |
+          #!/bin/bash
+          #
+          username=$(echo $PAM_USER | sed -e 's/^.*\\//g' -e 's/@.*$//g' -e 's/\(.*\)/\L\1/')
+          n=$(id -u $PAM_USER)
+          if [ $n -gt {{var_min_domain_uid}} ] && [ $n -lt {{var_max_domain_uid}} ]; then
+            /bin/echo "/media/$username /etc/auto.media" > /etc/auto.master.d/$username.autofs
+            /bin/systemctl reload autofs
+          fi
+    - name: Set autofs volume definitions Pam exec
+      lineinfile:
+        dest: /etc/pam.d/common-session
+        regexp: ^\s*session\s*optional\s*pam_exec.so
+        line: session optional pam_exec.so /usr/local/bin/autofs-media.sh 
+        insertafter: EOF
+  tags:
+    - ws
+    - set_autofs_volume
+
+- name: Samba client min protocol
+  lineinfile:
+      path: /etc/samba/smb.conf
+      create: true
+      regexp: ^[\s]*client\s*min\s*protocol\s*=.*$
+      line: client min protocol = SMB2
+      state: present
+      insertafter: \[global\]
+  tags:
+    - ws
+    - sec
+    - mob
+    - samba_client_min_protocol
+
+- name: Samba client encrypt passwords absent
+  lineinfile:
+      path: /etc/samba/smb.conf
+      regexp: ^\s*encrypt\s*passwords
+      state: absent
+  tags:
+    - ws
+    - sec
+    - samba_client_encrypt_passwords_absent
+
+- name: Samba client smb encrypt required
+  lineinfile:
+      path: /etc/samba/smb.conf
+      create: true
+      regexp: ^\s*smb\s*encrypt
+      line: smb encrypt = required
+      state: present
+      insertafter: \[global\]
+  tags:
+    - ws
+    - sec
+    - samba_client_smb_encrypt_required
+

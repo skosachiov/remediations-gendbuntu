@@ -1,0 +1,5 @@
+var_mandatory_access: false
+var_mandatory_access_mcs: false
+var_mandatory_access_mls: false
+var_mandatory_access_ima: false
+var_mandatory_access_gpg_pub_key: "example_pub.key"

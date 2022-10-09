@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<zone>
+    <short>trusted</short>
+    <source address="192.168.122.1"/>
+    <source address="10.150.1.1"/>
+    <source address="10.162.1.139"/>
+    <source address="10.162.1.144"/>
+    <source address="10.162.1.114"/>
+    <port protocol="tcp" port="22"/>
+    <port protocol="tcp" port="3389"/>
+    <service name="ssh"/>
+</zone>

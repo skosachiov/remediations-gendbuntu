@@ -1,0 +1,32 @@
+- name: Remove lines starting with + from /etc/passwd
+  lineinfile:
+    regexp: ^\+.*$
+    state: absent
+    path: /etc/passwd
+  tags:
+    - ws
+    - sec
+    - mob
+    - no_legacy_plus_entries_etc_passwd
+
+- name: Remove lines starting with + from /etc/shadow
+  lineinfile:
+    regexp: ^\+.*$
+    state: absent
+    path: /etc/shadow
+  tags:
+    - ws
+    - sec
+    - mob
+    - no_legacy_plus_entries_etc_shadow
+
+- name: Remove lines starting with + from /etc/group
+  lineinfile:
+    regexp: ^\+.*$
+    state: absent
+    path: /etc/group
+  tags:
+    - ws
+    - sec
+    - mob
+    - no_legacy_plus_entries_etc_group

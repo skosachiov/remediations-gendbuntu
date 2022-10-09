@@ -1,0 +1,4 @@
+- name: NetworkManager restarted
+  service:
+    name: NetworkManager
+    state: restarted

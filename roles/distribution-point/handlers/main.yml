@@ -1,0 +1,9 @@
+- name: Apache restarted
+  service:
+    name: apache2
+    state: restarted
+
+- name: Rsyslog restarted
+  service:
+      name: rsyslog
+      state: restarted

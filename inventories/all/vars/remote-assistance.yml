@@ -1,0 +1,2 @@
+var_no_shell_pass: "rhewae2Thie5buZW"
+var_fqdn_sshserver: "{{var_ansible_fqdn}}"

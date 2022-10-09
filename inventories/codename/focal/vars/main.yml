@@ -1,0 +1,50 @@
+var_local_repo: |
+  deb http://{{var_dp_fqdn}}/ubuntu/ focal main restricted
+  deb http://{{var_dp_fqdn}}/ubuntu/ focal-updates main restricted
+  deb http://{{var_dp_fqdn}}/ubuntu/ focal universe
+  deb http://{{var_dp_fqdn}}/ubuntu/ focal-updates universe
+  deb http://{{var_dp_fqdn}}/ubuntu/ focal multiverse
+  deb http://{{var_dp_fqdn}}/ubuntu/ focal-updates multiverse
+  deb http://{{var_dp_fqdn}}/ubuntu/ focal-backports main restricted universe multiverse
+  deb http://{{var_dp_fqdn}}/ubuntu focal-security main restricted
+  deb http://{{var_dp_fqdn}}/ubuntu focal-security universe
+  deb http://{{var_dp_fqdn}}/ubuntu focal-security multiverse
+var_external_repo: |
+  deb http://{{var_external_ansible_fqdn}}/ubuntu/ focal main restricted
+  deb http://{{var_external_ansible_fqdn}}/ubuntu/ focal-updates main restricted
+  deb http://{{var_external_ansible_fqdn}}/ubuntu/ focal universe
+  deb http://{{var_external_ansible_fqdn}}/ubuntu/ focal-updates universe
+  deb http://{{var_external_ansible_fqdn}}/ubuntu/ focal multiverse
+  deb http://{{var_external_ansible_fqdn}}/ubuntu/ focal-updates multiverse
+  deb http://{{var_external_ansible_fqdn}}/ubuntu/ focal-backports main restricted universe multiverse
+  deb http://{{var_external_ansible_fqdn}}/ubuntu focal-security main restricted
+  deb http://{{var_external_ansible_fqdn}}/ubuntu focal-security universe
+  deb http://{{var_external_ansible_fqdn}}/ubuntu focal-security multiverse
+var_public_repo:
+  deb http://et.archive.ubuntu.com/ubuntu/ focal main restricted
+  deb http://et.archive.ubuntu.com/ubuntu/ focal-updates main restricted
+  deb http://et.archive.ubuntu.com/ubuntu/ focal universe
+  deb http://et.archive.ubuntu.com/ubuntu/ focal-updates universe
+  deb http://et.archive.ubuntu.com/ubuntu/ focal multiverse
+  deb http://et.archive.ubuntu.com/ubuntu/ focal-updates multiverse
+  deb http://et.archive.ubuntu.com/ubuntu/ focal-backports main restricted universe multiverse
+  deb http://security.ubuntu.com/ubuntu focal-security main restricted
+  deb http://security.ubuntu.com/ubuntu focal-security universe
+  deb http://security.ubuntu.com/ubuntu focal-security multiverse
+var_local_repo_fpr_whitelist:
+  - "790BC7277767219C42C86F933B4FE6ACC0B21F32"
+  - "843938DF228D22F7B3742BC0D94AA3F0EFE21092"
+  - "F6ECB3762474EDA9D21B7022871920D1991BC93C"
+var_external_repo_fpr_whitelist:
+  - "790BC7277767219C42C86F933B4FE6ACC0B21F32"
+  - "843938DF228D22F7B3742BC0D94AA3F0EFE21092"
+  - "F6ECB3762474EDA9D21B7022871920D1991BC93C"
+var_public_repo_fpr_whitelist:
+  - "790BC7277767219C42C86F933B4FE6ACC0B21F32"
+  - "843938DF228D22F7B3742BC0D94AA3F0EFE21092"
+  - "F6ECB3762474EDA9D21B7022871920D1991BC93C"
+
+var_libreoffice_version: "1:7.3.6~rc2-0ubuntu0.20.04.1~lo1"
+var_libreoffice_version_prev: "1:6.4.7-0ubuntu0.20.04.4"
+
+var_pam_faillock: pam_tally.so

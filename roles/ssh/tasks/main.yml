@@ -1,0 +1,341 @@
+- name: Ensure openssh-server is installed
+  package:
+    name:
+      - openssh-server
+    state: present
+  tags:
+    - ws
+    - openssh_server_is_installed
+
+- name: SSHD Only Approved Ciphers
+  block:
+    - name: SSHD Only Approved Ciphers Ciphers
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        create: true
+        regexp: ^\s*Ciphers\s*.*$
+        line: Ciphers aes128-ctr,aes192-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,chacha20-poly1305@openssh.com
+        state: present
+        insertbefore: ^[#\s]*Match
+        validate: /usr/sbin/sshd -t -f %s
+      notify: Sshd restarted
+  tags:
+    - ws
+    - sec
+    - mob
+    - sshd_only_approved_ciphers
+
+- name: SSHD Only Approved Macs
+  block:
+    - name: SSHD Only Approved Ciphers Macs
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        create: true
+        regexp: ^\s*MACs
+        line: MACs hmac-sha2-256,hmac-sha2-512,hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com
+        state: present
+        insertbefore: ^[#\s]*Match
+        validate: /usr/sbin/sshd -t -f %s
+      notify: Sshd restarted
+  tags:
+    - ws
+    - sec
+    - mac
+    - sshd_only_approved_macs
+
+- name: SSHD disable Host-Based Authentication
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    create: true
+    line: HostbasedAuthentication no
+    regexp: ^#?\s*HostbasedAuthentication
+    state: present
+    insertbefore: ^[#\s]*Match
+    validate: /usr/sbin/sshd -t -f %s
+  tags:
+    - ws
+    - sec
+    - sshd_disable_hostbased_auth
+
+- name: SSHD IgnoreRhosts
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    create: true
+    line: IgnoreRhosts yes
+    regexp: ^#?\s*IgnoreRhosts
+    state: present
+    insertbefore: ^[#\s]*Match
+    validate: /usr/sbin/sshd -t -f %s
+  tags:
+    - ws
+    - sec
+    - sshd_ignorerhosts
+
+- name: SSHD LogLevel info
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    create: true
+    line: LogLevel INFO
+    regexp: ^#?\s*LogLevel
+    state: present
+    insertbefore: ^[#\s]*Match
+    validate: /usr/sbin/sshd -t -f %s
+  tags:
+    - ws
+    - sec
+    - sshd_loglevel_info
+
+- name: SSHD LoginGraceTime
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    create: true
+    line: LoginGraceTime 1m
+    regexp: ^#?\s*LoginGraceTime
+    state: present
+    insertbefore: ^[#\s]*Match
+    validate: /usr/sbin/sshd -t -f %s
+  tags:
+    - ws
+    - sec
+    - sshd_logingracetime
+
+- name: SSHD disable PermitEmptyPasswords
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    create: true
+    line: PermitEmptyPasswords no
+    regexp: ^#?\s*PermitEmptyPasswords
+    state: present
+    insertbefore: ^[#\s]*Match
+    validate: /usr/sbin/sshd -t -f %s
+  tags:
+    - ws
+    - sec
+    - sshd_disable_emptypasswords
+
+- name: SSHD set max auth tries
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    create: true
+    line: MaxAuthTries 4
+    regexp: ^#?\s*MaxAuthTries
+    state: present
+    insertbefore: ^[#\s]*Match
+    validate: /usr/sbin/sshd -t -f %s
+  tags:
+    - ws
+    - sec
+    - sshd_set_maxauthtries
+
+- name: SSHD disable PermitRootLogin
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    create: true
+    line: PermitRootLogin no
+    regexp: ^#?\s*PermitRootLogin
+    state: present
+    insertbefore: ^[#\s]*Match
+    validate: /usr/sbin/sshd -t -f %s
+  tags:
+    - ws
+    - sec
+    - sshd_set_maxauthtries
+
+- name: SSHD disable PermitUserEnvironment
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    create: true
+    line: PermitUserEnvironment no
+    regexp: ^#?\s*PermitUserEnvironment
+    state: present
+    insertbefore: ^[#\s]*Match
+    validate: /usr/sbin/sshd -t -f %s
+  tags:
+    - ws
+    - sec
+    - sshd_disable_userenvironment
+
+- name: SSHD disable PermitRootLogin
+  block:
+    - name: Check for duplicate values
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        create: false
+        regexp: (?i)^\s*PermitRootLogin\s+
+        state: absent
+      check_mode: true
+      changed_when: false
+      register: dupes
+    - name: Deduplicate values from /etc/ssh/sshd_config
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        create: false
+        regexp: (?i)^\s*PermitRootLogin\s+
+        state: absent
+      when: dupes.found is defined and dupes.found > 1
+    - name: Insert correct line to /etc/ssh/sshd_config
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        create: true
+        regexp: (?i)^\s*PermitRootLogin\s+
+        line: PermitRootLogin no
+        state: present
+        insertbefore: ^[#\s]*Match
+        validate: /usr/sbin/sshd -t -f %s
+  tags:
+    - ws
+    - sec
+    - sshd_disable_root_login
+
+- name: SSHD Protocol 2 only
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    create: true
+    line: Protocol 2
+    regexp: ^#?\s*Protocol
+    state: present
+    insertbefore: ^[#\s]*Match
+    validate: /usr/sbin/sshd -t -f %s
+  tags:
+    - ws
+    - sec
+    - sshd_protocol_2
+
+- name: SSHD disable X11Forwarding
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    create: true
+    line: X11Forwarding no
+    regexp: ^\s*X11Forwarding
+    state: present
+    insertbefore: ^[#\s]*Match
+    validate: /usr/sbin/sshd -t -f %s
+  tags:
+    - ws
+    - sec
+    - sshd_disable_x11forwarding
+
+- name: Set SSH Idle Timeout Interval
+  block:
+    - name: Check for duplicate values
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        create: false
+        regexp: (?i)^\s*ClientAliveInterval\s+
+        state: absent
+      check_mode: true
+      changed_when: false
+      register: dupes
+    - name: Deduplicate values from /etc/ssh/sshd_config
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        create: false
+        regexp: (?i)^\s*ClientAliveInterval\s+
+        state: absent
+      when: dupes.found is defined and dupes.found > 1
+    - name: Insert correct line to /etc/ssh/sshd_config
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        create: true
+        regexp: (?i)^\s*ClientAliveInterval\s+
+        line: ClientAliveInterval 600
+        state: present
+        insertbefore: ^[#\s]*Match
+        validate: /usr/sbin/sshd -t -f %s
+  tags:
+    - ws
+    - sec
+    - sshd_set_idle_timeout
+
+- name: Set SSH Client Alive Count Max
+  block:
+    - name: Check for duplicate values
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        create: false
+        regexp: (?i)^\s*ClientAliveCountMax\s+
+        state: absent
+      check_mode: true
+      changed_when: false
+      register: dupes
+    - name: Deduplicate values from /etc/ssh/sshd_config
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        create: false
+        regexp: (?i)^\s*ClientAliveCountMax\s+
+        state: absent
+      when: dupes.found is defined and dupes.found > 1
+    - name: Insert correct line to /etc/ssh/sshd_config
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        create: true
+        regexp: (?i)^\s*ClientAliveCountMax\s+
+        line: ClientAliveCountMax 1
+        state: present
+        insertbefore: ^[#\s]*Match
+        validate: /usr/sbin/sshd -t -f %s
+  tags:
+    - ws
+    - sec
+    - sshd_set_keepalive
+
+- name: Set SSH MaxSessions limit
+  block:
+    - name: Check for duplicate values
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        create: false
+        regexp: (?i)^\s*MaxSessions\s+
+        state: absent
+      check_mode: true
+      changed_when: false
+      register: dupes
+    - name: Deduplicate values from /etc/ssh/sshd_config
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        create: false
+        regexp: (?i)^\s*MaxSessions\s+
+        state: absent
+      when: dupes.found is defined and dupes.found > 1
+    - name: Insert correct line to /etc/ssh/sshd_config
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        create: true
+        regexp: (?i)^\s*MaxSessions\s+
+        line: MaxSessions 3
+        state: present
+        insertbefore: ^[#\s]*Match
+        validate: /usr/sbin/sshd -t -f %s
+  tags:
+    - ws
+    - sec
+    - sshd_set_max_sessions
+
+- name: SSHD set AllowGroups
+  block:
+    - name: SSHD set AllowGroups User
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        create: true
+        regexp: ^\s*AllowGroups\s*
+        line: AllowGroups {{var_ansible_username}} {{var_domain_admins_group}} {{var_local_admins_group}}
+        state: present
+        insertbefore: ^[#\s]*Match
+        validate: /usr/sbin/sshd -t -f %s
+      register: service_conf
+      when: var_admin_workstation|bool == false
+    - name: SSHD set AllowGroups Admin
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        create: true
+        regexp: ^\s*AllowGroups\s*
+        line: AllowGroups {{var_ansible_username}} {{var_local_admins_group}}
+        state: present
+        insertbefore: ^[#\s]*Match
+        validate: /usr/sbin/sshd -t -f %s
+      notify: Sshd restarted
+      when: var_admin_workstation|bool == true
+  tags:
+    - ws
+    - sec
+    - sshd_set_allowgroups

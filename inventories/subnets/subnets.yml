@@ -1,0 +1,54 @@
+# Please do not modify this file manually, use the script from the utils folder.
+
+var_subnets:
+  ajaccio_rue_du_general_fiorella:
+  - 10.81.21.0/24
+  angers_15_rue_dupetit_thouars:
+  - 10.81.164.0/24
+  bordeaux_23_rue_francois_de_sourdis:
+  - 10.84.58.0/24
+  - 10.84.42.0/24
+  clermont_ferrand_106_avenue_de_la_republique:
+  - 10.20.132.0/22
+  dijon_2_place_suquet:
+  - 10.35.56.0/26
+  les_abymes_pointe_a_pitre_le_morne_vergain:
+  - 10.76.36.0/22
+  - 10.76.44.64/26
+  lille_8_10_boulevard_de_la_liberte:
+  - 10.168.122.0/24
+  limoges_84_avenue_emile_labussiere:
+  - 10.32.2.0/25
+  - 10.32.8.0/23
+  lyon_40_rue_marius_berliet:
+  - 10.32.0.0/22
+  marseille_2_rue_antoine_becker:
+  - 10.59.179.0/25
+  - 10.58.56.0/24
+  - 10.58.55.160/27
+  montpellier_206_rue_du_comte_de_melgueil:
+  - 10.44.63.0/24
+  - 10.44.64.0/24
+  - 10.44.65.0/24
+  nancy_38_boulevard_lobau:
+  - 10.44.0.0/20
+  nantes_6_place_waldeck_rousseau:
+  - 10.35.20.0/22
+  orleans_63_rue_du_faubourg_saint_jean:
+  - 10.37.68.0/24
+  - 10.40.8.64/26
+  paris_36_rue_du_bastion:
+  - 10.89.0.0/16
+  reims_40_boulevard_roederer:
+  - 10.50.0.0/16
+  rennes_22_boulevard_de_la_tour_d_auvergne:
+  - 10.34.210.0/24
+  rouen_9_rue_brisout_de_barneville:
+  - 10.58.10.0/26
+  strasbourg_34_route_de_l_hopital:
+  - 10.86.16.0/22
+  toulouse_23_boulevard_de_l_embouchure:
+  - 10.9.47.0/24
+  - 10.9.48.0/24
+  versailles_19_avenue_de_paris:
+  - 10.71.20.0/22

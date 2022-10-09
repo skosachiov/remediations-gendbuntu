@@ -1,0 +1,12 @@
+- name: Set rsyslog all to remote loghost
+  lineinfile:
+    dest: /etc/rsyslog.conf
+    regexp: ^\*\.\*
+    line: '*.* @{{ var_rsyslog_server }}'
+    create: true
+  when: ansible_facts.nodename != var_rsyslog_server
+  tags:
+    - ws
+    - sec
+    - rsyslog_all_remote_loghost
+    - never

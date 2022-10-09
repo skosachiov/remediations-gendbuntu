@@ -1,0 +1,39 @@
+- name: Set pam_mount volume definitions
+  block:
+    - name: Set pam_mount volume definitions Package present
+      package:
+        name: libpam-mount
+        state: present
+    - name: Set pam_mount volume definitions Common-auth
+      lineinfile:
+        create: true
+        dest: /etc/pam.d/common-auth
+        regexp: ^\s*auth\s*optional\s*pam_mount.so
+        line: auth optional pam_mount.so
+        insertafter: EOF
+    - name: Set pam_mount volume definitions Common-session
+      lineinfile:
+        create: true
+        dest: /etc/pam.d/common-session
+        regexp: ^\s*session\s*optional\s*pam_mount.so
+        line: session optional pam_mount.so
+        insertafter: EOF
+    - name: Set pam_mount volume definitions Volume dfs
+      blockinfile:
+        dest: /etc/security/pam_mount.conf.xml
+        marker: "<!-- {mark} ANSIBLE MANAGED BLOCK {{item.dir}} -->"
+        insertafter: "<!-- Volume definitions -->"
+        block: |
+          <volume
+             fstype="cifs"
+             server="{{item.server}}"
+             path="{{item.service}}"
+             mountpoint="{{var_dfs_mountpoint}}/{{item.dir}}"
+             uid="{{var_min_domain_uid}}-2000000000"
+             options="noauto,x-systemd.automount,x-systemd.idle-timeout=60,cache=none,vers=2.1,echo_interval=60,sec=krb5,cruid=%(USERUID),uid=%(USERUID),dir_mode=0700"
+          />
+      with_items: "{{var_dfs}}"
+  tags:
+    - ws
+    - set_pam_mount_volume
+    - never

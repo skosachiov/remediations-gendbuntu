@@ -1,0 +1,20 @@
+- name: Set external repo Debian
+  block:
+    - name: Set external repo Debian Comment line
+      replace:
+        dest: /etc/apt/sources.list
+        regexp:  '^deb cdrom:[Official Debian GNU/Linux Live 11.2.0 standard 2021-12-18T11:51]/ bullseye main'
+        replace: '# deb cdrom:[Official Debian GNU/Linux Live 11.2.0 standard 2021-12-18T11:51]/ bullseye main'
+    - name: Set external repo Debian Blockinfile
+      blockinfile:
+        dest: /etc/apt/sources.list
+        marker_begin: BEGIN_LOCAL
+        marker_end: END_LOCAL
+        block: |
+          deb http://mirror.mephi.ru/debian/ bullseye main contrib non-free
+          deb http://security.debian.org/debian-security bullseye-security main contrib non-free
+        insertafter: #
+  when: ansible_lsb.codename == 'bullseye' and var_installation_type != "workstation"
+  tags:
+    - mob
+    - set_external_repo_bullseye

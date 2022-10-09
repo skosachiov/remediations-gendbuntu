@@ -1,0 +1,21 @@
+- name: Enable service cron
+  block:
+    - name: Ensure cron is installed
+      package:
+        name: cron
+        state: present
+    - name: Gather the package facts
+      package_facts:
+        manager: auto
+    - name: Enable service cron
+      service:
+        name: cron
+        enabled: 'yes'
+        state: started
+      when:
+        - '"cron" in ansible_facts.packages'
+  tags:
+    - ws
+    - sec
+    - mob
+    - service_cron_enabled

@@ -1,0 +1,79 @@
+- name: Chromium browser latest
+  package:
+    name: 
+      - chromium-browser
+      - libnss3-tools
+    state: latest
+  tags:
+    - ws
+    - chromium_browser_latest
+
+- name: Set xdg-settings defaults
+  copy:
+    dest: /etc/profile.d/set-xdg-settings.sh
+    mode: a+x
+    content: |
+      #!/bin/bash
+      #
+      if [ $UID -gt {{var_min_domain_uid}} ]; then
+      FLAG=~/.set-xdg-settings.2021112501
+      if [ ! -f "$FLAG" ]; then
+          #
+          xdg-settings set default-web-browser chromium.desktop
+          #
+          touch $FLAG
+      fi
+      fi
+  tags:
+    - ws
+    - set_xdg_settings_defaults
+
+- name: Set chromium variables
+  block:
+    - name: Set chromium variables Defaults
+      failed_when: false
+      blockinfile:
+        dest: /etc/chromium/default
+        marker_begin: BEGIN_FLAGS
+        marker_end: END_FLAGS
+        block: |
+          export CHROMIUM_FLAGS="$CHROMIUM_FLAGS --auth-server-whitelist=*.{{var_local_domain}},*.{{var_external_domain}}"
+          export CHROMIUM_FLAGS="$CHROMIUM_FLAGS --password-store=gnome"
+          export CHROMIUM_FLAGS="$CHROMIUM_FLAGS --disable-gpu"
+    - name: Set chromium variables Chromium
+      failed_when: false
+      blockinfile:
+        dest: /etc/default/chromium
+        marker_begin: BEGIN_FLAGS
+        marker_end: END_FLAGS
+        block: |
+          export CHROMIUM_FLAGS="$CHROMIUM_FLAGS --auth-server-whitelist=*.{{var_local_domain}},*.{{var_external_domain}}"
+          export CHROMIUM_FLAGS="$CHROMIUM_FLAGS --password-store=gnome"
+          export CHROMIUM_FLAGS="$CHROMIUM_FLAGS --disable-gpu"
+  tags:
+    - ws
+    - set_chromium_variables
+
+- name: Chromium policies
+  block:
+    - name: Chromium policies Copy
+      copy:
+        src: "{{item}}"
+        dest: /etc/chromium/policies/managed/
+      with_fileglob:
+        - "{{playbook_dir}}/inventories/all/files/browser/chromium/*.json"
+    - name: Chromium policies Mode
+      file:
+        path: /etc/chromium/policies/managed 
+        mode: '0755'
+        recurse: yes
+    - name: Status initial_bookmarks.html
+      failed_when: false
+      stat: path=/usr/share/chromium/initial_bookmarks.html
+      register: init_bookmarks_stat
+    - name: Rename initial_bookmarks.html
+      command: mv /usr/share/chromium/initial_bookmarks.html /usr/share/chromium/initial_bookmarks.html.orig
+      when: init_bookmarks_stat.stat.exists
+  tags:
+    - ws
+    - chromium_policies

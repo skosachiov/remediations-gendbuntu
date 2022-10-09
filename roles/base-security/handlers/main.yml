@@ -1,0 +1,10 @@
+- name: Update grub
+  command: update-grub
+
+- name: Rc-local restarted
+  changed_when: false
+  failed_when: false
+  service:
+    name: rc-local
+    enabled: 'yes'
+    state: restarted

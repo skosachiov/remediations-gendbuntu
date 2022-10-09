@@ -1,0 +1,7 @@
+rm -f -r /var/www/html/repos/buster/third-party/db 
+rm -f -r /var/www/html/repos/buster/third-party/dists
+rm -f -r /var/www/html/repos/buster/third-party/pool
+# reprepro -b /var/www/html/repos/buster/third-party includedeb focal /usr/ports/repos/focal/third-party/*
+# reprepro -S main -P optional -b /var/www/html/repos/buster/third-party includedeb focal /usr/ports/repos/focal/third-party/*
+reprepro -S main -P optional -b /var/www/html/repos/buster/third-party includedeb focal /usr/ports/repos/focal-signed/third-party/*
+

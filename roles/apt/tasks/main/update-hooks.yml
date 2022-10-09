@@ -1,0 +1,19 @@
+- name: Remove specific package versions
+  shell: "dpkg --remove --force-all {{item}}"
+  when: (ansible_facts.packages[item] is defined) and (ansible_facts.packages[item][0].version == var_pkg_versions_absent[item])
+  with_items: "{{var_pkg_versions_absent.keys() | list}}"
+  ignore_errors: yes
+  tags:
+    - ws
+    - remove_pkg_specific_version
+
+- name: Present specific package versions
+  package:
+    name: "{{item}}"
+    state: present
+  with_items: "{{var_pkg_versions_absent.keys() | list}}"
+  tags:
+    - ws
+    - present_pkg_specific_version
+
+      

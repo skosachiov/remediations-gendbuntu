@@ -1,0 +1,9 @@
+- name: Clamav latest
+  package:
+    name:
+      - clamav
+    state: latest
+  tags:
+    - ws
+    - clamav_latest
+

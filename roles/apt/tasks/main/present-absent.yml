@@ -1,0 +1,103 @@
+- name: Ensure packages are installed
+  package:
+    name:
+      - samba-common-bin
+      - cifs-utils
+      - oddjob
+      - oddjob-mkhomedir
+      - autofs
+      - packagekit
+      - krb5-user
+      - libnss3-tools
+      - audispd-plugins
+      - ansible
+      - libxml2-utils
+      - sysstat
+      - dnsutils
+      - openjdk-*-jdk
+      - remmina
+      - remmina-plugin-secret
+      - nautilus
+      - zenity
+      - tigervnc-viewer
+      - tigervnc-common
+      - freerdp2-x11
+      - xrdp
+      - openssh-server
+      - unattended-upgrades
+      - python-lxml
+      - network-manager
+      - seahorse
+      - printer-driver-cups-pdf
+      - printer-driver-gutenprint
+      - apparmor
+      - apparmor-utils
+      - gnome-keyring
+      - smbclient
+      - opensc
+      - simple-scan
+      - make
+      - flex
+      - bison
+      - libemail-outlook-message-perl
+      - pidgin
+      - pidgin-sipe
+      - simplescreenrecorder
+      - etckeeper
+      - acct
+      - secure-delete
+      - iptables-persistent
+      - netfilter-persistent
+      - chrony
+      - x11vnc
+      - libxml2
+      - libxml2-utils
+      - python-libxml2
+      - packagekit
+      - packagekit-tools
+      - ghostscript
+      - libgs9
+      - libgs9-common
+      - connman
+      - curl
+      - dbus
+      - dbus-x11
+      - libdbus-1-3
+      - p11-kit
+      - libp11-kit0
+      - p11-kit-modules
+    state: latest
+  ignore_errors: yes
+  tags:
+    - ws
+    - packages_are_installed
+
+- name: Ensure unnecessary packages are removed
+  package:
+    name:
+      - ufw
+      - exim4-daemon-light
+      - ntfs-3g
+      - psi-plus
+      - psi-plus-common
+      - psi-plus-l10n
+      - qbittorrent
+      - gss-ntlmssp
+    state: absent
+  tags:
+    - ws
+    - sec
+    - mob
+    - packages_are_removed
+
+- name: Ensure debuggers are removed
+  package:
+    name:
+      - gdb
+      - strace
+    state: absent
+  tags:
+    - ws
+    - sec
+    - debuggers_are_removed
+    

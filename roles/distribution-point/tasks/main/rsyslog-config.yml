@@ -1,0 +1,32 @@
+- name: Enable rsyslog to accept udp
+  block:
+    - name: Enable rsyslog to accept udp ModLoad
+      lineinfile:
+        dest: /etc/rsyslog.conf
+        regexp: ^.*module\(load=\"imudp\"\)
+        line: module(load="imudp")
+        create: true
+      notify: Rsyslog restarted
+    - name: Enable rsyslog to accept udp Add UDPServerRun
+      lineinfile:
+        dest: /etc/rsyslog.conf
+        regexp: ^.*input\(type=\"imudp\" port=\"514\"\)
+        line: input(type="imudp" port="514")
+        create: true
+      notify: Rsyslog restarted
+    - name: Enable rsyslog to accept udp Template
+      blockinfile:
+        dest: /etc/rsyslog.conf
+        marker_begin: BEGIN_NETWORK
+        marker_end: END_NETWORK
+        insertafter: ^\$IncludeConfig 
+        block: |
+          $AllowedSender UDP, 127.0.0.1, 10.0.0.0/8
+          #
+          $template TraditionalFileFormat,"%TIMESTAMP% %FROMHOST-IP% %syslogtag%%msg:::sp-if-no-1st-sp%%msg:::drop-last-lf%\n"
+          *.* /var/log/network.log;TraditionalFileFormat
+      notify: Rsyslog restarted
+  when: ansible_facts.nodename == var_rsyslog_server
+  tags:
+    - dp
+    - enable_rsyslog_accept_udp

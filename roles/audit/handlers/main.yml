@@ -1,0 +1,14 @@
+- name: Auditd restarted
+  service:
+    name: auditd
+    enabled: 'yes'
+    state: restarted
+  tags:
+    - ws
+    - sec
+    - auditd_restarted
+
+- name: Rsyslog restarted
+  service:
+    name: rsyslog
+    state: restarted

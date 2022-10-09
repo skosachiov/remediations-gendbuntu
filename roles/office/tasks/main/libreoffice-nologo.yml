@@ -1,0 +1,26 @@
+- name: Libreoffice nologo
+  vars:
+    var_lo_nologo: 
+      - "libreoffice-calc.desktop"
+      - "libreoffice-writer.desktop"
+      - "libreoffice-impress.desktop"
+  block:
+    - name: Libreoffice nologo Find
+      find:
+        file_type: any
+        paths:
+          - "/home"
+          - "/usr/share/applications"
+        patterns: "libreoffice*.desktop"
+        recurse: yes
+      register: result
+    - name: Libreoffice nologo Replace
+      replace:
+        dest: "{{item.path}}"
+        regexp:  '(Exec=libreoffice)\s*--(calc|writer|impress)'
+        replace: '\1 --nologo --\2'
+      with_items: "{{ result.files }}"
+      when: (item.path|basename) in var_lo_nologo
+  tags:
+    - ws
+    - libreoffice_nologo

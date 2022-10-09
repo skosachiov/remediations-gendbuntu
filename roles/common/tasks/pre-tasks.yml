@@ -1,0 +1,15 @@
+- name: Check internet connectivity
+  block:
+    - name: Check internet connectivity Connect
+      wait_for:
+        host: github.com
+        port: 22
+        timeout: 1
+      register: result
+      failed_when: false
+    - set_fact:
+        var_proxy_server: ""
+        var_internet_connectivity: true
+      when: result.state is defined
+  tags:
+    - always

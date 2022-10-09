@@ -1,0 +1,2 @@
+var_smb_printers:
+  - ipp://print.example.test/Default_PCL

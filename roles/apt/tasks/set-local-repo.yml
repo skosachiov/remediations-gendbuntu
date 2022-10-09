@@ -1,0 +1,35 @@
+- name: Set local repo
+  block:
+    - name: Set local repo Blockinfile
+      blockinfile:
+        dest: /etc/apt/sources.list
+        marker_begin: BEGIN_LOCAL
+        marker_end: END_LOCAL
+        block: |
+          {{var_local_repo}}
+        insertafter: #
+      when: var_internal_ansible_ip
+      notify: Apt update cache
+  tags:
+    - ws
+    - sec
+    - mob
+    - set_local_repo
+
+- name: Set branch local repo
+  block:
+    - name: Set local repo Blockinfile
+      blockinfile:
+        dest: /etc/apt/sources.list
+        marker_begin: BEGIN_BRANCH_LOCAL
+        marker_end: END_BRANCH_LOCAL
+        insertbefore: BOF
+        block: |
+          {{var_local_repo}}
+      when: var_branch_local_repo is defined and var_internal_ansible_ip
+      notify: Apt update cache
+  when:
+  tags:
+    - ws
+    - sec
+    - set_branch_local_repo

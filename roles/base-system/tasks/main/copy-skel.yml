@@ -1,0 +1,8 @@
+- name: Copy skel folder
+  copy:
+    src: "{{playbook_dir}}/{{var_skel_dir}}"
+    dest: /etc/skel/
+    remote_src: no
+  tags:
+    - ws
+    - copy_skel_folder

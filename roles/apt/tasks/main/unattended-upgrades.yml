@@ -1,0 +1,42 @@
+- name: Unattended security upgrades
+  block:
+    - name: Unattended security upgrades Present
+      package:
+        name: unattended-upgrades
+        state: present
+    - name: Unattended security upgrades Gather the package facts
+      package_facts:
+        manager: auto
+    - name: Unattended security upgrades Enable service unattended-upgrades
+      service:
+        name: unattended-upgrades
+        enabled: 'yes'
+        state: started
+    - name: Unattended security upgrades Ensure line in file
+      lineinfile:
+        dest: /etc/apt/apt.conf.d/50unattended-upgrades
+        line: '        "origin=Debian,codename=${distro_codename},label=Debian-Security";'
+        regexp: ^\s*\"origin=Debian,codename=\$\{distro_codename\},label=Debian-Security\"
+        state: present
+        create: true
+        insertafter: Unattended-Upgrade::Origins-Pattern
+  tags:
+    - ws
+    - sec
+    - mob
+    - unattended_security_upgrades
+
+- name: Daily unattended upgrades
+  block:
+    - name: Gather the package facts
+      package_facts:
+        manager: auto
+    - name: Enable service unattended-upgrades
+      service:
+        name: unattended-upgrades
+        enabled: 'yes'
+        state: started
+  tags:
+    - ws
+    - sec
+    - daily_unattended_upgrades

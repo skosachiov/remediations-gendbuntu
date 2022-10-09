@@ -1,0 +1,25 @@
+
+- name: Accounts root path no write
+  block:
+    - name: Get root paths which are not symbolic links
+      become: yes
+      stat:
+        path: '{{ item }}'
+      changed_when: false
+      failed_when: false
+      register: root_paths
+      with_items: '{{ ansible_env.PATH.split('':'') }}'
+    - name: Disable writability to root directories
+      file:
+        path: '{{ item.item }}'
+        mode: g-w,o-w
+      with_items: '{{ root_paths.results }}'
+      when:
+        - root_paths.results is defined
+        - item.stat.exists
+        - not item.stat.islnk
+  tags:
+    - ws
+    - sec
+    - mob
+    - accounts_root_path_dirs_no_write

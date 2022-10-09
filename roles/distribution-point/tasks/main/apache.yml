@@ -1,0 +1,53 @@
+- name: Apache server is started
+  block:
+    - name: Apache server is started Present
+      package:
+        name:
+          - apache2
+        state: present
+    - name: Apache server is started Started
+      service:
+        name: apache2
+        state: started
+  tags:
+    - dp
+    - apache_server_is_started
+
+- name: Apache Only Approved Ciphers
+  block:
+    - name:
+      lineinfile:
+        path: /etc/apache2/mods-available/ssl.conf
+        create: true
+        regexp: ^\s*SSLProtocol\s*.*$
+        line: SSLProtocol all -TLSv1.1 -SSLv2 -SSLv3
+        state: present
+        insertafter: ^[#\s]*<IfModule mod_ssl.c>
+      notify: Apache restarted
+    - name:
+      lineinfile:
+        path: /etc/apache2/mods-available/ssl.conf
+        create: true
+        regexp: ^\s*SSLCipherSuite\s*.*$
+        line: SSLCipherSuite ALL:+HIGH:!ADH:!EXP:!SSLv2:!SSLv3:!MEDIUM:!LOW:!NULL:!aNULL
+        state: present
+        insertafter: ^[#\s]*<IfModule mod_ssl.c>
+      notify: Apache restarted
+  tags:
+    - ws
+    - dp
+    - sec
+    - apache_only_approved_ciphers
+
+- name: Apache folder symlink
+  block:
+    - name: Apache folder symlink Link repo
+      file:
+        src: /var/spool/apt-mirror/mirror/{{var_ansible_fqdn}}/focal
+        dest: /var/www/html/focal
+        state: link
+        force: yes
+  when: ansible_lsb.codename == 'focal'
+  tags:
+    - dp
+    - apache_folder_symlink  

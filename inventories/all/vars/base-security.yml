@@ -1,0 +1,58 @@
+var_password_minlen: 8
+var_password_max_days: 90
+var_password_max_days_mob: 500
+var_password_min_days: 1
+
+var_services_blacklist:
+  - vsftpd
+  - telnetd
+  - tightvncserver
+  - squid
+  - tftpd
+  - apache2
+
+var_sudoers_groups_whitelist:
+  - "sudo:x:27:ansible"
+
+var_suid_whitelist:
+  - "/usr/lib/chromium/chrome-sandbox"
+  - "/usr/lib/kde4/libexec/fileshareset"
+  - "/usr/lib/openssh/ssh-keysign"
+  - "/usr/lib/policykit-1/polkit-agent-helper-1"
+  - "/usr/lib/eject/dmcrypt-get-device"
+  - "/usr/lib/dbus-1.0/dbus-daemon-launch-helper"
+  - "/usr/lib/spice-gtk/spice-client-glib-usb-acl-helper"
+  - "/usr/lib/x86_64-linux-gnu/sssd/proxy_child"
+  - "/usr/lib/x86_64-linux-gnu/sssd/krb5_child"
+  - "/usr/lib/x86_64-linux-gnu/sssd/selinux_child"
+  - "/usr/lib/x86_64-linux-gnu/sssd/p11_child"
+  - "/usr/lib/x86_64-linux-gnu/sssd/ldap_child"
+  - "/usr/bin/weston-launch"
+  - "/usr/bin/netkit-rcp"
+  - "/usr/bin/chsh"
+  - "/usr/bin/netkit-rsh"
+  - "/usr/bin/firejail"
+  - "/usr/bin/passwd"
+  - "/usr/bin/sudo"
+  - "/usr/bin/newgrp"
+  - "/usr/bin/chfn"
+  - "/usr/bin/pkexec"
+  - "/usr/bin/netkit-rlogin"
+  - "/usr/bin/gpasswd"
+  - "/usr/bin/ksu"
+  - "/sbin/mount.cifs"
+  - "/sbin/mount.nfs"
+  - "/sbin/mount.ecryptfs_private"
+  - "/bin/efibootmgr"
+  - "/bin/fusermount"
+  - "/bin/su"
+  - "/bin/mount"
+  - "/bin/umount"
+  - "/opt/Citrix/ICAClient/ctxusb"
+
+var_log_skip_permissions_check: 
+  - "MediaEngineSRV*"
+  - "krb5_trace.log"
+
+var_superusers: root
+var_password_pbkdf2: grub.pbkdf2.sha512.10000.E3F286A301E64EB0234413E469860C9C4689184EDEB1116458D402A2709980F0BC1CAC8127217B5B5B94DD1E429F2FBC93220CE0460359116D08FE0E7387EB80.EF0E53D35560388021726E5F579ACA8F9AFF2C5AE2ACA06965042DCB86612F628D459016E9D3EFF0CEC9DEC0424A3FC2095E759BC9349BD3F02301E3D96FAF4D

@@ -1,0 +1,26 @@
+[sssd]
+domains = {{var_local_domain}}
+config_file_version = 2
+services = nss, pam
+[domain/{{var_local_domain}}]
+ad_domain = {{var_local_domain}}
+ad_site = {{var_ad_site}}
+ad_hostname = {{ansible_facts.nodename}}.{{var_local_domain}}
+krb5_realm = {{var_default_realm}}
+realmd_tags = manages-system joined-with-adcli 
+cache_credentials = True
+id_provider = ad
+krb5_store_password_if_offline = True
+default_shell = /bin/bash
+ldap_id_mapping = True
+# use_fully_qualified_names = True
+fallback_homedir = /home/%u@%d
+access_provider = ad
+use_fully_qualified_names = False 
+override_homedir = /home/%u 
+ad_gpo_access_control = disabled 
+# ad_gpo_access_control = enforcing
+# ad_gpo_map_interactive = +unity, +cron, +gdm3, +gdm, +login
+# ad_gpo_map_remote_interactive = +unity, +cron, +gdm3, +gdm, +login
+ignore_group_members = True
+entry_cache_timeout = 5400

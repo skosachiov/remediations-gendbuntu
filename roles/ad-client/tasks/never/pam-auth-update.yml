@@ -1,0 +1,6 @@
+- name: Pam auth update
+  command: pam-auth-update --package --enable mkhomedir --remove cracklib --force
+  tags:
+    - ws
+    - pam_auth_update
+    - never

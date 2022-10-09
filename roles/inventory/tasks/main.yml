@@ -1,0 +1,86 @@
+- name: Print all available facts
+  debug:
+    var: ansible_facts
+  tags:
+    - all_available_facts
+
+- name: Print basic ansible facts
+  block:
+    - name:  Print main ansible facts Mounts
+      changed_when: false
+      failed_when: false
+      set_fact:
+        var_device: "{{item.device}}"
+        var_size_available: "{{(item.size_available/1073741824)|int}}"
+      with_items: "{{ansible_mounts}}"
+      when: item.mount == '/'
+    - name: Print main ansible facts Who
+      check_mode: no
+      shell: 'LANG=C who -q | tr "\n" " "'
+      register: sessions
+      changed_when: false
+      failed_when: false
+    - name:  Print main ansible facts
+      changed_when: false
+      failed_when: false
+      debug:
+        msg:  "basic_ansible_facts = {{ansible_default_ipv4.address}} {{ansible_date_time.iso8601}}{{ansible_date_time.tz_offset}}
+              {{ansible_fqdn}} {{ansible_kernel}} {{var_device}} {{var_size_available}} {{ansible_uptime_seconds}}
+              {{sessions.stdout_lines[0]}} var_site_address={{var_site_address}}
+              macaddress={{ansible_default_ipv4.macaddress}}
+              ansible_product_serial={{ansible_product_serial}}"
+  tags:
+    - ws
+    - basic_ansible_facts
+
+- name: Get sensors info
+  block:
+    - name: Get sensors info Lm-sensors present
+      package:
+        name: lm-sensors
+        state: present
+    - name: Get sensors info Smartmontools present
+      package:
+        name: smartmontools
+        state: present
+    - name: Get sensors info Sensors
+      shell: "sensors"
+      register: items
+      changed_when: false
+      failed_when: no
+    - debug:
+        msg: "{{items}}"
+    - name: Get sensors info Smartctl
+      shell: "smartctl -a $(df -hT | grep /$ | awk '{print $1}')"
+      register: items
+      changed_when: false
+      failed_when: no
+    - debug:
+        msg: "{{items}}"
+  tags:
+    - ws
+    - get_sensors_info
+
+- name: Get system load average 
+  block:
+    - name: Get system load average Sysstat present
+      package:
+        name: sysstat
+        state: present
+    - name: Get system load average Lineinfile
+      lineinfile:
+        dest: /etc/default/sysstat
+        state: present
+        regexp: ^#?\s*ENABLED
+        line: ENABLED="true"
+      notify: Sysstat restarted
+    - name: Get sysstat info
+      shell: "sar -q"
+      register: items
+      changed_when: false
+      failed_when: false
+    - debug:
+        msg: "{{items}}"
+  tags:
+    - ws
+    - get_load_average

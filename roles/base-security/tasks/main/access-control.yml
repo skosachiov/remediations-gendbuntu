@@ -1,0 +1,30 @@
+
+- name: Set Access control table
+  block:
+    - name: Set Access control table User
+      blockinfile:
+        dest: /etc/security/access.conf
+        marker_begin: BEGIN_GROUPS
+        marker_end: END_GROUPS
+        block: |
+          + : @{{var_local_admins_group}} : LOCAL
+          + : @{{var_domain_admins_group}} : ALL
+          + : @{{var_domain_users_group}} : {{var_domain_users_group_access}}
+          - : ALL : ALL
+        insertafter: #
+      when: var_admin_workstation|bool == false
+    - name: Set Access control table Admin
+      blockinfile:
+        dest: /etc/security/access.conf
+        marker_begin: BEGIN_GROUPS
+        marker_end: END_GROUPS
+        block: |
+          + : @{{var_local_admins_group}} : LOCAL
+          + : @{{var_domain_users_group}} : {{var_domain_users_group_access}}
+          - : ALL : ALL
+        insertafter: #
+      when: var_admin_workstation|bool == true
+  tags:
+    - ws
+    - sec
+    - set_access_control_table

@@ -1,0 +1,28 @@
+var_fw_services_whitelist:
+  - ssh
+  - dhcpv6-client
+var_fw_ports_whitelist:
+  - 22/tcp
+  - 88/tcp
+  - 88/udp
+  - 3389/tcp
+var_fw_default_zone:
+  - work
+var_fw_active_zones:
+  - dmz
+  - trusted
+var_fw_target:
+  - default
+var_listening_ports_blacklist:
+  - "udp *:2049"
+  - "tcp *:445"
+  - "tcp *:80"
+  - "tcp *:21"
+  - "udp 0.0.0.0:2049"
+  - "tcp 0.0.0.0:445"
+  - "tcp 0.0.0.0:80"
+  - "tcp 0.0.0.0:21"
+  - "udp :::2049"
+  - "tcp :::445"
+  - "tcp :::80"
+  - "tcp :::21"

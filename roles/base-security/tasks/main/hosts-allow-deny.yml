@@ -1,0 +1,25 @@
+- name: Configure etc hosts access
+  block:
+    - name: Configure etc hosts access Allow
+      blockinfile:
+        dest: /etc/hosts.allow
+        mode: 0644
+        owner: root
+        group: root
+        content: |
+          ALL: 127.0.0.1
+          ALL: 192.168.0.0/16
+          ALL: 10.0.0.0/8
+    - name: Configure etc hosts access Deny
+      blockinfile:
+        dest: /etc/hosts.deny
+        mode: 0644
+        owner: root
+        group: root
+        content: |
+          ALL: ALL
+  when: 
+  tags:
+    - ws
+    - sec
+    - configure_etc_hosts_access

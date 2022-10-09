@@ -1,0 +1,17 @@
+- name: No shell for systemaccounts
+  block:
+    - name: No shell for systemaccounts Get users
+      command: awk -F ':' '($3>0 && $3<1000 && $7!="/usr/sbin/nologin" && $7!="/bin/false" && $7!="/bin/sync" && $7!="") {print $1}' /etc/passwd
+      check_mode: no
+      register: usernames
+      changed_when: false
+    - name: No shell for systemaccounts Set nologin
+      user:
+        name: "{{item}}"
+        shell: /bin/false
+      with_items: "{{usernames.stdout_lines}}"
+      when: item != var_ansible_username
+  tags:
+    - ws
+    - sec
+    - no_shell_for_systemaccounts

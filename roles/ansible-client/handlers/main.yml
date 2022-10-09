@@ -1,0 +1,7 @@
+- name: Cron restarted
+  service:
+    name: cron
+    state: restarted
+  tags:
+    - ws
+    - cron_restarted

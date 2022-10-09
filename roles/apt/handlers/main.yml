@@ -1,0 +1,9 @@
+- name: Networking restarted
+  failed_when: false
+  service:
+    name: networking
+    state: restarted
+
+- name: Apt update cache
+  apt:
+    update_cache: yes

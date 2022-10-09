@@ -1,0 +1,25 @@
+- name: Apt-mirror config
+  block:
+    - name: Apt-mirror config Present
+      package:
+        name:
+          - apt-mirror
+        state: present
+    - name: Apt-mirror config Mirror.list
+      template:
+        src: mirror.list.j2
+        dest: /etc/apt/mirror.list
+        mode: 0644
+    - name: Apt-mirror config Postmirror
+      blockinfile:
+        dest: /var/spool/apt-mirror/var/postmirror.sh
+        block: |
+          chmod -R a+rx /var/spool/apt-mirror/mirror/*
+    - name: Apt-mirror config Replace
+      blockinfile:
+        dest: /etc/cron.d/apt-mirror
+        block: |
+          0 4 * * * root /usr/bin/apt-mirror > /var/spool/apt-mirror/var/cron.log
+  tags:
+    - dp
+    - apt_mirror_config

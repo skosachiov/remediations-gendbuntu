@@ -1,0 +1,38 @@
+- name: Copy ca certs and script
+  block:
+    - name: Copy ca certs and script Certs
+      copy:
+        src: "{{item}}"
+        dest: /usr/local/share/ca-certificates/
+        mode: go+r
+      with_fileglob:
+        - "{{playbook_dir}}/{{var_certs_dir}}/*"
+    - name: Copy ca certs and script Script
+      copy:
+        dest: /etc/profile.d/ca-cert-install-for-user.sh
+        mode: a+rx
+        content: |
+          #!/bin/bash
+          # openssl x509 -inform pem -outform der -in cert.crt -out cert.der
+          # openssl x509 -inform der -outform pem -in cert.crt -out cert.pem
+          for certfile in /usr/local/share/ca-certificates/*.der; do
+            if ! grep -q "BEGIN CERTIFICATE" "$certfile"; then
+              certname=$(openssl x509 -inform DER -nameopt multiline -noout -subject -in ${certfile} | sed -n 's/ *commonName *= //p')
+              for certDB in $(find ~/ -xdev -name "cert9.db")
+              do
+                certdir=$(dirname ${certDB});
+                certutil -A -n "${certname}" -t "TC,C,T" -i ${certfile} -d sql:${certdir}
+              done
+            fi
+          done
+    - name: Copy ca certs and script Chmod
+      file:
+        path: /usr/local/share/ca-certificates
+        mode: go+r
+        recurse: yes
+    - name: Copy ca certs and script Update
+      command: update-ca-certificates
+      changed_when: false
+  tags:
+    - ws
+    - copy_ca_certs_and_script

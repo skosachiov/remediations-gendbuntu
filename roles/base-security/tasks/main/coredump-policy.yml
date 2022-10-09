@@ -1,0 +1,20 @@
+- name: Disable core dumps with limits
+  lineinfile:
+    dest: /etc/security/limits.conf
+    regexp: ^[^#].*core
+    line: '*        hard       core      0'
+    create: true
+  tags:
+    - ws
+    - sec
+    - disable_users_coredumps
+
+- name: Disable core dump backtraces
+  template:
+    src: coredump.conf.j2
+    dest: /etc/systemd/coredump.conf
+    mode: 0600
+  tags:
+    - ws
+    - sec
+    - coredump_disable_backtraces

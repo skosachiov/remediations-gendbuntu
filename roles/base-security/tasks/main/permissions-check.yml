@@ -1,0 +1,435 @@
+- name: Check file system devices permissions
+  block:
+    - name: Check file system devices permissions Find
+      shell: cat /proc/mounts | cut -f 1 -d " " | grep -v "\/fuse" | grep "\/dev\/" | sort -u
+      failed_when: false
+      check_mode: no
+      register: result
+      changed_when: false
+    - name: Check file system devices permissions Check
+      check_mode: no
+      failed_when: false
+      file:
+        path: "{{item}}"
+        mode: o-rwx
+      with_items: "{{result.stdout_lines}}"
+  tags:
+    - ws
+    - check_fs_devices_permissions
+
+- name: Check swap files permissions
+  block:
+    - name: Check swap files permissions Find
+      shell: cat /proc/swaps | grep "\(partition\|file\)" | cut -f 1 -d " "
+      failed_when: false
+      check_mode: no
+      register: result
+      changed_when: false
+    - name: Check swap files permissions Check
+      check_mode: no
+      file:
+        path: "{{item}}"
+        mode: o-rwx
+      with_items: "{{result.stdout_lines}}"
+  tags:
+    - ws
+    - sec
+    - check_swap_files_permissions
+
+- name: Ensure group owner 0 and permissions 0700 on /etc/grub.d/
+  file:
+    path: /etc/grub.d/
+    group: '0'
+    mode: '0700'
+    recurse: yes
+  when:
+  tags:
+    - ws
+    - sec
+    - file_owner_and_permissions_grub_d
+
+- name: Ensure permissions on /etc/timezone
+  file:
+    path: /etc/timezone
+    mode: go-w,a-x
+    owner: root
+    group: root
+  tags:
+    - ws
+    - sec
+    - etc_timezone_perm
+
+- name: Ensure permissions on /usr/share/zoneinfo
+  block:
+    - name: Ensure permissions on /usr/share/zoneinfo Find
+      find:
+        path: /usr/share/zoneinfo
+        file_type: file 
+        recurse: yes
+      register: result
+    - name: Ensure permissions on /usr/share/zoneinfo      
+      file:
+        path: "{{item.path}}"
+        mode: go-w
+        owner: root
+        group: root
+      with_items: "{{result.files}}"
+  tags:
+    - ws
+    - sec
+    - usr_share_zoneinfo_perm
+
+- name: Ensure permissions on /etc/audit
+  block:
+    - name: Ensure permissions on /etc/audit Find
+      find:
+        path: /etc/audit
+        file_type: file 
+        recurse: yes
+      register: result
+    - name: Ensure permissions on /etc/audit Chmod
+      file:
+        path: "{{item.path}}"
+        mode: u-x,g-wx,o-rwx
+        owner: root
+        group: root
+      with_items: "{{result.files}}"
+  tags:
+    - ws
+    - sec
+    - etc_audit_perm
+
+- name: Ensure permissions on /var/log/audit
+  block:
+    - name: Ensure permissions on /var/log/audit Find
+      find:
+        path: /var/log/audit
+        file_type: file 
+        recurse: yes
+      register: result
+    - name: Ensure permissions on /var/log/audit Chmod
+      file:
+        path: "{{item.path}}"
+        mode: ug-x,o-rwx
+        owner: root
+      with_items: "{{result.files}}"
+  tags:
+    - ws
+    - sec
+    - mob
+    - var_log_audit_perm
+
+- name: Ensure permissions on /var/log
+  block:
+    - name: Ensure permissions on /var/log Find
+      find:
+        paths: /var/log
+        file_type: file
+        excludes: "{{var_log_skip_permissions_check}}"
+        recurse: yes
+      register: result
+    - name: Ensure permissions on /var/log Check
+      file:
+        path: "{{item.path}}"
+        mode: o-wx
+      with_items: "{{result.files}}"
+  tags:
+    - ws
+    - sec
+    - mob
+    - var_log_perm
+
+- name: Ensure permission 0644 on /etc/passwd
+  file:
+    path: /etc/passwd
+    mode: '0644'
+    owner: root
+    group: root    
+  tags:
+    - ws
+    - sec
+    - mob
+    - file_0644_etc_passwd
+      
+- name: Ensure permission 0644 on /etc/group
+  file:
+    path: /etc/group
+    mode: '0644'
+    owner: root
+    group: root
+  tags:
+    - ws
+    - sec
+    - mob
+    - file_0644_etc_group
+
+- name: Ensure permission on user account files backup
+  file:
+    path: "{{item}}"
+    mode: '0600'
+    owner: root
+    group: root
+  with_items:
+      - "/etc/passwd-"
+      - "/etc/shadow-"
+      - "/etc/group-"
+      - "/etc/gshadow-"
+      - "/etc/subuid-"
+  tags:
+    - ws
+    - sec
+    - account_files_backup_permission
+
+- name: Ensure permission 0640 on /etc/shadow
+  file:
+    path: /etc/shadow
+    mode: '0640'
+    owner: root
+    group: shadow
+  tags:
+    - ws
+    - sec
+    - mob
+    - file_0640_etc_shadow
+
+- name: Ensure permission 0640 on /etc/gshadow
+  file:
+    path: /etc/gshadow
+    mode: '0640'
+    owner: root
+    group: shadow
+  tags:
+    - ws
+    - sec
+    - file_0640_etc_gshadow
+
+- name: Ensure group owner 42 on /etc/shadow
+  file:
+    path: /etc/shadow
+    group: '42'
+  tags:
+    - ws
+    - sec
+    - file_groupowner_etc_shadow
+
+- name: Ensure owner 0 and permissions 0600 on /etc/crontab
+  file:
+    path: /etc/crontab
+    owner: '0'
+    mode: '0600'
+  tags:
+    - ws
+    - sec
+    - mob
+    - crontab_owner_and_permissions
+
+- name: Ensure owner 0 and permissions 0600 /etc/sysctl.conf
+  file:
+    path: /etc/sysctl.conf
+    owner: '0'
+    mode: '0600'
+  tags:
+    - ws
+    - sec
+    - sysctl_conf_owner_and_permissions
+
+- name: Ensure cron and at permissions
+  block:
+    - name: Ensure cron and at permissions Absent /etc/at.deny
+      file:
+        state: absent
+        path: /etc/at.deny
+    - name: Ensure cron and at permissions Absent /etc/cron.deny
+      file:
+        state: absent
+        path: /etc/cron.deny
+    - name: Ensure cron and at permissions Absent /etc/at.allow
+      file:
+        state: absent
+        path: /etc/at.allow
+    - name: Ensure cron and at permissions Absent /etc/cron.allow
+      file:
+        state: absent
+        path: /etc/cron.allow
+  tags:
+    - ws
+    - sec
+    - mob
+    - cron_and_at_permissions
+
+- name: Ensure group owner 0 and permissions 0700 on /etc/cron.d/
+  file:
+    path: /etc/cron.d/
+    group: '0'
+    mode: '0700'
+  when:
+  tags:
+    - ws
+    - sec
+    - mob
+    - file_owner_and_permissions_cron_d
+
+- name: Ensure group owner 0 and permissions 0700 on /etc/cron.hourly/
+  file:
+    path: /etc/cron.hourly/
+    group: '0'
+    mode: '0700'
+  when:
+  tags:
+    - ws
+    - sec
+    - mob
+    - file_owner_and_permissions_cron_hourly
+
+- name: Ensure group owner 0 and permissions 0700 on /etc/cron.daily/
+  file:
+    path: /etc/cron.daily/
+    group: '0'
+    mode: '0700'
+  when:
+  tags:
+    - ws
+    - sec
+    - mob
+    - file_owner_and_permissions_cron_daily
+
+- name: Ensure group owner 0 and permissions 0700 on /etc/cron.weekly/
+  file:
+    path: /etc/cron.weekly/
+    group: '0'
+    mode: '0700'
+  when:
+  tags:
+    - ws
+    - sec
+    - mob
+    - file_owner_and_permissions_cron_weekly
+
+- name: Ensure group owner 0 and permissions 0700 on /etc/cron.monthly/
+  file:
+    path: /etc/cron.monthly/
+    group: '0'
+    mode: '0700'
+  when:
+  tags:
+    - ws
+    - sec
+    - mob
+    - file_owner_and_permissions_cron_monthly
+
+- name: Ensure permission 0600 on /etc/ssh/sshd_config
+  file:
+    path: /etc/ssh/sshd_config
+    mode: '0600'
+    owner: root
+    group: root
+  when:
+  tags:
+    - ws
+    - sec
+    - mob
+    - file_permissions_sshd_config
+
+- name: Set 0700 permissions on home
+  block:
+    - name: Set 0700 permissions on home Find
+      find:
+        paths: /home/
+        patterns: '*'
+        file_type: directory
+        recurse: no
+      register: find_home
+    - name: Set 0700 permissions on home Chmod
+      file:
+        path: "{{item.path}}"
+        mode: '0700'
+      with_items: "{{find_home.files}}"
+  tags:
+    - ws
+    - sec
+    - set_700_permissions_home
+      
+- name: Ensure owner 0 and permissions 0600 on /boot/grub/grub.cfg
+  block:
+    - name: Ensure owner 0 on /boot/grub/grub.cfg
+      file:
+        path: /boot/grub/grub.cfg
+        owner: '0'
+    - name: Ensure permissions 0600 on /boot/grub/grub.cfg
+      file:
+        path: /boot/grub/grub.cfg
+        mode: '0600'
+  when:
+  tags:
+    - ws
+    - sec
+    - mob
+    - grub_cfg_owner_and_permissions
+
+- name: Folder /etc/cups 0644 permissions
+  file:
+    path: /etc/cups
+    mode: g-w,o-w
+    owner: root
+    group: lp
+    recurse: yes
+  tags:
+    - ws
+    - sec
+    - folder_etc_cups_0644_perm
+
+- name: Folder /etc/hp 0644 permissions
+  file:
+    path: /etc/hp
+    mode: g-w,o-w
+    owner: root
+    group: root
+    recurse: yes
+  tags:
+    - ws
+    - sec
+    - folder_etc_hp_0644_perm
+
+- name: Check dot files other write permission
+  block:
+    - name: Check dot files with write permission Find
+      shell: find /home/ -maxdepth 2 -type f -name "\.[a-zA-Z]*" -perm /go+w
+      failed_when: false
+      check_mode: no
+      register: result
+      changed_when: false
+    - name: Check dot files with write permission Chmod
+      file:
+        path: "{{item}}"
+        mode: go-w
+      with_items: "{{result.stdout_lines}}"
+      when: result.stdout_lines|length >= 1
+  tags:
+    - ws
+    - sec
+    - check_dot_files_write_perm
+
+- name: Check shadow group users
+  block:
+    - name: Check shadow group users Group file
+      failed_when: false
+      check_mode: yes
+      lineinfile:
+        path: /etc/group
+        create: no
+        regexp: ^shadow:x:42:ansible$
+        line: shadow:x:42:ansible
+        state: present
+    - name: Check shadow group users Passwd file
+      failed_when: false
+      check_mode: yes
+      lineinfile:
+        path: /etc/passwd
+        create: no
+        state: absent
+        regexp: "^.*:.*:.*:42:"
+        line: ""
+  tags:
+    - ws
+    - sec
+    - check_shadow_group_users

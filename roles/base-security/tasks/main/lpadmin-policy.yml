@@ -1,0 +1,21 @@
+- name: Check lpadmin group
+  check_mode: yes
+  replace:
+    dest: /etc/group
+    regexp: ^(lpadmin:x:[0-9]*:[^,]*),.*
+    replace: \1
+  tags:
+    - ws
+    - sec
+    - check_lpadmin_group
+
+- name: Ensure cups SystemGroup
+  lineinfile:
+    path: /etc/cups/cups-files.conf
+    regexp: ^\s*SystemGroup\s
+    line: SystemGroup lpadmin
+    state: present
+  tags:
+    - ws
+    - sec
+    - ensure_cups_systemgroup

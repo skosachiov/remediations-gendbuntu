@@ -1,0 +1,10 @@
+- name: Check no CAP_SYS_TIME files
+  shell: filecap -a | grep sys_time
+  register: items
+  changed_when: items.stdout_lines|length != 1
+  failed_when: false
+  tags:
+    - ws
+    - sec
+    - check_cap_sys_time_files
+    - never

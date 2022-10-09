@@ -1,0 +1,14 @@
+- name: Ensure dbus not allow anonymous
+  check_mode: no
+  lineinfile:
+    path: "{{item}}"
+    create: false
+    regexp: allow_anonymous
+    state: absent
+  with_items:
+    - "/usr/share/dbus-1/session.conf"
+    - "/usr/share/dbus-1/system.conf"
+  tags:
+    - ws
+    - sec
+    - ensure_dbus_not_allow_anonymous

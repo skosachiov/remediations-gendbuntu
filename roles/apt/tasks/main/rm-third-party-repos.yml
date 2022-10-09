@@ -1,0 +1,20 @@
+- name: Ensure third-party repos are disabled
+  block:
+    - name: Ensure third-party repos are disabled List dir
+      find:
+        paths: /etc/apt/sources.list.d/
+        recurse: no
+        file_type: file
+        excludes:
+          - "libreoffice-ubuntu-libreoffice-still-focal.list"
+          - "dummy.list"          
+      register: result
+    - name: Ensure third-party repos are disabled Comment
+      replace:
+        dest: "{{item.path}}"
+        regexp: '^(deb\s.*)'
+        replace: '# \1'
+      with_items: "{{ result.files }}"
+  tags:
+    - ws
+    - rm_third_party_repo

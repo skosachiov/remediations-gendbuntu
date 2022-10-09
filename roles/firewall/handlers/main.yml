@@ -1,0 +1,7 @@
+- name: Firewalld restarted
+  service:
+    name: firewalld
+    state: restarted
+  tags:
+    - ws
+    - firewalld_restarted

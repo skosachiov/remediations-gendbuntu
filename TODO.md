@@ -1,0 +1,2 @@
+- hostname/username apps
+- separate codename vars

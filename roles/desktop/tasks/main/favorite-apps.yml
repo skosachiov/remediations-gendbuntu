@@ -1,0 +1,16 @@
+- name: Add favorite-apps
+  block:
+    - name: Add favorite-apps Add quotes
+      set_fact:
+        quotes_favorite_apps: "'{{var_favorite_apps|join(\"', '\")}}'"
+    - name: Add favorite-apps Copy set-script to profile.d
+      copy:
+        dest: /etc/profile.d/set-favorite-apps.sh
+        mode: a+x
+        content: |
+          #!/bin/bash
+          #
+          gsettings set org.gnome.shell favorite-apps "$(gsettings get org.gnome.shell favorite-apps | sed s/.$//), {{ quotes_favorite_apps }}]"
+  tags:
+    - ws
+    - add_favorite_apps

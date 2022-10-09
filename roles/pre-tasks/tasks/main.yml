@@ -1,0 +1,88 @@
+# Get subnet
+
+- name: Get subnet by IP
+  set_fact:
+    var_subnet: "{{item.0.key}}"
+  loop: "{{ var_subnets | dict2items | subelements('value') }}"
+  when: ansible_default_ipv4.address | ipaddr(item.1)
+  tags: always
+
+# Include vars
+
+- name: Include all vars
+  include_vars:
+    dir: "{{playbook_dir}}/inventories/all/vars"
+  tags: always
+
+- name: Include subnet vars
+  include_vars:
+    file: "{{playbook_dir}}/inventories/subnets/{{var_subnet}}/vars/main.yml"
+  tags: always
+
+- name: Include codename vars
+  include_vars:
+    file: "{{playbook_dir}}/inventories/codename/{{ansible_lsb.codename}}/vars/main.yml"
+  tags: always
+
+- name: Include branch vars
+  debug:
+    msg: "pass"
+  tags: always
+
+# Check Intranet/Internet environment
+
+- name: Get ansible server IP
+  block:
+    - name: Get ansible server IP
+      wait_for:
+        port: 443
+        host: "{{var_ansible_fqdn}}"
+        timeout: 5
+      register: result
+      ignore_errors: yes
+    - name: Get ansible server IP
+      set_fact:
+        var_internal_ansible_ip: "{{not result.failed}}"
+  tags: always
+
+- name: Get external ansible server IP
+  block:
+    - name: Get external ansible server IP
+      wait_for:
+        port: 443
+        host: "{{var_external_ansible_fqdn}}"
+        timeout: 5
+      register: result
+      ignore_errors: yes
+    - name: Get external ansible server IP
+      set_fact:
+        var_external_ansible_ip: "{{not result.failed}}"
+  tags: always
+  
+# Set admin mandatory control
+
+- name: Check file exists
+  stat:
+    path: /etc/ansible/mandatory-access
+  register: result
+  tags: always
+
+- name: Set mandatory-access
+  set_fact:
+    var_mandatory_access: true
+  when: result.stat.exists
+  tags: always      
+
+# Set admin workstations  
+
+- name: Check file exists
+  stat:
+    path: /etc/ansible/administrative-workstation
+  register: result
+  tags: always
+
+- name: Set admin workstation
+  set_fact:
+    var_admin_workstation: true
+  when: result.stat.exists
+  tags: always

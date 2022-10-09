@@ -1,0 +1,21 @@
+- name: Install additional fonts
+  block:
+    - name: Install additional fonts Copy
+      copy:
+        src: "{{item}}"
+        dest: /usr/local/share/fonts/
+        mode: go+r
+      with_fileglob:
+        - "{{playbook_dir}}/inventories/all/files/office/fonts/*"
+      register: result
+    - name: Install additional fonts Chmod
+      file:
+        path: /usr/local/share/fonts
+        mode: go+r
+        recurse: yes
+    - name: Install additional fonts Update cache
+      command: fc-cache -f
+      when: result.changed
+  tags:
+    - ws
+    - install_additional_fonts
