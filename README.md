@@ -190,7 +190,12 @@ The terminal service is provided through XRDP. The role configures accesses, dis
 <a name="Deploy"></a>
 # Deploy
 
-See inventories/codename/<codename>/vars for a list of supported platforms.
+## Pre tasks for push mode
+
+1. See inventories/codename/<codename>/vars for a list of supported platforms.
+2. Create deploy user: `useradd -n ansible`
+3. Set password: `passwd ansible`
+4. Add ansible to sudoers: `echo "ansible ALL=(ALL) EXEC:ALL, NOPASSWD:ALL" >> /etc/sudoers`
 
 ## Deploy Master Distribution Point
 
