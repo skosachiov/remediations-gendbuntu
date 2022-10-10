@@ -207,6 +207,12 @@
     - mob
     - set_iptables_persistent
 
+- name: Disable netfilter-persistent # temporary workaround
+  service:
+    name: netfilter-persistent
+    enabled: no
+  when: ansible_lsb.codename == "jammy"
+
 - name: Check listening ports
   block:
     - name: Check listening ports Get

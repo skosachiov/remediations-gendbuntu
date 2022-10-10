@@ -1,0 +1,50 @@
+- name: Clamav latest
+  package:
+    name:
+      - clamav
+      - clamav-daemon
+      - clamdscan
+    state: latest
+  tags:
+    - ws
+    - clamav_latest
+
+- name: Clamav Set local mirror
+  replace:
+    path: /etc/clamav/freshclam.conf
+    regexp: ^(DatabaseMirror).*
+    replace: '\1 {{var_clamav_server}}'
+  when: var_installation_type == "workstation" and var_internal_ansible_ip
+  tags:
+    - ws
+    - clamav_set_mirror
+
+- name: Clamav freshclam started
+  service:
+    name: clamav-freshclam
+    state: started
+  tags:
+    - ws
+    - clamav_freshclam_started
+
+- name: Clamd on access scanning
+  blockinfile:
+    dest: /etc/clamav/clamd.conf
+    marker_begin: BEGIN_ONACCESS
+    marker_end: END_ONACCESS
+    insertafter: EOF
+    block: |
+      OnAccessIncludePath /home
+      OnAccessPrevention yes
+      OnAccessExcludeUname clamd
+  tags:
+    - ws
+    - clamad_on_access_scanning
+
+- name: Clamav daemon started
+  service:
+    name: clamav-daemon
+    state: started
+  tags:
+    - ws
+    - clamav_daemon_started

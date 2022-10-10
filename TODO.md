@@ -1,2 +1,5 @@
 - hostname/username apps
 - separate codename vars
+- netfilter-persistent enable for 22.04
+- clamav on access
+- rkhunter

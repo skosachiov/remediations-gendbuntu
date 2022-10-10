@@ -1,9 +1,5 @@
-- name: Clamav latest
-  package:
-    name:
-      - clamav
-    state: latest
-  tags:
-    - ws
-    - clamav_latest
-
+- include_tasks: "{{ tasks_file }}"
+  loop_control:
+    loop_var: tasks_file
+  with_fileglob:
+    - main/*.yml
