@@ -21,9 +21,24 @@
           - tigervnc-common
         state: present
       when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+    - name: Install client dependencies Tigervnc tools deb
+      package:
+        name:
+          - tigervnc-tools
+        state: present
+      when: ansible_lsb.codename == 'jammy'      
   tags:
     - ws
     - ra_install_client_dependencies
+
+- name: Wayland disable
+  replace:
+    dest: /etc/gdm3/custom.conf
+    regexp: ^#?(WaylandEnable).*
+    replace: '\1=false'
+  tags:
+    - ws
+    - wayland_disable
 
 - name: Init known hosts
   block:

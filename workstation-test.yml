@@ -38,7 +38,6 @@
     - role: ad-client
     - role: ansible-client
     - role: antivirus
-      tags: always          
     - role: audit
     - role: base-security
     - role: base-system
@@ -47,7 +46,6 @@
     - role: desktop
     - role: dlp
     - role: firewall
-      tags: always            
     - role: flatpak
     - role: integrity-check
     - role: inventory
@@ -56,8 +54,8 @@
     - role: office
     - role: polkit-restrictions
     - role: print
-      tags: always                       
     - role: remote-assistance
+      tags: always                           
     - role: scap
     - role: security-modules
     - role: smb-client
