@@ -27,6 +27,7 @@ var_clamav_server: paris-clamav.si.mi
 var_site_address: "default"
 
 var_admin_workstation: false
+var_network_auditd: false
 
 var_no_proxy: "127.0.0.1,10.0.0.0/8,localhost,*.si.mi"
 

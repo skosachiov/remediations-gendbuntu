@@ -86,3 +86,17 @@
     var_admin_workstation: true
   when: result.stat.exists
   tags: always
+
+# Set network auditd
+
+- name: Check file exists
+  stat:
+    path: /etc/ansible/network-auditd
+  register: result
+  tags: always
+
+- name: Set admin workstation
+  set_fact:
+    var_network_auditd: true
+  when: result.stat.exists
+  tags: always
