@@ -17,3 +17,4 @@ var_domain_admins_group: gend_admins
 var_clamav_server: dijon-clamav.si.mi
 var_site_address: "dijon_2_place_suquet"
 var_dp_fqdn: "{{var_ansible_fqdn}}"
+var_dp_rsyslog_server: "{{var_ansible_fqdn}}"

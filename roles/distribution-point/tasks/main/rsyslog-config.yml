@@ -26,7 +26,7 @@
           $template TraditionalFileFormat,"%TIMESTAMP% %FROMHOST-IP% %syslogtag%%msg:::sp-if-no-1st-sp%%msg:::drop-last-lf%\n"
           *.* /var/log/network.log;TraditionalFileFormat
       notify: Rsyslog restarted
-  when: ansible_facts.nodename == var_rsyslog_server
+  when: ansible_facts.nodename == var_dp_rsyslog_server
   tags:
     - dp
     - enable_rsyslog_accept_udp

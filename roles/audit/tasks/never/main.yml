@@ -2,9 +2,9 @@
   lineinfile:
     dest: /etc/rsyslog.conf
     regexp: ^\*\.\*
-    line: '*.* @{{ var_rsyslog_server }}'
+    line: '*.* @{{ var_dp_rsyslog_server }}'
     create: true
-  when: ansible_facts.nodename != var_rsyslog_server
+  when: ansible_facts.nodename != var_dp_rsyslog_server
   tags:
     - ws
     - sec

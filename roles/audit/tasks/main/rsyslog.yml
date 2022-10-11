@@ -24,9 +24,9 @@
   lineinfile:
     dest: /etc/rsyslog.conf
     regexp: ^\*\.\*
-    line: '*.* @{{ var_rsyslog_server }}'
+    line: '*.* @{{ var_dp_rsyslog_server }}'
     state: absent
-  when: ansible_facts.nodename != var_rsyslog_server
+  when: ansible_facts.nodename != var_dp_rsyslog_server
   tags:
     - ws
     - sec
@@ -58,21 +58,32 @@
         regexp: ^\*\.=info;\*\.=notice;\*\.=warn;
         replace: '*.=notice;*.=warn;'
       notify: Rsyslog restarted
-    - name: Set rsyslog access to remote loghost Block
+    - name: Set rsyslog to remote loghost Block
       blockinfile:
         dest: /etc/rsyslog.conf
         marker_begin: BEGIN_REMOTE
         marker_end: END_REMOTE
         insertafter: auth,authpriv\.\*\s*\/var\/log\/auth\.log
         block: |
-          {{var_rsyslog_filter}}        
-          auth.* @{{ var_rsyslog_server }}
-          authpriv.* @{{ var_rsyslog_server }}
-          daemon.* @{{ var_rsyslog_server }}
-          *.info @{{ var_rsyslog_server }}
+          {{var_dp_rsyslog_filter}}        
+          auth.* @{{ var_dp_rsyslog_server }}
+          authpriv.* @{{ var_dp_rsyslog_server }}
+          daemon.* @{{ var_dp_rsyslog_server }}
         create: true
+        state: "{{'present' if var_installation_type == 'workstation' else 'absent' }}"
       notify: Rsyslog restarted
-  when: ansible_facts.nodename != var_rsyslog_server
+    - name: Set rsyslog access to remote loghost Block
+      blockinfile:
+        dest: /etc/rsyslog.conf
+        marker_begin: BEGIN_AUDITD
+        marker_end: END_AUDITD
+        insertafter: auth,authpriv\.\*\s*\/var\/log\/auth\.log
+        block: |
+          *.info @{{ var_dp_rsyslog_server }}
+        create: true
+        state: "{{'present' if var_network_auditd else 'absent' }}"
+      notify: Rsyslog restarted      
+  when: ansible_facts.nodename != var_dp_rsyslog_server
   tags:
     - ws
     - sec
@@ -84,7 +95,7 @@
     regexp: ^\*\.\*
     line: '*.* @{{ var_logstash_server }}'
     create: true
-  when: ansible_facts.nodename == var_rsyslog_server
+  when: ansible_facts.nodename == var_dp_rsyslog_server
   tags:
     - ws
     - sec
@@ -96,7 +107,7 @@
     regexp: ^\$FileCreateMode
     line: $FileCreateMode 0640
     create: true
-  when: ansible_facts.nodename != var_rsyslog_server
+  when: ansible_facts.nodename != var_dp_rsyslog_server
   tags:
     - ws
     - sec

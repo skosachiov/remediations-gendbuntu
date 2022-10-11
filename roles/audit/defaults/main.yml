@@ -12,4 +12,4 @@ var_auditd_rules_count: 120
 var_logstash_server: logstash.example.test
 var_rsyslog_filter: |
   :msg, contains, "SOME USELESS TEXT" stop
-  :msg, contains, "SOME TEXT" @{{ var_rsyslog_server }}
+  :msg, contains, "SOME TEXT" @{{ var_dp_rsyslog_server }}

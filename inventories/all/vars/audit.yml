@@ -12,4 +12,4 @@ var_auditd_exceptions: |
 var_auditd_rules_count: 125
 var_logstash_server: dummy
 var_rsyslog_filter: |
-  :msg, contains, "dummystring" @{{ var_rsyslog_server }}
+  :msg, contains, "dummystring" @{{ var_dp_rsyslog_server }}

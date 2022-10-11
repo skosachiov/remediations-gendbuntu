@@ -17,3 +17,4 @@ var_domain_admins_group: gend_admins
 var_clamav_server: toulouse-clamav.si.mi
 var_site_address: "toulouse_23_boulevard_de_l_embouchure"
 var_dp_fqdn: "{{var_ansible_fqdn}}"
+var_dp_rsyslog_server: "{{var_ansible_fqdn}}"

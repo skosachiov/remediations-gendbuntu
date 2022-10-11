@@ -16,3 +16,4 @@ var_domain_admins_group: gend_admins
 var_clamav_server: lyon-clamav.si.mi
 var_site_address: "lyon_40_rue_marius_berliet"
 var_dp_fqdn: "{{var_ansible_fqdn}}"
+var_dp_rsyslog_server: "{{var_ansible_fqdn}}"

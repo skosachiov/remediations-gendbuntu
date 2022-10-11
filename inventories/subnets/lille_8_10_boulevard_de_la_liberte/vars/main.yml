@@ -16,3 +16,4 @@ var_domain_admins_group: gend_admins
 var_clamav_server: paris-clamav.si.mi
 var_site_address: "lille_8_10_boulevard_de_la_liberte"
 var_dp_fqdn: "{{var_ansible_fqdn}}"
+var_dp_rsyslog_server: "{{var_ansible_fqdn}}"

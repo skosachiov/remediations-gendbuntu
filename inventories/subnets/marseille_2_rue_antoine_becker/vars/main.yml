@@ -18,3 +18,4 @@ var_domain_admins_group: gend_admins
 var_clamav_server: marseille-clamav.si.mi
 var_site_address: "marseille_2_rue_antoine_becker"
 var_dp_fqdn: "{{var_ansible_fqdn}}"
+var_dp_rsyslog_server: "{{var_ansible_fqdn}}"
