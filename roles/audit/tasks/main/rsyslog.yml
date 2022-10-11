@@ -65,7 +65,7 @@
         marker_end: END_REMOTE
         insertafter: auth,authpriv\.\*\s*\/var\/log\/auth\.log
         block: |
-          {{var_dp_rsyslog_filter}}        
+          {{var_rsyslog_filter}}        
           auth.* @{{ var_dp_rsyslog_server }}
           authpriv.* @{{ var_dp_rsyslog_server }}
           daemon.* @{{ var_dp_rsyslog_server }}
