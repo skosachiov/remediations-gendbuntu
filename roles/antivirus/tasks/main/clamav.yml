@@ -27,6 +27,29 @@
     - ws
     - clamav_freshclam_started
 
+# - name: Clamav freshclam workaround # be careful
+#   block:
+#     - name: Clamav freshclam workaround Check files
+#       stat:
+#         path: 
+#       register: result
+#     - name: Clamav freshclam workaround Rpm present
+#       package:
+#         name:
+#           - rpm2cpio
+#       when: not result.stat.exists
+#     - name: Clamav freshclam workaround Download
+#       get_url:
+#         url: https://download-ib01.fedoraproject.org/pub/epel/8/Everything/x86_64/Packages/c/clamav-data-0.103.7-1.el8.noarch.rpm
+#         dest: /var/lib/clamav/
+#       when: not result.stat.exists
+#     - name: Clamav freshclam workaround Unpack
+#       shell: "cd /var/lib/clamav/ && "
+#       when: not result.stat.exists      
+#   tags:
+#     - ws
+#     - clamav_freshclam_workaround
+
 - name: Clamd on access scanning
   blockinfile:
     dest: /etc/clamav/clamd.conf

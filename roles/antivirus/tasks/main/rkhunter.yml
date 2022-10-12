@@ -1,0 +1,8 @@
+- name: Rkhunter latest
+  package:
+    name:
+      - rkhunter
+    state: latest
+  tags:
+    - ws
+    - rkhunter_latest
