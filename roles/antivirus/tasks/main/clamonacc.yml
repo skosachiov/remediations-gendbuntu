@@ -2,10 +2,19 @@
   template:
     src: clamav-onacc.service.j2
     dest: /usr/lib/systemd/system/clamav-onacc.service
-    mode: u=rw,g=r,o=r  
+    mode: u=rw,g=r,o=r
   notify:
     - Systemctl daemon reload
     - Clamav onacc restarted
   tags:
     - ws
     - clamav_onacc_service
+
+- name: Clamav onacc enabled
+  service:
+    name: clamav-onacc
+    enabled: yes
+  ignore_errors: yes
+  tags:
+    - ws
+    - clamav_onacc_enabled    
