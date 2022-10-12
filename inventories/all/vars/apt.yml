@@ -1,14 +1,21 @@
 var_pkg_versions_absent:
   myspell-uk: 9.9-9
 
-var_special_applications:
-  - blender
+var_special_apps:
+  - screen
   - gimp
   - ffmpeg
+  - gvim
+  - tmux
 
-var_username_applications:
-  - {username: "armelle.roche", applications: ["blender", "ffmpeg"]}
-  - {username: "maude.moulin", applications: ["gimp"]}
+var_username_apps:
+  armelle.roche:
+    apps: ["screen", "ffmpeg"]
+  maude.moulin:
+    apps: ["gimp"]
 
-var_hostname_applications:
-  - {username: "", applications: ["blender", "ffmpeg"]}
+var_hostname_apps:
+  a-9737:
+    apps: ["tmux", "ffmpeg"]
+  a-3457:
+    apps: ["gimp", "gvim"]
