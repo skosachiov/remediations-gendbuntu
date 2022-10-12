@@ -19,6 +19,12 @@
         state: touch
         modification_time: preserve
         access_time: preserve
+      register: result
+    - name: Ansible cfg is present Defaults
+      lineinfile:
+        dest: /etc/ansible/ansible.cfg
+        line: "[defaults]"
+        insertbefore: BOF
   tags:
     - ws
     - ansible_cfg_is_present
@@ -56,6 +62,24 @@
   tags:
     - ws
     - config_ansible_environment
+
+- name: Config ansible stdout
+  block:
+    - name: Config ansible stdout
+      lineinfile:
+        dest: /etc/ansible/ansible.cfg
+        regexp: ^#?\s*display_skipped_hosts.*
+        line: display_skipped_hosts = False
+        insertafter: \[defaults\]
+    - name: Config ansible stdout
+      lineinfile:
+        dest: /etc/ansible/ansible.cfg
+        regexp: ^#?\s*display_ok_hosts.*
+        line: display_ok_hosts = False
+        insertafter: \[defaults\]
+  tags:
+    - ws
+    - config_ansible_stdout
 
 - name: Create ansible user
   block:

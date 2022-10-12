@@ -37,6 +37,7 @@
     - role: apt
     - role: ad-client
     - role: ansible-client
+      tags: always    
     - role: antivirus
     - role: audit
     - role: base-security
@@ -55,7 +56,6 @@
     - role: polkit-restrictions
     - role: print
     - role: remote-assistance
-      tags: always                           
     - role: scap
     - role: security-modules
     - role: smb-client
