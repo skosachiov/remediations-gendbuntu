@@ -1,0 +1,17 @@
+- name: Clamav daemon started
+  service:
+    name: clamav-daemon
+    state: started
+
+- name: Clamav freshclam restarted
+  service:
+    name: clamav-freshclam
+    state: restarted
+
+- name: Systemctl daemon reload
+  command: systemctl daemon-reload
+
+- name: Clamav onacc restarted
+  service:
+    name: clamav-onacc
+    state: restarted

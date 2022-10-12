@@ -1,3 +1,4 @@
 var_clamav_server: 10.10.12.140
-
-var_clamav_ver: "9.0.5"
+var_clamav_ver: "0.103.7"
+var_clamav_onacc_dir: /home
+var_clamav_data_rpm_url: https://download-ib01.fedoraproject.org/pub/epel/8/Everything/x86_64/Packages/c/clamav-data-0.103.7-1.el8.noarch.rpm

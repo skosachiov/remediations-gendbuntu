@@ -85,7 +85,7 @@ Ansible-client creates a special user with an authorized key, sets up a sudoers 
 
 ## antivirus
 
-This role installs and configures a free anti-virus package to run in On-Access Scanning mode and to regularly scan certain folders.
+This role installs and configures a free antivirus suite to run in on-access scan mode and to regularly scan specific folders. The static clamav-dada package is not available in current versions of Ubuntu, and server-side freshclam may require the most recent clamav, so we had to provide the script with an rpm installation. In addition, the script installs onAccess scanning systemd service.
 
 ## apt
 

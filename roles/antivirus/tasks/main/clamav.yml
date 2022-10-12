@@ -15,40 +15,10 @@
     regexp: ^(DatabaseMirror).*
     replace: '\1 {{var_clamav_server}}'
   when: var_installation_type == "workstation" and var_internal_ansible_ip
+  notify: Clamav freshclam restarted
   tags:
     - ws
     - clamav_set_mirror
-
-- name: Clamav freshclam started
-  service:
-    name: clamav-freshclam
-    state: started
-  tags:
-    - ws
-    - clamav_freshclam_started
-
-# - name: Clamav freshclam workaround # be careful
-#   block:
-#     - name: Clamav freshclam workaround Check files
-#       stat:
-#         path: 
-#       register: result
-#     - name: Clamav freshclam workaround Rpm present
-#       package:
-#         name:
-#           - rpm2cpio
-#       when: not result.stat.exists
-#     - name: Clamav freshclam workaround Download
-#       get_url:
-#         url: https://download-ib01.fedoraproject.org/pub/epel/8/Everything/x86_64/Packages/c/clamav-data-0.103.7-1.el8.noarch.rpm
-#         dest: /var/lib/clamav/
-#       when: not result.stat.exists
-#     - name: Clamav freshclam workaround Unpack
-#       shell: "cd /var/lib/clamav/ && "
-#       when: not result.stat.exists      
-#   tags:
-#     - ws
-#     - clamav_freshclam_workaround
 
 - name: Clamd on access scanning
   blockinfile:
@@ -57,17 +27,11 @@
     marker_end: END_ONACCESS
     insertafter: EOF
     block: |
-      OnAccessIncludePath /home
+      OnAccessIncludePath {{var_clamav_onacc_dir}}
       OnAccessPrevention yes
       OnAccessExcludeUname clamd
+  notify: Clamav daemon started
   tags:
     - ws
     - clamad_on_access_scanning
 
-- name: Clamav daemon started
-  service:
-    name: clamav-daemon
-    state: started
-  tags:
-    - ws
-    - clamav_daemon_started

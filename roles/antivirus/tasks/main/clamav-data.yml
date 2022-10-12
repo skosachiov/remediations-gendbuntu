@@ -1,0 +1,27 @@
+- name: Clamav freshclam workaround # be careful
+  block:
+    - name: Clamav freshclam workaround Check files
+      stat:
+        path: "/var/lib/clamav/main.cvd"
+      register: result
+    - name: Clamav freshclam workaround Rpm present
+      package:
+        name:
+          - rpm2cpio
+        state: present
+      when: not result.stat.exists
+    - name: Clamav freshclam workaround Download
+      get_url:
+        url: "{{var_clamav_data_rpm_url}}"
+        dest: /var/lib/clamav/
+      when: not result.stat.exists
+    - name: Clamav freshclam workaround Unpack
+      shell: "cd / && rpm2cpio /var/lib/clamav/{{var_clamav_data_rpm_url | basename}} | cpio -imd"
+      when: not result.stat.exists      
+    - name: Clamav freshclam workaround Remove rpm
+      file:
+        path: "/var/lib/clamav/{{var_clamav_data_rpm_url | basename}}"
+        state: absent
+  tags:
+    - ws
+    - clamav_freshclam_workaround
