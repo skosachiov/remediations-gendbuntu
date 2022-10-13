@@ -60,7 +60,7 @@ The project is adapted for development in the Internet environment with or witho
     │   ├── all             #   
     │   │    ├─ group_vars  # vars for certain hosts, for example, for distribution-points
     │   │        └── dp     #
-    │   ├── branches        # vars based on OU memmership
+    │   ├── branches        # vars based on OU membership
     │   ├── codename        # vars based on OS codename
     │   └── subnets         # vars based on subnet
     │                       #
