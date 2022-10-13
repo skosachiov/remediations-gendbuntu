@@ -12,14 +12,14 @@
         state: present
     - name: Enable service cupsd Started
       service: 
-        name: cupsd 
+        name: cups
         enabled: yes 
         state: started 
       when: 
         - '"cups" in ansible_facts.packages' 
   tags: 
     - ws
-    - service_cupsd_enabled
+    - service_cups_enabled
 
 - name: CUPS smb backend set
   block:
