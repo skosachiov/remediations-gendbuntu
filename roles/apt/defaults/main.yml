@@ -9,7 +9,7 @@ var_local_repo: |
 var_pkg_versions_absent:
   myspell-uk: 9.9-9
 
-  var_special_apps:
+var_special_apps:
   - screen
   - gimp
   - ffmpeg
