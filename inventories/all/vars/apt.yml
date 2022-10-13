@@ -5,7 +5,7 @@ var_special_apps:
   - screen
   - gimp
   - ffmpeg
-  - gvim
+  - nmap
   - tmux
 
 var_username_apps:
@@ -18,4 +18,6 @@ var_hostname_apps:
   a-9737:
     apps: ["tmux", "ffmpeg"]
   a-3457:
-    apps: ["gimp", "gvim"]
+    apps: ["gimp", "nmap"]
+  standard-pc-q35-ich9-2009:
+    apps: ["ffmpeg", "tmux", "nmap"]

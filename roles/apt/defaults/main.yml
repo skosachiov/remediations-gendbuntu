@@ -8,3 +8,24 @@ var_local_repo: |
   deb [arch=amd64] http://{{var_ansible_fqdn}}/repos/bullseye/third-party/ main
 var_pkg_versions_absent:
   myspell-uk: 9.9-9
+
+  var_special_apps:
+  - screen
+  - gimp
+  - ffmpeg
+  - nmap
+  - tmux
+
+var_username_apps:
+  armelle.roche:
+    apps: ["screen", "ffmpeg"]
+  maude.moulin:
+    apps: ["gimp"]
+
+var_hostname_apps:
+  a-9737:
+    apps: ["tmux", "ffmpeg"]
+  a-3457:
+    apps: ["gimp", "nmap"]
+  standard-pc-q35-ich9-2009:
+    apps: ["ffmpeg", "tmux", "nmap"]
