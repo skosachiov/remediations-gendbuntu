@@ -16,7 +16,7 @@
         enabled: yes 
         state: started 
       when: 
-        - '"cupsd" in ansible_facts.packages' 
+        - '"cups" in ansible_facts.packages' 
   tags: 
     - ws
     - service_cupsd_enabled
