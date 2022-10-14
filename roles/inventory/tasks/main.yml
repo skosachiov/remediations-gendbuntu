@@ -23,7 +23,7 @@
     - name:  Print main ansible facts
       changed_when: false
       failed_when: false
-      debug:
+      syslogger:
         msg:  "basic_ansible_facts = {{ansible_default_ipv4.address}} {{ansible_date_time.iso8601}}{{ansible_date_time.tz_offset}}
               {{ansible_fqdn}} {{ansible_kernel}} {{var_device}} {{var_size_available}} {{ansible_uptime_seconds}}
               {{sessions.stdout_lines[0]}} var_site_address={{var_site_address}}
