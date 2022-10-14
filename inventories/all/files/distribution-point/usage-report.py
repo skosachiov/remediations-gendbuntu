@@ -191,10 +191,9 @@ for log in logs:
         if 'basic_ansible_facts' in line:
             if 'ansible_product_serial' in line:
                 try:
-                    ansible_product_serial = re.findall("ansible_product_serial=.*\"", line)[0]
+                    ansible_product_serial = re.findall("ansible_product_serial=.*", line)[0]
                     ansible_product_serial = ansible_product_serial.replace("ansible_product_serial=", "")
-                    ansible_product_serial = ansible_product_serial.replace("\"", "")
-                    line = re.sub("ansible_product_serial=.*\"", "", line)
+                    line = re.sub("ansible_product_serial=.*", "", line)
                 except:
                   ansible_product_serial = "none"  
             else: ansible_product_serial = "none"
@@ -209,10 +208,10 @@ for log in logs:
                 line = re.sub("var_site_address=[a-z0-9_-]*", "", line)
             else: siteaddress = "default"
             a = line.split()
-            if (len(a) < 15): continue
-            if 'basic_ansible_facts' not in a[6]: continue
+            if (len(a) < 14): continue
+            if 'basic_ansible_facts' not in a[5]: continue
             a[2] = str(dateutil.parser.parse(a[0] + " " + a[1] + " " + a[2]))
-            a = a[2:4] + a[9:]
+            a = a[2:4] + a[8:]
             a[8:] = [' '.join(a[8:])]
             a[1] = "\"" + a[1] + "\""
             a.append(siteaddress)
