@@ -103,7 +103,7 @@ apps_count = 0
 changed_count = 0
 failed_count = 0
 
-xdata, ydata, ydata_second, ydata_third = [], [], [], []
+xdata, ydata, ydata_second, ydata_third, ydata_fourth = [], [], [], [], []
 yapps = {}
 ts = "value=0000-00-00"
 
@@ -122,10 +122,12 @@ with open('/var/log/usage-report.log', "r") as f:
             if "unique_usernames" in line:
                 a_h[-1].append("unique_usernames=" + v)
                 ydata_second.append(int(v))
-            if "changed_count"    in line: a_h[-1].append("changed_count=" + v)
+            if "changed_count"    in line:
+                a_h[-1].append("changed_count=" + v)
+                ydata_third.append(int(v)/100)
             if "failed_count"     in line:
                 a_h[-1].append("failed_count=" + v)
-                ydata_third.append(int(v))
+                ydata_fourth.append(int(v))
             if "apps_count"       in line: a_h[-1].append("apps_count=" + v)
         if '[(' in line and ')]' in line:
             appstring = re.findall("\[\(.*\)\]", line)
@@ -135,7 +137,8 @@ with open('/var/log/usage-report.log', "r") as f:
 xdata = [i for i in range(-len(ydata)+1, 1)]
 plt.plot(xdata, ydata, label = "Unique addresses", color="blue")
 plt.plot(xdata, ydata_second, label = "Unique usernames", color="green")
-plt.plot(xdata, ydata_third, label = "Failed count", color="red")
+plt.plot(xdata, ydata_third, label = "Changed count / 100", color="yellow")
+plt.plot(xdata, ydata_fourth, label = "Failed count", color="red")
 plt.title("Records")
 plt.xlabel("Day")
 plt.legend(loc="upper left")
