@@ -124,7 +124,7 @@ with open('/var/log/usage-report.log', "r") as f:
                 ydata_second.append(int(v))
             if "changed_count"    in line:
                 a_h[-1].append("changed_count=" + v)
-                ydata_third.append(int(v)/100)
+                ydata_third.append(int(v))
             if "failed_count"     in line:
                 a_h[-1].append("failed_count=" + v)
                 ydata_fourth.append(int(v))
@@ -137,7 +137,7 @@ with open('/var/log/usage-report.log', "r") as f:
 xdata = [i for i in range(-len(ydata)+1, 1)]
 plt.plot(xdata, ydata, label = "Unique addresses", color="blue")
 plt.plot(xdata, ydata_second, label = "Unique usernames", color="green")
-plt.plot(xdata, ydata_third, label = "Changed count / 100", color="yellow")
+plt.plot(xdata, ydata_third, label = "Changed count", color="yellow")
 plt.plot(xdata, ydata_fourth, label = "Failed count", color="red")
 plt.title("Records")
 plt.xlabel("Day")
@@ -180,7 +180,7 @@ for log in logs:
             a = line.split()
             if (len(a) < 11): continue
             if 'changed=' not in a[8]: continue
-            changed_count += int((a[8].split("=", 1))[1])
+            changed_count += 1 if int((a[8].split("=", 1))[1]) > 0 else 0
             failed_count += int((a[10].split("=", 1))[1])
             a[2] = str(dateutil.parser.parse(a[0] + " " + a[1] + " " + a[2]))
             a = a[2:4] + a[7:]
