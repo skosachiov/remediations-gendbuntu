@@ -1,5 +1,14 @@
+#!/usr/bin/python3
+
+# cat /etc/apache2/conf-available/charset.conf 
+# AddDefaultCharset UTF-8
+# SetEnv PYTHONIOENCODING UTF-8
+
+import cgi
+
 from lxml import html
 import re
+import string
 
 f = open("usage-report.log").readlines()
 
@@ -37,8 +46,53 @@ for line in f:
     if "Basic ansible facts</h1>" in line:
         parsing_b = True
 
+a_a, a_b = [], []
+
 for i, u in enumerate(sorted(users.items(), key = lambda item: item[1], reverse = True)):
-    print(i, u[1], u[0])
+    a_a.append([str(i), u[1], u[0]])
 
 for i, c in enumerate(sorted(computers.items(), key = lambda item: item[1], reverse = True)):
-    print(i, c[1][0], c[1][1], c[0])
+    a_b.append([str(i), c[1][0], c[1][1], c[0]])
+
+print("Content-type: text/html; charset=utf-8")
+print()
+header = """
+<html><head>
+<link type="text/css" rel="stylesheet" href="/javascript/jquery-tablesorter/themes/blue/style.css" />
+<script type="text/javascript" src="/javascript/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="/javascript/jquery-tablesorter/jquery.tablesorter.min.js"></script>
+<script type="text/javascript">
+    $(function(){ $("#a_h").tablesorter(); });
+    $(function(){ $("#a_p").tablesorter(); });
+    $(function(){ $("#a_f").tablesorter(); });
+    $(function(){ $("#a_s").tablesorter(); });
+    $(function(){ $("#a_a").tablesorter(); });
+</script>
+</head><body>
+<div class="container">
+"""
+print(header)
+
+def print_table(t, id):
+    thelist = list(string.ascii_uppercase)
+    print("<table id=\"" + id + "\" class=\"tablesorter\"><thead><tr>")
+    for (c, h)  in zip(t[0], thelist):
+        print("<th>" + h + "</th>")
+    print("</tr></thead><tbody>")
+    for r in t:
+        print("<tr>")
+        for c in r:
+            print("<td>" + c + "</td>", end = "")
+        print("</tr>")
+    print("</tbody></table>")
+
+print("<a href='#h_a_a'>Last authentication success</a>")
+print("<a href='#h_a_b'>Last basic ansible facts</a>")
+
+print("<br />")
+print("<h1 id='h_a_a'>Last authentication success</h1>")
+print_table(a_a, "a_a")
+
+print("<br />")
+print("<h1 id='h_a_b'>Last basic ansible fact</h1>")
+print_table(a_b, "a_b")
