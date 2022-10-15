@@ -1,9 +1,5 @@
 #!/usr/bin/python3
 
-# cat /etc/apache2/conf-available/charset.conf 
-# AddDefaultCharset UTF-8
-# SetEnv PYTHONIOENCODING UTF-8
-
 import cgi
 
 from lxml import html
@@ -24,22 +20,23 @@ for line in f:
         parsing_a = False
         parsing_b = False
     
-    try:
-        if parsing_a:
-            tree = html.fromstring(line)
-            td = tree.xpath("./td/text()")
-            user = re.search("user=(.*)", td[2]).group(1)
-            user = re.sub("@.*", "", user)
-            user = re.sub(".*\\\\", "", user)
-            users[user.lower()] = td[0]
-        if parsing_b:
-            tree = html.fromstring(line)
-            td = tree.xpath("./td/text()")
-            computer = re.search("(.*)\.?", td[3]).group(1)
-            computer = re.sub("\..*", "", computer)
-            computers[computer.lower()] = [td[0], td[9]]
-    except:
-        pass
+    if '</td><td>' in line:
+        try:
+            if parsing_a:
+                tree = html.fromstring(line)
+                td = tree.xpath("./td/text()")
+                user = re.search("user=(.*)", td[2]).group(1)
+                user = re.sub("@.*", "", user)
+                user = re.sub(".*\\\\", "", user)
+                users[user.lower()] = td[0]
+            if parsing_b:
+                tree = html.fromstring(line)
+                td = tree.xpath("./td/text()")
+                computer = re.search("(.*)\.?", td[3]).group(1)
+                computer = re.sub("\..*", "", computer)
+                computers[computer.lower()] = [td[0], td[9]]
+        except:
+            pass
         
     if "Authentication success</h1>" in line:
         parsing_a = True
@@ -62,11 +59,8 @@ header = """
 <script type="text/javascript" src="/javascript/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="/javascript/jquery-tablesorter/jquery.tablesorter.min.js"></script>
 <script type="text/javascript">
-    $(function(){ $("#a_h").tablesorter(); });
-    $(function(){ $("#a_p").tablesorter(); });
-    $(function(){ $("#a_f").tablesorter(); });
-    $(function(){ $("#a_s").tablesorter(); });
     $(function(){ $("#a_a").tablesorter(); });
+    $(function(){ $("#a_b").tablesorter(); });
 </script>
 </head><body>
 <div class="container">
