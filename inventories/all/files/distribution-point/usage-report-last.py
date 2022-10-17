@@ -6,7 +6,7 @@ from lxml import html
 import re
 import string
 
-f = open("usage-report.log").readlines()
+f = open("/var/log/usage-report.log").readlines()
 
 parsing_a = False
 parsing_b = False
@@ -28,13 +28,16 @@ for line in f:
                 user = re.search("user=(.*)", td[2]).group(1)
                 user = re.sub("@.*", "", user)
                 user = re.sub(".*\\\\", "", user)
-                users[user.lower()] = td[0]
+                users[user.lower()] = [td[0], td[1]]
             if parsing_b:
                 tree = html.fromstring(line)
                 td = tree.xpath("./td/text()")
                 computer = re.search("(.*)\.?", td[3]).group(1)
                 computer = re.sub("\..*", "", computer)
-                computers[computer.lower()] = [td[0], td[9]]
+                if len(td) < 11:
+                    td.append("N/A")
+                    td.append("N/A")
+                computers[computer.lower()] = [td[0], td[9], td[1], td[10], td[11]]
         except:
             pass
         
@@ -46,10 +49,10 @@ for line in f:
 a_a, a_b = [], []
 
 for i, u in enumerate(sorted(users.items(), key = lambda item: item[1], reverse = True)):
-    a_a.append([str(i), u[1], u[0]])
+    a_a.append([str(i), u[1][0], u[0], u[1][1]])
 
 for i, c in enumerate(sorted(computers.items(), key = lambda item: item[1], reverse = True)):
-    a_b.append([str(i), c[1][0], c[1][1], c[0]])
+    a_b.append([str(i), c[1][0], c[1][1], c[0], c[1][2], c[1][3], c[1][4]])
 
 print("Content-type: text/html; charset=utf-8")
 print("Cache-Control: no-cache")
