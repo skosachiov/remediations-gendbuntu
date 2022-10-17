@@ -52,10 +52,11 @@ for i, c in enumerate(sorted(computers.items(), key = lambda item: item[1], reve
     a_b.append([str(i), c[1][0], c[1][1], c[0]])
 
 print("Content-type: text/html; charset=utf-8")
+print("Cache-Control: no-cache")
 print()
 header = """
 <html><head>
-<link type="text/css" rel="stylesheet" href="/javascript/jquery-tablesorter/themes/blue/style.css" />
+<link type="text/css" rel="stylesheet" href="/javascript/jquery-tablesorter/css/theme.default.css" />
 <script type="text/javascript" src="/javascript/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="/javascript/jquery-tablesorter/jquery.tablesorter.min.js"></script>
 <script type="text/javascript">

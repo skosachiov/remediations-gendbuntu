@@ -1,13 +1,11 @@
 #!/usr/bin/python3
 
-#
-# This statistics script is suitable for parsing the distribution point syslog for several hundred workstations.
-# For large companies Opensearch based solutions should be used.
-#
-
 # cat /etc/apache2/conf-available/charset.conf 
 # AddDefaultCharset UTF-8
 # SetEnv PYTHONIOENCODING UTF-8
+#
+# apt install libjs-jquery-tablesorter
+# ln -s /usr/share/javascript /var/www/html/javascript
 
 import cgi
 import dateutil.parser
@@ -38,10 +36,11 @@ def natural_sort(l):
     return sorted(l, key=alphanum_key)
 
 print("Content-type: text/html; charset=utf-8")
+print("Cache-Control: no-cache")
 print()
 header = """
 <html><head>
-<link type="text/css" rel="stylesheet" href="/javascript/jquery-tablesorter/themes/blue/style.css" />
+<link type="text/css" rel="stylesheet" href="/javascript/jquery-tablesorter/css/theme.default.css" />
 <script type="text/javascript" src="/javascript/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="/javascript/jquery-tablesorter/jquery.tablesorter.min.js"></script>
 <script type="text/javascript">
@@ -57,7 +56,6 @@ header = """
 print(header)
 
 # ipaddr = cgi.escape(os.environ["REMOTE_ADDR"])
-
 
 path_var_log = "/var/log"
 logs = [path_var_log + "/" + f for f in os.listdir(path_var_log) if f.startswith("network.log")]
@@ -100,8 +98,8 @@ d_f = {}
 records_dates, ip_addresses = [], []
 usernames, apps = {}, {}
 apps_count = 0
-changed_count = 0
-failed_count = 0
+changed_count = {}
+failed_count = {}
 
 xdata, ydata, ydata_second, ydata_third, ydata_fourth = [], [], [], [], []
 yapps = {}
@@ -180,8 +178,10 @@ for log in logs:
             a = line.split()
             if (len(a) < 11): continue
             if 'changed=' not in a[8]: continue
-            changed_count += 1 if int((a[8].split("=", 1))[1]) > 0 else 0
-            failed_count += int((a[10].split("=", 1))[1])
+            changed_count.setdefault(a[3],0)
+            changed_count[a[3]] = 1 if int((a[8].split("=", 1))[1]) > 0 else 0
+            failed_count.setdefault(a[3],0)
+            failed_count[a[3]] = int((a[10].split("=", 1))[1])
             a[2] = str(dateutil.parser.parse(a[0] + " " + a[1] + " " + a[2]))
             a = a[2:4] + a[7:]
             a[1] = "\"" + a[1] + "\""
@@ -223,7 +223,7 @@ for log in logs:
             a = line.split()
             if (len(a) < 15): continue
             a[2] = str(dateutil.parser.parse(a[0] + " " + a[1] + " " + a[2]))
-            try: a.remove("gdm3:")
+            try: a.remove("fly-dm:")
             except ValueError: pass
             if 'authentication' not in a[6]: continue
             a = a[2:4] + a[14:15] + a[9:10]
@@ -296,8 +296,8 @@ print_table(a_a, "a_a")
 print("<input type='hidden' id='log_timestamp' name='log_timestamp' value='" + str(max(records_dates)) + "'>")
 print("<input type='hidden' id='unique_addresses' name='unique_addresses' value='" + str(len(set(ip_addresses))) + "'>")
 print("<input type='hidden' id='unique_usernames' name='unique_usernames' value='" + str(len(usernames)) + "'>")
-print("<input type='hidden' id='changed_count' name='changed_count' value='" + str(changed_count) + "'>")
-print("<input type='hidden' id='failed_count' name='failed_count' value='" + str(failed_count) + "'>")
+print("<input type='hidden' id='changed_count' name='changed_count' value='" + str(sum(changed_count.values())) + "'>")
+print("<input type='hidden' id='failed_count' name='failed_count' value='" + str(sum(failed_count.values())) + "'>")
 print("<input type='hidden' id='apps_count' name='apps_count' value='" + str(apps_count) + "'>")
 
 print('</div></body></html>')
