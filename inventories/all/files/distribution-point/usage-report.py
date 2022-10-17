@@ -81,6 +81,7 @@ logs = logs[shift:shift+interval]
 logs.reverse()
 
 def print_table(t, id):
+    if len(t) == 0: return
     thelist = list(string.ascii_uppercase)
     print("<table id=\"" + id + "\" class=\"tablesorter\"><thead><tr>")
     for (c, h)  in zip(t[0], thelist):
