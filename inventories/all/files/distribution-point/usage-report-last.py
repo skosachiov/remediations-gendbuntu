@@ -72,6 +72,7 @@ header = """
 print(header)
 
 def print_table(t, id):
+    if len(t) == 0: return    
     thelist = list(string.ascii_uppercase)
     print("<table id=\"" + id + "\" class=\"tablesorter\"><thead><tr>")
     for (c, h)  in zip(t[0], thelist):
@@ -92,5 +93,5 @@ print("<h1 id='h_a_a'>Last authentication success</h1>")
 print_table(a_a, "a_a")
 
 print("<br />")
-print("<h1 id='h_a_b'>Last basic ansible fact</h1>")
+print("<h1 id='h_a_b'>Last basic ansible facts</h1>")
 print_table(a_b, "a_b")
