@@ -35,10 +35,10 @@
 
   roles:
     - role: apt
-      tags: always
     - role: ad-client
     - role: ansible-client
     - role: antivirus
+      tags: always    
     - role: audit
     - role: base-security
     - role: base-system

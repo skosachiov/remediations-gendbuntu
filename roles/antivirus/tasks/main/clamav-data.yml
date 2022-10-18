@@ -16,7 +16,9 @@
         dest: /var/lib/clamav/
       when: not result.stat.exists
     - name: Clamav freshclam workaround Unpack
-      shell: "cd / && rpm2cpio /var/lib/clamav/{{var_clamav_data_rpm_url | basename}} | cpio -imd"
+      shell:
+        cmd: "rpm2cpio /var/lib/clamav/{{var_clamav_data_rpm_url | basename}} | cpio -imd"
+        chdir: "/"
       when: not result.stat.exists      
     - name: Clamav freshclam workaround Remove rpm
       file:
