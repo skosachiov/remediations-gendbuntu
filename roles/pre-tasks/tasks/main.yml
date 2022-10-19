@@ -8,11 +8,6 @@
   tags: always
 
 # Include vars
-- name: Set short vars
-  set_fact:
-    distribution: "{{ansible_facts.distribution}}"
-    distribution_major_version: "{{ansible_facts.distribution_major_version}}"
-  tags: always
 
 - name: Include all vars
   include_vars:
@@ -26,7 +21,7 @@
 
 - name: Include distribution vars
   include_vars:
-    file: "{{playbook_dir}}/inventories/distribution/{{distribution}}/{{distribution_major_version}}/vars/main.yml"
+    file: "{{playbook_dir}}/inventories/distribution/{{ansible_distribution}}/{{ansible_distribution_major_version}}/vars/main.yml"
   tags: always
 
 - name: Include branch vars
