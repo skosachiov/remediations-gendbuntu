@@ -211,7 +211,7 @@
   service:
     name: netfilter-persistent
     enabled: no
-  when: ansible_lsb.codename == "jammy"
+  when: distribution == "Ubuntu" and distribution_major_version == "22"
 
 - name: Check listening ports
   block:

@@ -61,7 +61,7 @@ The project is adapted for development in the Internet environment with or witho
     │   │    ├─ group_vars  # vars for certain hosts, for example, for distribution-points
     │   │        └── dp     #
     │   ├── branches        # vars based on OU membership
-    │   ├── codename        # vars based on OS codename
+    │   ├── distribution    # vars based on OS distribution
     │   └── subnets         # vars based on subnet
     │                       #
     ├── roles               # roles
@@ -192,7 +192,7 @@ The terminal service is provided through XRDP. The role configures accesses, dis
 
 ## Pre tasks for push mode
 
-1. See inventories/codename/<codename>/vars for a list of supported platforms.
+1. See inventories/distribution/<distribution>/<major_version>/vars for a list of supported platforms.
 2. Create deploy user: `useradd -n ansible`
 3. Set password: `passwd ansible`
 4. Add ansible to sudoers: `echo "ansible ALL=(ALL) EXEC:ALL, NOPASSWD:ALL" >> /etc/sudoers`

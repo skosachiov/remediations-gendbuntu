@@ -1,5 +1,12 @@
 #!/bin/bash
 #
+domainname=$(echo $@ | grep -o "@[^ ]*")
+if [[ $domainname =~ [a-z] ]]; then
+    echo "Use UPPERCASE DOMAIN NAME"
+    echo "example: realm.sh -v join -U username@DOMAIN.SUFFIX dc.domain.suffix"
+    exit 1
+fi
+#
 realm "$@"
 SRC=/root/sssd.conf
 DST=/etc/sssd/sssd.conf

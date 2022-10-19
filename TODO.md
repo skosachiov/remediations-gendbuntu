@@ -1,3 +1,2 @@
 - username apps
-- separate codename vars
 - netfilter-persistent enable for 22.04
