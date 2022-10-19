@@ -20,11 +20,12 @@
         state: present
         create: true
         insertafter: Unattended-Upgrade::Origins-Pattern
+  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"
   tags:
     - ws
     - sec
     - mob
-    - unattended_security_upgrades
+    - unattended_security_upgrades_deb
 
 - name: Daily unattended upgrades
   block:
@@ -36,7 +37,34 @@
         name: unattended-upgrades
         enabled: 'yes'
         state: started
+  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"
   tags:
     - ws
     - sec
-    - daily_unattended_upgrades
+    - daily_unattended_upgrades_deb
+
+- name: Yum cron
+  block:
+    - name: Yum cron Present
+      package:
+        name: yum-cron
+        state: present
+    - name: Yum cron Replace update cmd
+      replace:
+        dest: /etc/yum/yum-cron.conf
+        regexp: 
+        replace: 
+    - name: Yum cron Replace apply updates
+      replace:
+        dest: /etc/yum/yum-cron.conf
+        regexp: ^\s*\"origin=Debian,codename=\$\{distro_codename\},label=Debian-Security\"
+        replace: 
+  when: (ansible_distribution == "CentOS" or ansible_distribution == "OracleLinux") and
+  ansible_distribution_major_version == "7"
+  tags:
+    - ws
+    - sec
+    - mob
+    - unattended_security_upgrades_yum
+
+

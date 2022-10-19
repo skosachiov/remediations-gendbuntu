@@ -7,7 +7,7 @@ var_local_repo: |
   deb http://{{var_ansible_fqdn}}/debian-security bullseye-security main contrib non-free
   deb [arch=amd64] http://{{var_ansible_fqdn}}/repos/bullseye/third-party/ main
 var_pkg_versions_absent:
-  myspell-uk: 9.9-9
+  hunspell-de: 9.9-9
 
 var_special_apps:
   - screen

@@ -1,5 +1,5 @@
 var_pkg_versions_absent:
-  myspell-uk: 9.9-9
+  hunspell-de: 9.9-9
 
 var_special_apps:
   - screen
