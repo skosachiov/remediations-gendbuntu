@@ -35,10 +35,16 @@
 
 - name: Get sensors info
   block:
-    - name: Get sensors info Lm-sensors present
+    - name: Get sensors info Lm-sensors present deb
       package:
         name: lm-sensors
         state: present
+      when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"
+    - name: Get sensors info Lm-sensors present rpm
+      package:
+        name: lm_sensors
+        state: present
+      when: ansible_distribution == "CentOS" or ansible_distribution == "OracleLinux"
     - name: Get sensors info Smartmontools present
       package:
         name: smartmontools
@@ -74,6 +80,7 @@
         regexp: ^#?\s*ENABLED
         line: ENABLED="true"
       notify: Sysstat restarted
+      when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian" 
     - name: Get sysstat info
       shell: "sar -q"
       register: items

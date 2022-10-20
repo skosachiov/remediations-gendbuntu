@@ -1,5 +1,6 @@
 - name: Libreoffice add ppa
   shell: add-apt-repository ppa:libreoffice/libreoffice-still -y
+  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian" 
   tags:
     - ws
     - libreoffice_still_ppa
@@ -73,6 +74,7 @@
           - libreoffice-style-galaxy={{var_libreoffice_version_prev}}
           - libreoffice-style-oxygen={{var_libreoffice_version_prev}}
         state: absent
+  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"         
   tags:
     - ws
     - libreoffice_update

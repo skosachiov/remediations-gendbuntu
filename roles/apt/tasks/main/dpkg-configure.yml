@@ -3,6 +3,7 @@
   changed_when: false
   shell: 'dpkg --configure -a'
   ignore_errors: yes
+  when: ansible_distribution == "Debian" or ansible_distribution == "Ubuntu"
   tags:
     - ws
     - dpkg_configure_all
@@ -10,6 +11,20 @@
 - name: Apt update
   command: apt update
   changed_when: false
+  when: ansible_distribution == "Debian" or ansible_distribution == "Ubuntu"  
   tags:
     - ws
     - apt_update
+
+- name: Rpm rebuilddb
+  check_mode: no
+  changed_when: false
+  shell: 'rpm --rebuilddb'
+  ignore_errors: yes
+  when: >
+    (ansible_distribution == "CentOS" or ansible_distribution == "OracleLinux") and
+    ansible_distribution_major_version == "7"
+  tags:
+    - ws
+    - rpm_rebuilddb
+

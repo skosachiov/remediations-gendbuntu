@@ -54,6 +54,7 @@
     mode: go-w,a-x
     owner: root
     group: root
+  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"    
   tags:
     - ws
     - sec
@@ -74,6 +75,7 @@
         owner: root
         group: root
       with_items: "{{result.files}}"
+  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"          
   tags:
     - ws
     - sec
@@ -186,6 +188,7 @@
     mode: '0640'
     owner: root
     group: shadow
+  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"    
   tags:
     - ws
     - sec
@@ -198,6 +201,7 @@
     mode: '0640'
     owner: root
     group: shadow
+  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"    
   tags:
     - ws
     - sec
@@ -207,6 +211,7 @@
   file:
     path: /etc/shadow
     group: '42'
+  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"    
   tags:
     - ws
     - sec
@@ -350,21 +355,28 @@
     - set_700_permissions_home
       
 - name: Ensure owner 0 and permissions 0600 on /boot/grub/grub.cfg
-  block:
-    - name: Ensure owner 0 on /boot/grub/grub.cfg
-      file:
-        path: /boot/grub/grub.cfg
-        owner: '0'
-    - name: Ensure permissions 0600 on /boot/grub/grub.cfg
-      file:
-        path: /boot/grub/grub.cfg
-        mode: '0600'
-  when:
+  file:
+    path: /boot/grub/grub.cfg
+    owner: '0'
+    mode: '0600'        
+  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"
   tags:
     - ws
     - sec
     - mob
-    - grub_cfg_owner_and_permissions
+    - grub_cfg_owner_and_permissions_deb
+
+- name: Ensure owner 0 and permissions 0600 on /boot/grub/grub.cfg
+  file:
+    path: /boot/grub2/grub.cfg
+    owner: '0'
+    mode: '0600'        
+  when: ansible_distribution == "CentOS" or ansible_distribution == "OracleLinux"
+  tags:
+    - ws
+    - sec
+    - mob
+    - grub_cfg_owner_and_permissions_rpm
 
 - name: Folder /etc/cups 0644 permissions
   file:
@@ -429,6 +441,7 @@
         state: absent
         regexp: "^.*:.*:.*:42:"
         line: ""
+  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"        
   tags:
     - ws
     - sec

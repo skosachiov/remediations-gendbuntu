@@ -1,5 +1,11 @@
 - name: Update grub
-  command: update-grub
+  block:
+    - name:
+      command: update-grub
+      when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"
+    - name:
+      command: grub2-mkconfig --output /boot/grub2/grub.cfg    
+      when: ansible_distribution == "CentOS" or ansible_distribution == "OracleLinux"
 
 - name: Rc-local restarted
   changed_when: false

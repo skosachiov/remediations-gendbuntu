@@ -1,4 +1,4 @@
-- name: Enable service cron
+- name: Enable service cron deb
   block:
     - name: Ensure cron is installed
       package:
@@ -14,8 +14,32 @@
         state: started
       when:
         - '"cron" in ansible_facts.packages'
+  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"        
   tags:
     - ws
     - sec
     - mob
-    - service_cron_enabled
+    - service_cron_enabled_deb
+
+- name: Enable service cron rpm
+  block:
+    - name: Ensure cron is installed
+      package:
+        name: cronie
+        state: present
+    - name: Gather the package facts
+      package_facts:
+        manager: auto
+    - name: Enable service cron
+      service:
+        name: crond
+        enabled: 'yes'
+        state: started
+      when:
+        - '"crond" in ansible_facts.packages'
+  when: ansible_distribution == "CentOS" or ansible_distribution == "OracleLinux"
+  tags:
+    - ws
+    - sec
+    - mob
+    - service_cron_enabled_rpm

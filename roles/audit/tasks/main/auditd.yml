@@ -1,12 +1,24 @@
-- name: Auditd Present
+- name: Auditd Present deb
   package:
     name: auditd
     state: present
+  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"
   tags:
     - ws
     - sec
     - mob
-    - auditd_present
+    - auditd_present_deb
+
+- name: Auditd Present rpm
+  package:
+    name: audit
+    state: present
+  when: ansible_distribution == "CentOS" or ansible_distribution == "OracleLinux"
+  tags:
+    - ws
+    - sec
+    - mob
+    - auditd_present_rpm
 
 - name: Configure auditd max log file
   block:

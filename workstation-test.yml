@@ -54,13 +54,19 @@
     - role: office
     - role: polkit-restrictions
     - role: print
+      tags: always            
     - role: remote-assistance
+      tags: always            
     - role: scap
-      tags: always    
+      tags: always            
     - role: security-modules
+      tags: always            
     - role: smb-client
+      tags: always            
     - role: ssh
+      tags: always            
     - role: terminal-server
+      tags: always            
 
   post_tasks:
     - name: Debug

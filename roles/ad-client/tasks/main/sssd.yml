@@ -8,9 +8,24 @@
       - libpam-sss
       - adcli
     state: present
+  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"    
   tags:
     - ws
-    - sssd_packages_are_present
+    - sssd_packages_are_present_deb
+
+- name: Sssd packages are present
+  package:
+    name:
+      - realmd
+      - sssd
+      - sssd-tools
+      - sssd-client
+      - adcli
+    state: present
+  when: ansible_distribution == "CentOS" or ansible_distribution == "OracleLinux"
+  tags:
+    - ws
+    - sssd_packages_are_present_rpm
 
 - name: Sssd fine tuning Enabled
   service:
@@ -54,15 +69,23 @@
     - sec
     - sssd_conf_permissions
 
-- name: Pam mkhomedir
+- name: Pam mkhomedir deb
   lineinfile:
     dest: /etc/pam.d/common-session
     regexp: ^\s*session\s*optional\s*pam_mkhomedir.so
     line: session optional pam_mkhomedir.so skel=/etc/skel umask=0077
-    insertbefore: ^\s*session\s*required\s*pam_unix.so 
+    insertbefore: ^\s*session\s*required\s*pam_unix.so
+  when: ansible_distribution == "Debian" or ansible_distribution == "Ubuntu"      
   tags:
     - ws
-    - pam_mkhomedir
+    - pam_mkhomedir_deb
+
+- name: Pam mkhomedir rpm
+  shell: authconfig --enablemkhomedir --update
+  when: ansible_distribution == "CentOS" or ansible_distribution == "OracleLinux"
+  tags:
+    - ws
+    - pam_mkhomedir_rpm
 
 - name: Check ad_gpo_access_control enforcing 
   failed_when: false

@@ -1,12 +1,23 @@
-- name: Chromium browser latest
+- name: Chromium browser latest deb
   package:
     name: 
       - chromium-browser
       - libnss3-tools
     state: latest
+  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"    
   tags:
     - ws
-    - chromium_browser_latest
+    - chromium_browser_latest_deb
+
+- name: Chromium browser latest rpm
+  package:
+    name: 
+      - chromium
+    state: latest
+  when: ansible_distribution == "CentOS" or ansible_distribution == "OracleLinux"
+  tags:
+    - ws
+    - chromium_browser_latest_rpm
 
 - name: Set xdg-settings defaults
   copy:

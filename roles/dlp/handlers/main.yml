@@ -4,6 +4,9 @@
 - name: Update initramfs
   command: update-initramfs -k all -u
 
+- name: Dracut update
+  command: dracut -f
+
 - name: Usbguard restarted
   service:
     name: usbguard

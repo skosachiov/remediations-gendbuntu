@@ -43,34 +43,32 @@
     - sec
     - daily_unattended_upgrades_deb
 
-# - name: Yum cron
-#   block:
-#     - name: Yum cron Present
-#       package:
-#         name: yum-cron
-#         state: present
-#     - name: Yum cron Replace update cmd
-#       replace:
-#         dest: /etc/yum/yum-cron.conf
-#         regexp: 
-#         replace: 
-#     - name: Yum cron Replace apply updates
-#       replace:
-#         dest: /etc/yum/yum-cron.conf
-#         regexp: 
-#         replace:
-#     - name: Yum cron Replace apply updates
-#       replace:
-#         dest: /etc/yum/yum-cron.conf
-#         regexp: 
-#         replace:         
-#   when: >
-#     (ansible_distribution == "CentOS" or ansible_distribution == "OracleLinux") and
-#     ansible_distribution_major_version == "7"
-#   tags:
-#     - ws
-#     - sec
-#     - mob
-#     - unattended_security_upgrades_yum
+- name: Yum cron
+  block:
+    - name: Yum cron Present
+      package:
+        name: yum-cron
+        state: present
+    - name: Yum cron Replace update cmd
+      replace:
+        dest: /etc/yum/yum-cron.conf
+        regexp: ^#?\s*(update_cmd).*
+        replace: '\1 = security'
+    - name: Yum cron Replace download updates
+      replace:
+        dest: /etc/yum/yum-cron.conf
+        regexp: ^#?\s*(download_updates).*
+        replace: '\1 = yes'        
+    - name: Yum cron Replace apply updates
+      replace:
+        dest: /etc/yum/yum-cron.conf
+        regexp: ^#?\s*(apply_updates).*
+        replace: '\1 = yes'
+  when: ansible_distribution == "CentOS" or ansible_distribution == "OracleLinux"
+  tags:
+    - ws
+    - sec
+    - mob
+    - unattended_security_upgrades_yum
 
 
