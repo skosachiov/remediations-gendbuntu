@@ -1,3 +1,21 @@
+- name: Rpm Install xvfb
+  block:
+    - name: Rpm Install xvfb Check
+      package_facts:
+        manager: "auto"
+    - name: Install client dependencies Url
+      get_url:
+        url: http://mirror.centos.org/centos/7/updates/x86_64/Packages/xorg-x11-server-Xvfb-1.20.4-18.el7_9.x86_64.rpm
+        dest: /root/
+      when: "'xorg-x11-server-Xvfb' not in ansible_facts.packages"
+    - name: Install client dependencies Shell
+      shell: rpm -i /root/xorg-x11-server-Xvfb-1.20.4-18.el7_9.x86_64.rpm
+      when: "'xorg-x11-server-Xvfb' not in ansible_facts.packages"
+  when: ansible_distribution == 'OracleLinux' and ansible_distribution_major_version|int < 8
+  tags:
+    - ws
+    - rpm_install_xvfb
+
 - name: Install client dependencies
   block:
     - name: Install client dependencies x11
@@ -13,7 +31,7 @@
           - tigervnc
           - tigervnc-server-minimal
         state: present
-      when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+      when: ansible_distribution == 'CentOS' or ansible_distribution == 'OracleLinux'
     - name: Install client dependencies Tigervnc deb
       package:
         name:
@@ -26,7 +44,7 @@
         name:
           - tigervnc-tools
         state: present
-      when: ansible_lsb.codename == 'jammy'      
+      when: ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int == 22
   tags:
     - ws
     - ra_install_client_dependencies
@@ -36,6 +54,7 @@
     dest: /etc/gdm3/custom.conf
     regexp: ^#?(WaylandEnable).*
     replace: '\1=false'
+  when: ansible_distribution_major_version|int > 7
   tags:
     - ws
     - wayland_disable

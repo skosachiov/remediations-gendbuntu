@@ -10,7 +10,7 @@
   shell: "flatpak remote-add --system --if-not-exists {{var_flathub_name}} {{var_flathub_url}}"
   register: result
   changed_when: result.rc != 0
-  when: ansible_distribution_major_version > "7"
+  when: ansible_distribution_major_version|int > 7
   tags:
     - ws
     - flatpak_remote_add
@@ -24,7 +24,7 @@
     - name: Flatpak apps install Install diff
       shell: "flatpak install --system --noninteractive -y {{item}}"
       with_items: "{{var_fp_applications | difference(fp_installed.stdout_lines)}}"
-  when: ansible_distribution_major_version > "7"
+  when: ansible_distribution_major_version|int > 7
   tags:
     - ws
     - flatpak_apps_install      

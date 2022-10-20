@@ -1,4 +1,4 @@
-- name: Enable service cupsd 
+- name: Enable service cupsd deb
   block: 
     - name: Enable service cupsd facts 
       package_facts: 
@@ -17,11 +17,37 @@
         state: started 
       when: 
         - '"cups" in ansible_facts.packages' 
+  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"
   tags: 
     - ws
-    - service_cups_enabled
+    - service_cups_enabled_deb
 
-- name: CUPS smb backend set
+- name: Enable service cupsd rpm
+  block: 
+    - name: Enable service cupsd facts 
+      package_facts: 
+        manager: auto
+    - name: Enable service cupsd Present
+      package:
+        name:
+          - cups
+          - gutenprint
+          - samba-client
+          - samba-krb5-printing
+        state: present
+    - name: Enable service cupsd Started
+      service: 
+        name: cups
+        enabled: yes 
+        state: started 
+      when: 
+        - '"cups" in ansible_facts.packages' 
+  when: ansible_distribution == "CentOS" or ansible_distribution == "OracleLinux"
+  tags: 
+    - ws
+    - service_cups_enabled_rpm
+
+- name: CUPS smb backend set deb
   block:
     - name: CUPS smb backend set Check
       stat:
@@ -35,9 +61,29 @@
         src: /usr/lib/x86_64-linux-gnu/samba/smbspool_krb5_wrapper
         dest: /usr/lib/cups/backend/smb
         state: link
+  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"
   tags:
     - ws
-    - cups_smb_backend_set
+    - cups_smb_backend_set_rpm
+
+- name: CUPS smb backend set deb
+  block:
+    - name: CUPS smb backend set Check
+      stat:
+        path: /usr/lib/cups/backend/smb
+      register: result
+    - name: CUPS smb backend set Backup
+      command: mv /usr/lib/cups/backend/smb /usr/lib/cups/backend/smb.orig
+      when: not (result.stat.islnk is defined and result.stat.islnk)
+    - name: CUPS smb backend Link
+      file:
+        src: /usr/libexec/samba/smbspool_krb5_wrapper
+        dest: /usr/lib/cups/backend/smb
+        state: link
+  when: ansible_distribution == "CentOS" or ansible_distribution == "OracleLinux"
+  tags:
+    - ws
+    - cups_smb_backend_set_rpm
 
 - name: CUPS printers
   block:
@@ -61,9 +107,12 @@
       check_mode: no
       register: result
       changed_when: false
+    - name: CUPS printer Generic printer Set driver
+      set_fact:
+        cupsdriver: "{{'everywhere' if ansible_distribution_major_version|int > 7 else 'gutenprint.5.2://pcl-g_5c/expert'}}"
     - name: CUPS printer Generic printer
       become: false
-      command: lpadmin -p {{item | basename}} -E -v {{item}} -o auth-info-required=negotiate -m everywhere
+      command: "lpadmin -p {{item | basename}} -E -v {{item}} -o auth-info-required=negotiate -m {{cupsdriver}}"
       with_items: "{{ var_smb_printers | difference(result.stdout_lines) }}"
       register: service_conf
       notify: Cups restarted

@@ -34,6 +34,7 @@
         state: present
         create: true
       notify: Update grub
+  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"        
   tags:
     - ws
     - sec
@@ -49,6 +50,7 @@
         regexp: ^#?\s*GRUB_CMDLINE_LINUX_DEFAULT
         state: present
       notify: Update grub
+  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"        
   tags:
     - ws
     - sec

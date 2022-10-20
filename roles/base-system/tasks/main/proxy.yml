@@ -30,7 +30,7 @@
         marker_end: END_OTHER
         block: |
           export GVFS_DISABLE_FUSE=1
-  when: 
+  when: var_internal_ansible_ip 
   tags:
     - ws
     - set_environment_variables

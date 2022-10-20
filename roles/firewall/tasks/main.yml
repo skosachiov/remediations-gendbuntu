@@ -211,7 +211,7 @@
   service:
     name: netfilter-persistent
     enabled: no
-  when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "22"
+  when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int == 22
 
 - name: Check listening ports
   block:

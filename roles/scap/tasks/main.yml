@@ -4,7 +4,7 @@
       - libopenscap8
     state: present
   ignore_errors: yes
-  when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "20"
+  when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int == 20
   tags:
     - ws
     - sec
@@ -14,7 +14,7 @@
   package:
     name: openscap
     state: present
-  when: ansible_distribution == "Debian" and ansible_distribution_major_version == "11"
+  when: ansible_distribution == "Debian" and ansible_distribution_major_version|int == 11
   tags:
     - ws
     - sec

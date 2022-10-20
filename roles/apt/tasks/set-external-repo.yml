@@ -14,7 +14,7 @@
           deb http://mirror.mephi.ru/debian/ bullseye main contrib non-free
           deb http://security.debian.org/debian-security bullseye-security main contrib non-free
         insertafter: #
-  when: ansible_distribution == "Debian" and ansible_distribution_major_version == "11" and var_installation_type != "workstation"
+  when: ansible_distribution == "Debian" and ansible_distribution_major_version|int == 11 and var_installation_type != "workstation"
   tags:
     - mob
     - set_external_repo_bullseye
