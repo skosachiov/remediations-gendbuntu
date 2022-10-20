@@ -8,7 +8,7 @@
       - libpam-sss
       - adcli
     state: present
-  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"    
+  when: ansible_os_family in ['Debian']    
   tags:
     - ws
     - sssd_packages_are_present_deb
@@ -22,7 +22,7 @@
       - sssd-client
       - adcli
     state: present
-  when: ansible_distribution == "CentOS" or ansible_distribution == "OracleLinux"
+  when: ansible_os_family in ['RedHat', 'Rocky']
   tags:
     - ws
     - sssd_packages_are_present_rpm
@@ -75,14 +75,14 @@
     regexp: ^\s*session\s*optional\s*pam_mkhomedir.so
     line: session optional pam_mkhomedir.so skel=/etc/skel umask=0077
     insertbefore: ^\s*session\s*required\s*pam_unix.so
-  when: ansible_distribution == "Debian" or ansible_distribution == "Ubuntu"      
+  when: ansible_os_family in ['Debian']      
   tags:
     - ws
     - pam_mkhomedir_deb
 
 - name: Pam mkhomedir rpm
   shell: authconfig --enablemkhomedir --update
-  when: ansible_distribution == "CentOS" or ansible_distribution == "OracleLinux"
+  when: ansible_os_family in ['RedHat', 'Rocky']
   tags:
     - ws
     - pam_mkhomedir_rpm

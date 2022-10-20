@@ -38,8 +38,9 @@
       shell: "bunzip2 -k /home/{{var_ansible_username}}/com.ubuntu.{{ansible_lsb.codename}}.usn.oval.xml.bz2"
     - name: OpenSCAP CVE vulnerability scan ubuntu Scan
       check_mode: no
-      shell: 'oscap oval eval --skip-valid  /home/{{var_ansible_username}}/com.ubuntu.{{ansible_lsb.codename}}.usn.oval.xml
-      | grep true | grep -o "[0-9]*" | sort' 
+      shell: >
+        oscap oval eval --skip-valid  /home/{{var_ansible_username}}/com.ubuntu.{{ansible_lsb.codename}}.usn.oval.xml
+        | grep true | grep -o "[0-9]*" | sort
       register: cve
       changed_when: false
       failed_when: false

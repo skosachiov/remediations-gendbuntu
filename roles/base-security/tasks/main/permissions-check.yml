@@ -54,7 +54,7 @@
     mode: go-w,a-x
     owner: root
     group: root
-  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"    
+  when: ansible_os_family in ['Debian']    
   tags:
     - ws
     - sec
@@ -75,7 +75,7 @@
         owner: root
         group: root
       with_items: "{{result.files}}"
-  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"          
+  when: ansible_os_family in ['Debian']          
   tags:
     - ws
     - sec
@@ -188,7 +188,7 @@
     mode: '0640'
     owner: root
     group: shadow
-  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"    
+  when: ansible_os_family in ['Debian']    
   tags:
     - ws
     - sec
@@ -201,7 +201,7 @@
     mode: '0640'
     owner: root
     group: shadow
-  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"    
+  when: ansible_os_family in ['Debian']    
   tags:
     - ws
     - sec
@@ -211,7 +211,7 @@
   file:
     path: /etc/shadow
     group: '42'
-  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"    
+  when: ansible_os_family in ['Debian']    
   tags:
     - ws
     - sec
@@ -359,7 +359,7 @@
     path: /boot/grub/grub.cfg
     owner: '0'
     mode: '0600'        
-  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"
+  when: ansible_os_family in ['Debian']
   tags:
     - ws
     - sec
@@ -371,7 +371,7 @@
     path: /boot/grub2/grub.cfg
     owner: '0'
     mode: '0600'        
-  when: ansible_distribution == "CentOS" or ansible_distribution == "OracleLinux"
+  when: ansible_os_family in ['RedHat', 'Rocky']
   tags:
     - ws
     - sec
@@ -441,7 +441,7 @@
         state: absent
         regexp: "^.*:.*:.*:42:"
         line: ""
-  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"        
+  when: ansible_os_family in ['Debian']        
   tags:
     - ws
     - sec

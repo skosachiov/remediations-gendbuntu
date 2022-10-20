@@ -4,7 +4,7 @@
       - chromium-browser
       - libnss3-tools
     state: latest
-  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"    
+  when: ansible_os_family in ['Debian']    
   tags:
     - ws
     - chromium_browser_latest_deb
@@ -14,7 +14,7 @@
     name: 
       - chromium
     state: latest
-  when: ansible_distribution == "CentOS" or ansible_distribution == "OracleLinux"
+  when: ansible_os_family in ['RedHat', 'Rocky']
   tags:
     - ws
     - chromium_browser_latest_rpm

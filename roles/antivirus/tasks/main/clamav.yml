@@ -5,7 +5,7 @@
       - clamav-daemon
       - clamdscan
     state: latest
-  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"    
+  when: ansible_os_family in ['Debian']    
   tags:
     - ws
     - clamav_latest
@@ -17,7 +17,7 @@
     replace: '\1 {{var_clamav_server}}'
   when: var_installation_type == "workstation" and var_internal_ansible_ip
   notify: Clamav freshclam restarted
-  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"  
+  when: ansible_os_family in ['Debian']  
   tags:
     - ws
     - clamav_set_mirror
@@ -33,7 +33,7 @@
       OnAccessPrevention yes
       OnAccessExcludeUname clamd
   notify: Clamav daemon started
-  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"
+  when: ansible_os_family in ['Debian']
   tags:
     - ws
     - clamad_on_access_scanning

@@ -29,7 +29,7 @@
       register: result
       failed_when: false
       changed_when: result.stdout|int != var_aa_complaining
-  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"
+  when: ansible_os_family in ['Debian']
   tags:
     - ws
     - sec
@@ -40,7 +40,7 @@
   failed_when: false
   with_items:
     - cupsd
-  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"
+  when: ansible_os_family in ['Debian']
   tags:
     - ws
     - sec

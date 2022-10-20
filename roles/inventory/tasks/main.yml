@@ -39,12 +39,12 @@
       package:
         name: lm-sensors
         state: present
-      when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"
+      when: ansible_os_family in ['Debian']
     - name: Get sensors info Lm-sensors present rpm
       package:
         name: lm_sensors
         state: present
-      when: ansible_distribution == "CentOS" or ansible_distribution == "OracleLinux"
+      when: ansible_os_family in ['RedHat', 'Rocky']
     - name: Get sensors info Smartmontools present
       package:
         name: smartmontools
@@ -80,7 +80,7 @@
         regexp: ^#?\s*ENABLED
         line: ENABLED="true"
       notify: Sysstat restarted
-      when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian" 
+      when: ansible_os_family in ['Debian'] 
     - name: Get sysstat info
       shell: "sar -q"
       register: items

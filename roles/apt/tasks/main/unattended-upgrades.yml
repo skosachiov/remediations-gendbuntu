@@ -20,7 +20,7 @@
         state: present
         create: true
         insertafter: Unattended-Upgrade::Origins-Pattern
-  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"
+  when: ansible_os_family in ['Debian']
   tags:
     - ws
     - sec
@@ -37,7 +37,7 @@
         name: unattended-upgrades
         enabled: 'yes'
         state: started
-  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"
+  when: ansible_os_family in ['Debian']
   tags:
     - ws
     - sec
@@ -64,7 +64,7 @@
         dest: /etc/yum/yum-cron.conf
         regexp: ^#?\s*(apply_updates).*
         replace: '\1 = yes'
-  when: ansible_distribution == "CentOS" or ansible_distribution == "OracleLinux"
+  when: ansible_os_family in ['RedHat', 'Rocky']
   tags:
     - ws
     - sec

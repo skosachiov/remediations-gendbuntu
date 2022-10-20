@@ -2,7 +2,7 @@
   package:
     name: auditd
     state: present
-  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"
+  when: ansible_os_family in ['Debian']
   tags:
     - ws
     - sec
@@ -13,7 +13,7 @@
   package:
     name: audit
     state: present
-  when: ansible_distribution == "CentOS" or ansible_distribution == "OracleLinux"
+  when: ansible_os_family in ['RedHat', 'Rocky']
   tags:
     - ws
     - sec

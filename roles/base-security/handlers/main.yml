@@ -2,10 +2,10 @@
   block:
     - name:
       command: update-grub
-      when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"
+      when: ansible_os_family in ['Debian']
     - name:
       command: grub2-mkconfig --output /boot/grub2/grub.cfg    
-      when: ansible_distribution == "CentOS" or ansible_distribution == "OracleLinux"
+      when: ansible_os_family in ['RedHat', 'Rocky']
 
 - name: Rc-local restarted
   changed_when: false

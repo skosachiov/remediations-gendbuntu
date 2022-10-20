@@ -2,7 +2,7 @@
   package:
     name: "*epel-release*"
     state: present
-  when: ansible_distribution == "CentOS" or ansible_distribution == "OracleLinux"
+  when: ansible_os_family in ['RedHat', 'Rocky']
   tags:
     - ws
     - epel_package_is_present
@@ -95,11 +95,11 @@
     - name: Create ansible user Set groups deb
       set_fact:
         usergroups: "sudo,shadow,lpadmin"
-      when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"
+      when: ansible_os_family in ['Debian']
     - name: Create ansible user Set groups rpm
       set_fact:
         usergroups: "wheel,lp"
-      when: ansible_distribution == "CentOS" or ansible_distribution == "OracleLinux"
+      when: ansible_os_family in ['RedHat', 'Rocky']
     - name: Create ansible user Useradd
       user:
         name: "{{var_ansible_username}}"

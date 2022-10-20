@@ -17,7 +17,7 @@
         state: started 
       when: 
         - '"cups" in ansible_facts.packages' 
-  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"
+  when: ansible_os_family in ['Debian']
   tags: 
     - ws
     - service_cups_enabled_deb
@@ -42,7 +42,7 @@
         state: started 
       when: 
         - '"cups" in ansible_facts.packages' 
-  when: ansible_distribution == "CentOS" or ansible_distribution == "OracleLinux"
+  when: ansible_os_family in ['RedHat', 'Rocky']
   tags: 
     - ws
     - service_cups_enabled_rpm
@@ -61,7 +61,7 @@
         src: /usr/lib/x86_64-linux-gnu/samba/smbspool_krb5_wrapper
         dest: /usr/lib/cups/backend/smb
         state: link
-  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"
+  when: ansible_os_family in ['Debian']
   tags:
     - ws
     - cups_smb_backend_set_rpm
@@ -80,7 +80,7 @@
         src: /usr/libexec/samba/smbspool_krb5_wrapper
         dest: /usr/lib/cups/backend/smb
         state: link
-  when: ansible_distribution == "CentOS" or ansible_distribution == "OracleLinux"
+  when: ansible_os_family in ['RedHat', 'Rocky']
   tags:
     - ws
     - cups_smb_backend_set_rpm

@@ -6,7 +6,7 @@
   notify:
     - Systemctl daemon reload
     - Clamav onacc restarted
-  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"    
+  when: ansible_os_family in ['Debian']    
   tags:
     - ws
     - clamav_onacc_service
@@ -16,7 +16,7 @@
     name: clamav-onacc
     enabled: yes
   ignore_errors: yes
-  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"
+  when: ansible_os_family in ['Debian']
   tags:
     - ws
     - clamav_onacc_enabled    
