@@ -5,7 +5,7 @@
       when: ansible_os_family in ['Debian']
     - name:
       command: grub2-mkconfig --output /boot/grub2/grub.cfg    
-      when: ansible_os_family in ['RedHat', 'Rocky']
+      when: ansible_os_family in ['RedHat', 'Rocky', 'RED']
 
 - name: Rc-local restarted
   changed_when: false

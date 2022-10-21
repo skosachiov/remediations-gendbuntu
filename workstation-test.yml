@@ -54,8 +54,11 @@
     - role: office
     - role: polkit-restrictions
     - role: print
+      tags: always                
     - role: remote-assistance
+      tags: always                
     - role: scap
+      tags: always                
     - role: security-modules
       tags: always            
     - role: smb-client

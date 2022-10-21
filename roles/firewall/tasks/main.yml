@@ -94,10 +94,14 @@
 
 - name: Drop ougoing traffic
   block:
-    - name: Block ougoing traffic Ftp
+    - name: Drop ougoing traffic Service started
+      service:
+        name: firewalld
+        state: started
+    - name: Drop ougoing traffic Ftp
       changed_when: false
       shell: firewall-cmd --permanent --direct --add-rule ipv4 filter OUTPUT 0 -p tcp -m tcp --dport=21 -j DROP
-    - name: Block ougoing traffic Telnet
+    - name: Drop ougoing traffic Telnet
       changed_when: false
       shell: firewall-cmd --permanent --direct --add-rule ipv4 filter OUTPUT 0 -p tcp -m tcp --dport=23 -j DROP
   tags:

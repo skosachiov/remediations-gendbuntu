@@ -99,7 +99,7 @@
     - name: Create ansible user Set groups rpm
       set_fact:
         usergroups: "wheel,lp"
-      when: ansible_os_family in ['RedHat', 'Rocky']
+      when: ansible_os_family in ['RedHat', 'Rocky', 'RED']
     - name: Create ansible user Useradd
       user:
         name: "{{var_ansible_username}}"

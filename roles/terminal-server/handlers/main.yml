@@ -1,6 +1,6 @@
 - name: Xrdp restarted
   service:
-    name: cron
+    name: "{{'cron' if ansible_os_family in ['Debian'] else 'crond'}}"
     state: restarted
   tags:
     - ws

@@ -1,24 +1,12 @@
 - name: Auditd Present deb
   package:
-    name: auditd
+    name: "{{'auditd' if ansible_os_family in ['Debian'] else 'audit'}}"
     state: present
-  when: ansible_os_family in ['Debian']
   tags:
     - ws
     - sec
     - mob
-    - auditd_present_deb
-
-- name: Auditd Present rpm
-  package:
-    name: audit
-    state: present
-  when: ansible_os_family in ['RedHat', 'Rocky']
-  tags:
-    - ws
-    - sec
-    - mob
-    - auditd_present_rpm
+    - auditd_present
 
 - name: Configure auditd max log file
   block:

@@ -85,7 +85,7 @@
           fi
     - name: Set autofs volume definitions Pam exec
       lineinfile:
-        dest: /etc/pam.d/common-session
+        dest: "{{'/etc/pam.d/common-session' if ansible_os_family in ['Debian'] else '/etc/pam.d/login'}}"
         regexp: ^\s*session\s*optional\s*pam_exec.so
         line: session optional pam_exec.so /usr/local/bin/autofs-media.sh 
         insertafter: EOF

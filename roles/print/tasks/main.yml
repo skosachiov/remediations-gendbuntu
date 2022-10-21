@@ -5,10 +5,10 @@
         manager: auto
     - name: Enable service cupsd Present
       package:
-        name:
-          - cups
-          - printer-driver-gutenprint
-          - smbclient
+        name: >-
+          {{ ['cups', 'printer-driver-gutenprint', 'smbclient']
+          if ansible_os_family in ['Debian']
+          else ['cups', 'gutenprint', 'samba-client', 'samba-krb5-printing'] }}"
         state: present
     - name: Enable service cupsd Started
       service: 
@@ -20,34 +20,9 @@
   when: ansible_os_family in ['Debian']
   tags: 
     - ws
-    - service_cups_enabled_deb
+    - service_cups_enabled
 
-- name: Enable service cupsd rpm
-  block: 
-    - name: Enable service cupsd facts 
-      package_facts: 
-        manager: auto
-    - name: Enable service cupsd Present
-      package:
-        name:
-          - cups
-          - gutenprint
-          - samba-client
-          - samba-krb5-printing
-        state: present
-    - name: Enable service cupsd Started
-      service: 
-        name: cups
-        enabled: yes 
-        state: started 
-      when: 
-        - '"cups" in ansible_facts.packages' 
-  when: ansible_os_family in ['RedHat', 'Rocky']
-  tags: 
-    - ws
-    - service_cups_enabled_rpm
-
-- name: CUPS smb backend set deb
+- name: CUPS smb backend set
   block:
     - name: CUPS smb backend set Check
       stat:
@@ -58,32 +33,14 @@
       when: not (result.stat.islnk is defined and result.stat.islnk)
     - name: CUPS smb backend Link
       file:
-        src: /usr/lib/x86_64-linux-gnu/samba/smbspool_krb5_wrapper
+        src: >-
+          {{'/usr/lib/x86_64-linux-gnu/samba/smbspool_krb5_wrapper' if ansible_os_family in ['Debian']
+          else '/usr/libexec/samba/smbspool_krb5_wrapper'}}
         dest: /usr/lib/cups/backend/smb
         state: link
-  when: ansible_os_family in ['Debian']
   tags:
     - ws
-    - cups_smb_backend_set_rpm
-
-- name: CUPS smb backend set deb
-  block:
-    - name: CUPS smb backend set Check
-      stat:
-        path: /usr/lib/cups/backend/smb
-      register: result
-    - name: CUPS smb backend set Backup
-      command: mv /usr/lib/cups/backend/smb /usr/lib/cups/backend/smb.orig
-      when: not (result.stat.islnk is defined and result.stat.islnk)
-    - name: CUPS smb backend Link
-      file:
-        src: /usr/libexec/samba/smbspool_krb5_wrapper
-        dest: /usr/lib/cups/backend/smb
-        state: link
-  when: ansible_os_family in ['RedHat', 'Rocky']
-  tags:
-    - ws
-    - cups_smb_backend_set_rpm
+    - cups_smb_backend_set
 
 - name: CUPS printers
   block:
@@ -99,17 +56,22 @@
     - name: CUPS default printer Restart service
       service:
           name: cups
-          state: restarted
-      when: result.stdout_lines|length != 1
+          state: started
     - name: CUPS printer Check
       shell: "LANG=C lpstat -v | awk '{print $4}'"
       failed_when: false
       check_mode: no
       register: result
       changed_when: false
+    - name: Gather the package facts
+      package_facts:
+        manager: auto
     - name: CUPS printer Generic printer Set driver
       set_fact:
-        cupsdriver: "{{'everywhere' if ansible_distribution_major_version|int > 7 else 'gutenprint.5.2://pcl-g_5c/expert'}}"
+        cupsdriver: >-
+          {{'gutenprint.5.3://pcl-g_c/expert'
+          if '5.2' not in ansible_facts.packages['gutenprint'][0].version
+          else 'gutenprint.5.2://pcl-g_5c/expert'}}
     - name: CUPS printer Generic printer
       become: false
       command: "lpadmin -p {{item | basename}} -E -v {{item}} -o auth-info-required=negotiate -m {{cupsdriver}}"

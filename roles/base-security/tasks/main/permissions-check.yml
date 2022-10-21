@@ -356,7 +356,8 @@
       
 - name: Ensure owner 0 and permissions 0600 on /boot/grub/grub.cfg
   file:
-    path: /boot/grub/grub.cfg
+    path: 
+    path: "{{'/boot/grub/grub.cfg' if ansible_os_family in ['Debian'] else '/boot/grub2/grub.cfg'}}"
     owner: '0'
     mode: '0600'        
   when: ansible_os_family in ['Debian']
@@ -364,19 +365,7 @@
     - ws
     - sec
     - mob
-    - grub_cfg_owner_and_permissions_deb
-
-- name: Ensure owner 0 and permissions 0600 on /boot/grub/grub.cfg
-  file:
-    path: /boot/grub2/grub.cfg
-    owner: '0'
-    mode: '0600'        
-  when: ansible_os_family in ['RedHat', 'Rocky']
-  tags:
-    - ws
-    - sec
-    - mob
-    - grub_cfg_owner_and_permissions_rpm
+    - grub_cfg_owner_and_permissions
 
 - name: Folder /etc/cups 0644 permissions
   file:

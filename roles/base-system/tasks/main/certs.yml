@@ -37,7 +37,7 @@
     - name: Copy ca certs and script Update
       command: update-ca-trust
       changed_when: false
-      when: ansible_os_family in ['RedHat', 'Rocky']
+      when: ansible_os_family in ['RedHat', 'Rocky', 'RED']
   tags:
     - ws
     - copy_ca_certs_and_script

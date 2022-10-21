@@ -1,21 +1,3 @@
-- name: Rpm Install xvfb
-  block:
-    - name: Rpm Install xvfb Check
-      package_facts:
-        manager: "auto"
-    - name: Install client dependencies Url
-      get_url:
-        url: http://mirror.centos.org/centos/7/updates/x86_64/Packages/xorg-x11-server-Xvfb-1.20.4-18.el7_9.x86_64.rpm
-        dest: /root/
-      when: "'xorg-x11-server-Xvfb' not in ansible_facts.packages"
-    - name: Install client dependencies Shell
-      shell: rpm -i /root/xorg-x11-server-Xvfb-1.20.4-18.el7_9.x86_64.rpm
-      when: "'xorg-x11-server-Xvfb' not in ansible_facts.packages"
-  when: ansible_distribution == 'OracleLinux' and ansible_distribution_major_version|int < 8
-  tags:
-    - ws
-    - rpm_install_xvfb
-
 - name: Install client dependencies
   block:
     - name: Install client dependencies x11
@@ -31,7 +13,7 @@
           - tigervnc
           - tigervnc-server-minimal
         state: present
-      when: ansible_os_family in ['RedHat', 'Rocky']
+      when: ansible_os_family in ['RedHat', 'Rocky', 'RED']
     - name: Install client dependencies Tigervnc deb
       package:
         name:

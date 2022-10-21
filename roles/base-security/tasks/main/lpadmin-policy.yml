@@ -1,10 +1,9 @@
-- name: Check lpadmin group deb
+- name: Check lpadmin group
   check_mode: yes
   replace:
     dest: /etc/group
-    regexp: ^(lpadmin:x:[0-9]*:[^,]*),.*
+    regexp: "^({{'lpadmin' if ansible_os_family in ['Debian'] else 'lp'}}:x:[0-9]*:[^,]*),.*"
     replace: \1
-  when: ansible_os_family in ['Debian']
   tags:
     - ws
     - sec
@@ -14,34 +13,11 @@
   lineinfile:
     path: /etc/cups/cups-files.conf
     regexp: ^\s*SystemGroup\s
-    line: SystemGroup lpadmin
+    line: SystemGroup "{{'lpadmin' if ansible_os_family in ['Debian'] else 'sys root wheel printadmin'}}"
     state: present
-  when: ansible_os_family in ['Debian']
   tags:
     - ws
     - sec
-    - ensure_cups_systemgroup_deb
+    - ensure_cups_systemgroup
 
-- name: Check lpadmin group rpm
-  check_mode: yes
-  replace:
-    dest: /etc/group
-    regexp: ^(lp:x:[0-9]*:[^,]*),.*
-    replace: \1
-  when: ansible_os_family in ['RedHat', 'Rocky']
-  tags:
-    - ws
-    - sec
-    - check_lpadmin_group_rpm
 
-- name: Ensure cups SystemGroup rpm
-  lineinfile:
-    path: /etc/cups/cups-files.conf
-    regexp: ^\s*SystemGroup\s
-    line: SystemGroup lp
-    state: present
-  when: ansible_os_family in ['RedHat', 'Rocky']
-  tags:
-    - ws
-    - sec
-    - ensure_cups_systemgroup_rpm

@@ -12,7 +12,7 @@
       template:
         src: 50-blacklist.conf.j2
         dest: /etc/modprobe.d/50-blacklist.conf
-      when: ansible_os_family in ['RedHat', 'Rocky']
+      when: ansible_os_family in ['RedHat', 'Rocky', 'RED']
       notify:
         - Dracut update        
   tags:

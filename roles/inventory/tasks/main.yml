@@ -44,7 +44,7 @@
       package:
         name: lm_sensors
         state: present
-      when: ansible_os_family in ['RedHat', 'Rocky']
+      when: ansible_os_family in ['RedHat', 'Rocky', 'RED']
     - name: Get sensors info Smartmontools present
       package:
         name: smartmontools

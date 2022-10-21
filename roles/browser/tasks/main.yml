@@ -1,23 +1,11 @@
-- name: Chromium browser latest deb
+- name: Chromium browser latest
   package:
-    name: 
-      - chromium-browser
-      - libnss3-tools
+    name: "{{ ['chromium-browser', 'libnss3-tools'] if ansible_os_family in ['Debian'] else 'chromium'}}"
     state: latest
   when: ansible_os_family in ['Debian']    
   tags:
     - ws
-    - chromium_browser_latest_deb
-
-- name: Chromium browser latest rpm
-  package:
-    name: 
-      - chromium
-    state: latest
-  when: ansible_os_family in ['RedHat', 'Rocky']
-  tags:
-    - ws
-    - chromium_browser_latest_rpm
+    - chromium_browser_latest
 
 - name: Set xdg-settings defaults
   copy:
