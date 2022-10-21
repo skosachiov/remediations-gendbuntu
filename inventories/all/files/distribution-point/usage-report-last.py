@@ -34,9 +34,7 @@ for line in f:
                 td = tree.xpath("./td/text()")
                 computer = re.search("(.*)\.?", td[3]).group(1)
                 computer = re.sub("\..*", "", computer)
-                if len(td) < 11:
-                    td.append("N/A")
-                    td.append("N/A")
+                if len(td) < 11: td += ["N/A"]*2
                 computers[computer.lower()] = [td[0], td[9], td[1], td[10], td[11]]
         except:
             pass
