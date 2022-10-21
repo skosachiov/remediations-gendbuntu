@@ -13,7 +13,7 @@
   lineinfile:
     path: /etc/cups/cups-files.conf
     regexp: ^\s*SystemGroup\s
-    line: SystemGroup "{{'lpadmin' if ansible_os_family in ['Debian'] else 'sys root wheel printadmin'}}"
+    line: "SystemGroup {{'lpadmin' if ansible_os_family in ['Debian'] else 'sys root wheel printadmin'}}"
     state: present
   tags:
     - ws

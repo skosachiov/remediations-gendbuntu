@@ -8,7 +8,7 @@
         name: >-
           {{ ['cups', 'printer-driver-gutenprint', 'smbclient']
           if ansible_os_family in ['Debian']
-          else ['cups', 'gutenprint', 'samba-client', 'samba-krb5-printing'] }}"
+          else ['cups', 'gutenprint', 'samba-client', 'samba-krb5-printing'] }}
         state: present
     - name: Enable service cupsd Started
       service: 
@@ -17,7 +17,6 @@
         state: started 
       when: 
         - '"cups" in ansible_facts.packages' 
-  when: ansible_os_family in ['Debian']
   tags: 
     - ws
     - service_cups_enabled
