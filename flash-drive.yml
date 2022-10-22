@@ -36,32 +36,32 @@
 
   roles:
     # - ad-client
-    - apt
-    - ansible-client
-    - antivirus
-    - audit
-    - base-security
-    - base-system
-    - browser
-    - common
-    - desktop
-    # - distribution-point
-    - dlp
-    - firewall
-    - flatpak
-    - integrity-check
-    - inventories
-    - mail-client
-    - mobile-system
-    - office
-    - polkit-restrictions
-    - print
-    - remote-assistance
-    - scap
-    # - security-modules
-    - smb-client
-    - ssh
-    - terminal-server
+    - role: apt
+    - role: ansible-client
+    - role: antivirus
+    - role: audit
+    - role: base-security
+    - role: base-system
+    - role: browser
+    - role: common
+    - role: desktop
+    # - role: distribution-point
+    - role: dlp
+    - role: firewall
+    - role: flatpak
+    - role: integrity-check
+    - role: inventory
+    - role: mail-client
+    - role: mobile-system
+    - role: office
+    - role: polkit-restrictions
+    - role: print
+    - role: remote-assistance
+    - role: scap
+    # - role: security-modules
+    - role: smb-client
+    - role: ssh
+    - role: terminal-server
 
   post_tasks:
     - name: Debug

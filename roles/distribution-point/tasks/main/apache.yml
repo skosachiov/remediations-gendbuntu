@@ -2,12 +2,11 @@
   block:
     - name: Apache server is started Present
       package:
-        name:
-          - apache2
+        name: "{{['apache2'] if ansible_os_family in ['Debian'] else ['httpd', 'mod_ssl']}}"
         state: present
     - name: Apache server is started Started
       service:
-        name: apache2
+        name: "{{'apache2' if ansible_os_family in ['Debian'] else 'httpd'}}"
         state: started
   tags:
     - dp
@@ -15,18 +14,18 @@
 
 - name: Apache Only Approved Ciphers
   block:
-    - name:
+    - name: Apache Only Approved Ciphers SSLProtocol
       lineinfile:
-        path: /etc/apache2/mods-available/ssl.conf
+        path: "{{'/etc/apache2/mods-available/ssl.conf' if ansible_os_family in ['Debian'] else '/etc/httpd/conf.d/ssl.conf'}}"
         create: true
         regexp: ^\s*SSLProtocol\s*.*$
         line: SSLProtocol all -TLSv1.1 -SSLv2 -SSLv3
         state: present
         insertafter: ^[#\s]*<IfModule mod_ssl.c>
       notify: Apache restarted
-    - name:
+    - name: Apache Only Approved Ciphers SSLCipherSuite
       lineinfile:
-        path: /etc/apache2/mods-available/ssl.conf
+        path: "{{'/etc/apache2/mods-available/ssl.conf' if ansible_os_family in ['Debian'] else '/etc/httpd/conf.d/ssl.conf'}}"
         create: true
         regexp: ^\s*SSLCipherSuite\s*.*$
         line: SSLCipherSuite ALL:+HIGH:!ADH:!EXP:!SSLv2:!SSLv3:!MEDIUM:!LOW:!NULL:!aNULL
@@ -50,4 +49,4 @@
   when: ansible_lsb.codename == 'focal'
   tags:
     - dp
-    - apache_folder_symlink  
+    - apache_folder_symlink_focal

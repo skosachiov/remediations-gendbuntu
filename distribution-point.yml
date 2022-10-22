@@ -35,26 +35,25 @@
       tags: always 
 
   roles:
-    - ad-client
-    - ansible-client
-    - antivirus
-    - audit
-    - base-security
-    - base-system
-    - common
-    - distribution-point
-    - dlp
-    - firewall
-    - integrity-check
-    - inventories
-    - mobile-system
-    - print
-    - remote-assistance
-    - scap
-    - security-modules
-    - smb-client
-    - ssh
-    - terminal-server
+    - role: ad-client
+    - role: ansible-client
+    - role: antivirus
+    - role: audit
+    - role: base-security
+    - role: base-system
+    - role: common
+    - role: distribution-point
+    - role: dlp
+    - role: firewall
+    - role: integrity-check
+    - role: inventory
+    - role: print
+    - role: remote-assistance
+    - role: scap
+    - role: security-modules
+    - role: smb-client
+    - role: ssh
+    - role: terminal-server
 
   post_tasks:
     - name: Debug
