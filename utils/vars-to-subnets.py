@@ -24,9 +24,9 @@ for file in os.listdir(rootdir):
                     for n in d["var_subnets"]:
                         for ip_net in ip_nets:
                             if ip_network(ip_net[0]).subnet_of(ip_network(n)):
-                                print(file, n, "subnet_of", ip_net[1], ip_net[0])
+                                print(ip_net[1], ip_net[0], "subnet_of", file, n)
                             if ip_network(ip_net[0]).supernet_of(ip_network(n)):
-                                print(file, n, "supernet_of", ip_net[1], ip_net[0])
+                                print(ip_net[1], ip_net[0], "supernet_of", file, n)
                         ip_nets += [(n, file)]
             except yaml.YAMLError as e:
                 print(e)
