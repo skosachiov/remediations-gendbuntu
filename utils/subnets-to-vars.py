@@ -22,7 +22,6 @@ for key in d['var_subnets'].keys():
         os.system('echo "  - ' + s + '" >> ' + rootdir + key + newfile)
     os.system('echo "var_contacts:" >> ' + rootdir + key + newfile)
     os.system('echo "  - dummy.contact" >> ' + rootdir + key + newfile)
-    os.system('echo "  - dummy.contact" >> ' + rootdir + key + newfile)
     os.system('cat ' + rootdir + key + mainfile + ' >> ' + rootdir + key + newfile)
 
         
