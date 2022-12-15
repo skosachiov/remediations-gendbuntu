@@ -99,7 +99,7 @@
     - name: Create ansible user Group
       group:
         name: "{{var_ansible_group}}"
-        name: "{{var_ansible_gid}}"
+        gid: "{{var_ansible_gid}}"
         state: present
       when: result.stdout_lines[0] == 0
     - name: Create ansible user Useradd
@@ -140,11 +140,34 @@
       copy:
         dest: /etc/cron.d/ansible-pull
         content: |
-          {{var_ansible_daily_exec_time}} * * * root bash -c "/usr/bin/ansible-pull -i localhost -d /root/.ansible/pull/{{var_ansible_repo}} -U {{var_ansible_git}} {{var_ansible_playbook}}| logger -n {{var_rsyslog_server}}"
-          {{var_ansible_hourly_exec_time}} * * * * root bash -c "/usr/bin/ansible-pull -o -i localhost -d /root/.ansible/pull/{{var_ansible_repo}} -U {{var_ansible_git}} {{var_ansible_playbook}}| logger -n {{var_rsyslog_server}}"
+          {{var_ansible_daily_exec_time}} * * * root sleep $((RANDOM \% 600)); bash -c "/usr/bin/ansible-pull -i localhost -d /root/.ansible/pull/{{var_ansible_repo}} -U {{var_ansible_git}} {{var_ansible_playbook}}| logger -n {{var_rsyslog_server}}"
+          {{var_ansible_hourly_exec_time}} * * * * root sleep $((RANDOM \% 600)); bash -c "/usr/bin/ansible-pull -o -i localhost -d /root/.ansible/pull/{{var_ansible_repo}} -U {{var_ansible_git}} {{var_ansible_playbook}}| logger -n {{var_rsyslog_server}}"
           # EOF
       notify: Cron restarted
   tags:
     - ws
     - cron_ansible_pull
 
+- name: Ansible pull systemd service
+  block:
+    - name: Ansible pull systemd service Copy
+      template:
+        src: "{{item}}.j2"
+        dest: "/etc/systemd/system/{{item}}"
+      register: result
+      with_items:
+        - ansible-pull.service
+        - ansible-pull.timer
+    - name: Ansible pull systemd service Service
+      systemd:
+        name: ansible-pull
+        daemon_reload: true
+        enabled: no
+    - name: Ansible pull systemd service Timer
+      systemd:
+        name: ansible-pull.timer
+        state: started
+        enabled: yes
+  tags:
+    - ws
+    - ansible_pull_systemd_service

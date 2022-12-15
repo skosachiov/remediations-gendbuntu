@@ -1,0 +1,11 @@
+[Unit]
+Description=Starts ansible-pull systemd unit
+Requires=ansible-pull.service
+
+[Timer]
+Unit=ansible-pull.service
+OnCalendar=*-*-* 9,10,11,12,14,15,16,17,18:00
+RandomizedDelaySec=600
+
+[Install]
+WantedBy=timers.target

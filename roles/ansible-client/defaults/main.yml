@@ -11,5 +11,5 @@ var_ansible_server: 10.11.12.13
 var_ansible_fqdn: "{{var_ansible_server}}.{{var_local_domain}}"
 var_ansible_key: |
   ssh-rsa AAAAB3NzaC1yc2EBBAADAQABAAABAQCWZbWAZ5qIZSNUZVPP951Swdcu8BwdZLw+K02VwCpdaSWXRCViGYbnGMtLPaFCr644xaW2N0OX4IIGZdXFnbWD/t2ahCkxygOcMM698TxOI3bc2fqJSYaSbEghonqDRDM+NWzQuK7ufdbLKmVFV2wQTurpSD4nyOAsb5cpYqtrRB+zp5F47G4FqyKZfHD1WDaM7h1YdAdQar/Ln6f0/Bzq7JXBKdaYtv1nT1qMzEGOrHxQNMvkXJsupFvjiZhKQnff3pYhfSNQaBWTtJx156krwfnvOwPYnA1L17MqELjI3rUN8WYTCrGlxk2yrG4bFTj41C83qIsWHyLIwPmkV4n8 ansible@localhost
-var_ansible_daily_exec_time: "35 13"
-var_ansible_hourly_exec_time: "*/15"
+var_ansible_daily_exec_time: "00 13"
+var_ansible_hourly_exec_time: "15,30,45"
