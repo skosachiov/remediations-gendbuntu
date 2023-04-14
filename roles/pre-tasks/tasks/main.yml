@@ -19,6 +19,67 @@
     file: "{{playbook_dir}}/inventories/subnets/{{var_subnet}}/vars/main.yml"
   tags: always
 
+- name: Get ou
+  block:
+    - name: Get ou Sssd status
+      changed_when: false
+      command: sssctl domain-status {{var_local_domain}} -o
+      register: sssctl_status
+    - name: Get ou Kinit
+      changed_when: false
+      command: kinit -kt /etc/krb5.keytab '{{ansible_facts.nodename.split(".")[0]|upper}}$@{{var_default_realm}}'
+    - name: Get ou Ldapsearch ou
+      changed_when: false
+      shell: >
+        ldapsearch -o ldif-wrap=no -Y GSSAPI -H ldap://{{var_kdc.split(',')[0]}}
+        -b "dc={{var_local_domain.split('.')[0]}},dc={{var_local_domain.split('.')[1]}}"
+        "(&(objectClass=computer)(name={{ansible_facts.nodename.split('.')[0]}}))" |
+        grep -i "dn:" |
+        perl -MMIME::Base64 -n -00 -e 's/\n +//g;s/(?<=:: )(\S+)/decode_base64($1)/eg;print' |
+        grep -o -i '\(ou=[^,]*\),\(ou=[^,]*\),\(ou=[^,]*\),dc={{var_local_domain.split('.')[0]}},dc={{var_local_domain.split('.')[1]}}'
+      register: ldap_search_ou_dn
+    - name: Get ou Ldap_search giud
+      changed_when: false
+      shell: >
+        ldapsearch -o ldif-wrap=no -Y GSSAPI -H ldap://{{var_kdc.split(',')[0]}}
+        -b "dc={{var_local_domain.split('.')[0]}},dc={{var_local_domain.split('.')[1]}}"
+        "(&(objectClass=organizationalUnit)(distinguishedName={{ldap_search_ou_dn.stdout_lines[0]}}))" |
+        grep -i "objectGUID"
+      register: ldap_search_ou_guid
+    - name: Get ou Python uuid
+      changed_when: false
+      command: /usr/bin/python3
+      args:
+        stdin: |
+          import base64, uuid
+          print( str(uuid.UUID(bytes_le=base64.b64decode("{{ldap_search_ou_guid.stdout_lines[0].split()[1]}}"))) )
+      register: python_ou_guid
+    - name: Get ou Set fact
+      set_fact:
+        var_ou_dn: "{{ldap_search_ou_dn.stdout_lines[0]}}"
+        var_ou_guid: "{{python_ou_guid.stdout_lines[0]}}"
+      when:
+        - ldap_search_ou_guid is defined
+        - python_ou_guid is defined
+  rescue:
+    - name: Get ou Failed to get ou
+      debug:
+        msg: "Failed to get ou"
+  when: var_installation_type == 'workstation'
+  tags: always
+
+- name: Include ou vars
+  block:
+    - name: Include ou vars Try
+      include_vars:
+        file: "{{playbook_dir}}/inventories/ou/{{var_ou_guid}}/vars/main.yml"
+  rescue:
+    - name: Include ou vars Failed
+      debug:
+        msg: "Failed to get ou inventory folder"
+  when: var_ou_guid is defined
+  tags: always
+
 - name: Include distribution vars
   include_vars:
     file: "{{playbook_dir}}/inventories/distribution/{{ansible_distribution}}/{{ansible_distribution_major_version}}/vars/main.yml"
@@ -58,7 +119,7 @@
       set_fact:
         var_external_ansible_ip: "{{not result.failed}}"
   tags: always
-  
+
 # Set admin mandatory control
 
 - name: Check file exists
@@ -71,9 +132,9 @@
   set_fact:
     var_mandatory_access: true
   when: result.stat.exists
-  tags: always      
+  tags: always
 
-# Set admin workstations  
+# Set admin workstations
 
 - name: Check file exists
   stat:
