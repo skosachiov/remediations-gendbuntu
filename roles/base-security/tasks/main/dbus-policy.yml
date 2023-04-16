@@ -1,4 +1,4 @@
-- name: Ensure dbus not allow anonymous
+- name: Ensure dbus not allow anonymous @ensure_dbus_not_allow_anonymous
   check_mode: no
   lineinfile:
     path: "{{item}}"

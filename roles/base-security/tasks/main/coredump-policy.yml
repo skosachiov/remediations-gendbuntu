@@ -1,4 +1,5 @@
-- name: Disable core dumps with limits
+- name: Disable core dumps with limits @disable_users_coredumps
+  ignore_errors: "{{ansible_check_mode}}"
   lineinfile:
     dest: /etc/security/limits.conf
     regexp: ^[^#].*core
@@ -9,7 +10,8 @@
     - sec
     - disable_users_coredumps
 
-- name: Disable core dump backtraces
+- name: Disable core dump backtraces @coredump_disable_backtraces
+  ignore_errors: "{{ansible_check_mode}}"
   template:
     src: coredump.conf.j2
     dest: /etc/systemd/coredump.conf

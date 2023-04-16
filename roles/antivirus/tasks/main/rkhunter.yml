@@ -1,4 +1,4 @@
-- name: Rkhunter latest
+- name: Rkhunter latest @rkhunter_latest
   package:
     name:
       - rkhunter

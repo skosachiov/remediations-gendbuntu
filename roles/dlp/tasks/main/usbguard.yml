@@ -1,4 +1,4 @@
-- name: Ensure usbguard is installed
+- name: Ensure usbguard is installed @usbguard_is_installed
   package:
     name:
       - usbguard
@@ -8,16 +8,23 @@
     - sec
     - usbguard_is_installed
 
-- name: Usbguard allowed devices
+- name: Usbguard allowed devices @usbguard_allowed_devices
   block:
-    - name: Usbguard allowed devices Check empty
+    - name: Usbguard allowed devices Create rules @usbguard_allowed_devices
+      copy:
+        content: ""
+        dest: /etc/usbguard/rules.conf
+        force: no
+        owner: root
+        mode: 0500
+    - name: Usbguard allowed devices Check empty @usbguard_allowed_devices
       stat:
         path: /etc/usbguard/rules.conf
       register: result
-    - name: Usbguard allowed devices Init
-      shell: usbguard generate-policy >> /etc/usbguard/rules.conf 
-      when: result.stat.size == 0 
-    - name: Usbguard allowed devices Block
+    - name: Usbguard allowed devices Init @usbguard_allowed_devices
+      shell: usbguard generate-policy >> /etc/usbguard/rules.conf
+      when: result.stat.size == 0
+    - name: Usbguard allowed devices Block @usbguard_allowed_devices
       blockinfile:
         dest: /etc/usbguard/rules.conf
         marker: "{mark}"
@@ -25,19 +32,25 @@
         marker_end: block serial "ANSIBLE_END"
         block: "{{var_usb_allowed_devices}}"
       notify: Usbguard restarted
+    - name: Usbguard allowed devices Permissions @usbguard_allowed_devices
+      file:
+        path: /etc/usbguard/rules.conf
+        mode: '0600'
+        owner: root
+        group: root
   tags:
     - ws
     - sec
     - usbguard_allowed_devices
 
-- name: Usbguard list devices
+- name: Usbguard list devices @usbguad_list_devices
   block:
-    - name: Usbguard list devices List
+    - name: Usbguard list devices List @usbguad_list_devices
       command: usbguard list-devices
       register: command_output
       failed_when: false
       changed_when: false
-    - name: Usbguard list devices Debug
+    - name: Usbguard list devices Debug @usbguad_list_devices
       debug:
         msg: "{{command_output.stdout.split('\n')}}"
   tags:
@@ -45,25 +58,36 @@
     - sec
     - usbguad_list_devices
 
-- name: Ensure usbguard is active
+- name: Usbguard linter @usbguad_linter
+  lineinfile:
+    path: /etc/usbguard/rules.conf
+    regexp: '^(?!(allow id|block serial))'
+    state: absent
+  notify: Usbguard restarted
+  tags:
+      - ws
+      - sec
+      - usbguad_linter
+
+- name: Ensure usbguard is active @usbguard_is_active
   block:
-    - name: Ensure usbguard is installed
+    - name: Ensure usbguard is installed @usbguard_is_active
       package:
         name: usbguard
         state: present
-    - name: Enable service usbguard
+    - name: Enable service usbguard @usbguard_is_active
       block:
-        - name: Gather the package facts
+        - name: Gather the package facts @usbguard_is_active
           package_facts:
             manager: auto
-        - name: Enable service usbguard
+        - name: Enable service usbguard @usbguard_is_active
           service:
             name: usbguard
             enabled: 'yes'
             state: started
           when:
             - '"usbguard" in ansible_facts.packages'
-    - name: Ensure usbguard is active Block
+    - name: Ensure usbguard is active Block @usbguard_is_active
       lineinfile:
         dest: /etc/usbguard/usbguard-daemon.conf
         regexp: ^ImplicitPolicyTarget

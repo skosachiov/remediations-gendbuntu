@@ -1,25 +1,25 @@
-- name: Enable rsyslog to accept udp
+- name: Enable rsyslog to accept udp @enable_rsyslog_accept_udp
   block:
-    - name: Enable rsyslog to accept udp ModLoad
+    - name: Enable rsyslog to accept udp ModLoad @enable_rsyslog_accept_udp
       lineinfile:
         dest: /etc/rsyslog.conf
         regexp: ^.*module\(load=\"imudp\"\)
         line: module(load="imudp")
         create: true
       notify: Rsyslog restarted
-    - name: Enable rsyslog to accept udp Add UDPServerRun
+    - name: Enable rsyslog to accept udp Add UDPServerRun @enable_rsyslog_accept_udp
       lineinfile:
         dest: /etc/rsyslog.conf
         regexp: ^.*input\(type=\"imudp\" port=\"514\"\)
         line: input(type="imudp" port="514")
         create: true
       notify: Rsyslog restarted
-    - name: Enable rsyslog to accept udp Template
+    - name: Enable rsyslog to accept udp Template @enable_rsyslog_accept_udp
       blockinfile:
         dest: /etc/rsyslog.conf
         marker_begin: BEGIN_NETWORK
         marker_end: END_NETWORK
-        insertafter: ^\$IncludeConfig 
+        insertafter: ^\$IncludeConfig
         block: |
           $AllowedSender UDP, 127.0.0.1, 10.0.0.0/8
           #

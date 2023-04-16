@@ -1,18 +1,19 @@
-- name: Ensure kernel module some fs is disabled
+- name: Ensure kernel module some fs is disabled @kernel_module_some_fs_disabled
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Ensure kernel module 'cramfs' is disabled
+    - name: Ensure kernel module 'cramfs' is disabled @kernel_module_some_fs_disabled
       lineinfile:
         create: true
         dest: /etc/modprobe.d/cramfs.conf
         regexp: cramfs
         line: install cramfs /bin/true
-    - name: Ensure kernel module 'squashfs' is disabled
+    - name: Ensure kernel module 'squashfs' is disabled @kernel_module_some_fs_disabled
       lineinfile:
         create: true
         dest: /etc/modprobe.d/squashfs.conf
         regexp: squashfs
         line: install squashfs /bin/true
-    - name: Ensure kernel module 'udf' is disabled
+    - name: Ensure kernel module 'udf' is disabled @kernel_module_some_fs_disabled
       lineinfile:
         create: true
         dest: /etc/modprobe.d/udf.conf

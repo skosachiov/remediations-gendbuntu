@@ -1,12 +1,12 @@
-- name: Ensure rc.local bash
+- name: Ensure rc.local bash @ensure_rc_local_bash
   block:
-    - name: Ensure rc.local bash X
+    - name: Ensure rc.local bash X @ensure_rc_local_bash
       changed_when: false
       file:
         path: /etc/rc.local
         mode: a+x
         state: touch
-    - name: Ensure rc.local bash Shell
+    - name: Ensure rc.local bash Shell @ensure_rc_local_bash
       lineinfile:
         dest: /etc/rc.local
         regexp: '^#!\/bin\/bash'

@@ -1,13 +1,13 @@
-- name: Enable service cron
+- name: Enable service cron @service_cron_enabled
   block:
-    - name: Ensure cron is installed
+    - name: Ensure cron is installed @service_cron_enabled
       package:
         name: "{{'cron' if ansible_os_family in ['Debian'] else 'cronie'}}"
         state: present
-    - name: Gather the package facts
+    - name: Gather the package facts @service_cron_enabled
       package_facts:
         manager: auto
-    - name: Enable service cron
+    - name: Enable service cron @service_cron_enabled
       service:
         name: "{{'cron' if ansible_os_family in ['Debian'] else 'crond'}}"
         enabled: 'yes'

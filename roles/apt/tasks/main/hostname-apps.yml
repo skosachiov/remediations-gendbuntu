@@ -1,13 +1,13 @@
-- name: Install apps for hostname
+- name: Install apps for hostname @hostname_apps_install
   block:
-    - name: Install apps for hostname Is defined
+    - name: Install apps for hostname Is defined @hostname_apps_install
       set_fact:
-        hostname_apps: "{{true if ((ansible_facts.nodename|lower) in (var_hostname_apps.keys() | list)) else false}}"
-    - name: Install apps for hostname Set fact
+        hostname_apps: "{{true if ((ansible_facts.nodename.split('.')[0]|lower) in (var_hostname_apps.keys() | list)) else false}}"
+    - name: Install apps for hostname Set fact @hostname_apps_install
       set_fact:
         list_to_install: "{{ var_hostname_apps[(ansible_facts.nodename|lower)].apps | intersect(var_special_apps) }}"
       when: hostname_apps
-    - name: Install apps for hostname Present
+    - name: Install apps for hostname Present @hostname_apps_install
       package:
         name: "{{item}}"
         state: present
@@ -17,16 +17,16 @@
     - ws
     - hostname_apps_install
 
-- name: Remove apps for hostname
+- name: Remove apps for hostname @hostname_apps_remove
   block:
-    - name: Install apps for hostname Is defined
+    - name: Install apps for hostname Is defined @hostname_apps_remove
       set_fact:
         hostname_apps: "{{true if ((ansible_facts.nodename|lower) in (var_hostname_apps.keys() | list)) else false}}"
-    - name: Install apps for hostname Set fact
+    - name: Install apps for hostname Set fact @hostname_apps_remove
       set_fact:
         list_to_install: "{{ var_special_apps | difference(var_hostname_apps[(ansible_facts.nodename|lower)].apps) }}"
       when: hostname_apps
-    - name: Install apps for hostname Present
+    - name: Install apps for hostname Present @hostname_apps_remove
       package:
         name: "{{item}}"
         state: absent

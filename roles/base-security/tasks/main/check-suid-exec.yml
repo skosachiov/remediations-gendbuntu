@@ -1,12 +1,13 @@
-- name: Check suid executable files
+- name: Check suid executable files @check_suid_executable_files
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Check suid executable files Find
-      shell: find / -xdev -type f -perm -4000 
+    - name: Check suid executable files Find @check_suid_executable_files
+      shell: find / -xdev -type f -perm -4000
       failed_when: false
       check_mode: no
       register: result
       changed_when: false
-    - name: Check suid executable files Change permissions
+    - name: Check suid executable files Change permissions @check_suid_executable_files
       changed_when: true
       failed_when: false
       file:

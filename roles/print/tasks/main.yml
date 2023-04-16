@@ -1,36 +1,36 @@
-- name: Enable service cupsd deb
-  block: 
-    - name: Enable service cupsd facts 
-      package_facts: 
+- name: Enable service cupsd deb @service_cups_enabled
+  block:
+    - name: Enable service cupsd facts @service_cups_enabled
+      package_facts:
         manager: auto
-    - name: Enable service cupsd Present
+    - name: Enable service cupsd Present @service_cups_enabled
       package:
         name: >-
           {{ ['cups', 'printer-driver-gutenprint', 'smbclient']
           if ansible_os_family in ['Debian']
           else ['cups', 'gutenprint', 'samba-client', 'samba-krb5-printing'] }}
         state: present
-    - name: Enable service cupsd Started
-      service: 
+    - name: Enable service cupsd Started @service_cups_enabled
+      service:
         name: cups
-        enabled: yes 
-        state: started 
-      when: 
-        - '"cups" in ansible_facts.packages' 
-  tags: 
+        enabled: yes
+        state: started
+      when:
+        - '"cups" in ansible_facts.packages'
+  tags:
     - ws
     - service_cups_enabled
 
-- name: CUPS smb backend set
+- name: CUPS smb backend set @cups_smb_backend_set
   block:
-    - name: CUPS smb backend set Check
+    - name: CUPS smb backend set Check @cups_smb_backend_set
       stat:
         path: /usr/lib/cups/backend/smb
       register: result
-    - name: CUPS smb backend set Backup
+    - name: CUPS smb backend set Backup @cups_smb_backend_set
       command: mv /usr/lib/cups/backend/smb /usr/lib/cups/backend/smb.orig
       when: not (result.stat.islnk is defined and result.stat.islnk)
-    - name: CUPS smb backend Link
+    - name: CUPS smb backend Link @cups_smb_backend_set
       file:
         src: >-
           {{'/usr/lib/x86_64-linux-gnu/samba/smbspool_krb5_wrapper' if ansible_os_family in ['Debian']
@@ -41,46 +41,45 @@
     - ws
     - cups_smb_backend_set
 
-- name: CUPS printers
+- name: CUPS printers @cups_printers
   block:
-    - name: CUPS printer Grep
+    - name: CUPS printer Grep @cups_printers
       shell: "cupsctl | grep DefaultAuthType=Negotiate"
       failed_when: false
       check_mode: no
       register: result
       changed_when: false
-    - name: CUPS printer Set auth 
+    - name: CUPS printer Set auth @cups_printers
       command: cupsctl DefaultAuthType=Negotiate
       when: result.stdout_lines|length != 1
-    - name: CUPS default printer Restart service
+    - name: CUPS default printer Restart service @cups_printers
       service:
           name: cups
-          state: started
-    - name: CUPS printer Check
+          state: restarted
+      when: result.stdout_lines|length != 1
+    - name: CUPS printer Check @cups_printers
       shell: "LANG=C lpstat -v | awk '{print $4}'"
       failed_when: false
       check_mode: no
       register: result
       changed_when: false
-    - name: Gather the package facts
-      package_facts:
-        manager: auto
-    - name: CUPS printer Generic printer Set driver
+    - name: CUPS printer Diff @cups_printers
       set_fact:
-        cupsdriver: >-
-          {{'gutenprint.5.3://pcl-g_c/expert'
-          if '5.2' not in ansible_facts.packages['gutenprint'][0].version
-          else 'gutenprint.5.2://pcl-g_5c/expert'}}
-    - name: CUPS printer Generic printer
-      become: false
-      command: "lpadmin -p {{item | basename}} -E -v {{item}} -o auth-info-required=negotiate -m {{cupsdriver}}"
-      with_items: "{{ var_smb_printers | difference(result.stdout_lines) }}"
+        diff_cups_printers: "{{ (var_cups_printers | map(attribute='uri') | list) | difference(result.stdout_lines)}}"
+      changed_when: false
+      when: var_cups_printers|length > 0
+    - name: CUPS printer Generic printer @cups_printers
+      command: >
+        lpadmin -p {{item.uri | basename}} -E -v {{item.uri}}
+        {{ '-o auth-info-required=negotiate' if item.auth == 'negotiate' else '' }}
+        -m {{item.model}}
+      with_items: "{{var_cups_printers}}"
       register: service_conf
       notify: Cups restarted
-    - name: CUPS printer Default
-      become: false    
-      command: lpadmin -d {{var_smb_printers[0] | basename}}
-      when: service_conf.changed 
+      when: diff_cups_printers|length > 0 and var_cups_printers|length > 0
+    - name: CUPS printer Default @cups_printers
+      command: lpadmin -d {{var_cups_printers[0].uri | basename}}
+      when: service_conf.changed
   tags:
     - ws
     - cups_printers

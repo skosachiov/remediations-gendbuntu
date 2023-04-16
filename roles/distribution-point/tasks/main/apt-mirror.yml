@@ -1,26 +1,27 @@
-- name: Apt-mirror config
+- name: Apt-mirror config @apt_mirror_config
   block:
-    - name: Apt-mirror config Present
+    - name: Apt-mirror config Present @apt_mirror_config
       package:
         name:
           - apt-mirror
         state: present
-    - name: Apt-mirror config Mirror.list
+    - name: Apt-mirror config Mirror.list @apt_mirror_config
       template:
         src: mirror.list.j2
         dest: /etc/apt/mirror.list
         mode: 0644
-    - name: Apt-mirror config Postmirror
+    - name: Apt-mirror config Postmirror @apt_mirror_config
       blockinfile:
         dest: /var/spool/apt-mirror/var/postmirror.sh
         block: |
           chmod -R a+rx /var/spool/apt-mirror/mirror/*
-    - name: Apt-mirror config Replace
+      ignore_errors: yes
+    - name: Apt-mirror config Replace @apt_mirror_config
       blockinfile:
         dest: /etc/cron.d/apt-mirror
         block: |
           0 4 * * * root /usr/bin/apt-mirror > /var/spool/apt-mirror/var/cron.log
-  when: ansible_os_family in ['Debian']          
+  when: ansible_os_family in ['Debian']
   tags:
     - dp
     - apt_mirror_config

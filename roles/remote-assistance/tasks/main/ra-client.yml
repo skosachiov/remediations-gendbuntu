@@ -1,27 +1,27 @@
-- name: Install client dependencies
+- name: Install client dependencies @ra_install_client_dependencies
   block:
-    - name: Install client dependencies x11
+    - name: Install client dependencies x11 @ra_install_client_dependencies
       package:
         name:
           - x11vnc
           - zenity
           - sshpass
         state: present
-    - name: Install client dependencies Tigervnc rpm
+    - name: Install client dependencies Tigervnc rpm @ra_install_client_dependencies
       package:
         name:
           - tigervnc
           - tigervnc-server-minimal
         state: present
       when: ansible_os_family in ['RedHat', 'Rocky', 'RED']
-    - name: Install client dependencies Tigervnc deb
+    - name: Install client dependencies Tigervnc deb @ra_install_client_dependencies
       package:
         name:
           - tigervnc-viewer
           - tigervnc-common
         state: present
       when: ansible_os_family in ['Debian']
-    - name: Install client dependencies Tigervnc tools deb
+    - name: Install client dependencies Tigervnc tools deb @ra_install_client_dependencies
       package:
         name:
           - tigervnc-tools
@@ -31,7 +31,7 @@
     - ws
     - ra_install_client_dependencies
 
-- name: Wayland disable
+- name: Wayland disable @wayland_disable
   replace:
     dest: /etc/gdm3/custom.conf
     regexp: ^#?(WaylandEnable).*
@@ -41,13 +41,14 @@
     - ws
     - wayland_disable
 
-- name: Init known hosts
+- name: Init known hosts @ra_init_known_hosts
   block:
-    - name: Init known hosts Shell
+    - name: Init known hosts Shell @ra_init_known_hosts
       shell: sshpass -p '{{var_no_shell_pass}}' ssh -o StrictHostKeyChecking=no no-shell@{{var_fqdn_sshserver}} "/bin/false"
       failed_when: false
       changed_when: false
-    - name: Init known hosts Copy
+    - name: Init known hosts Copy @ra_init_known_hosts
+      changed_when: false
       copy:
         src: ~/.ssh/known_hosts
         dest: /etc/ssh/known_hosts
@@ -57,13 +58,14 @@
     - ws
     - ra_init_known_hosts
 
-- name: Install client desktop files
+- name: Install client desktop files @ra_install_client_desktop_files
   block:
-    - name: Install client desktop files Full control
+    - name: Install client desktop files Full control @ra_install_client_desktop_files
       set_fact:
         var_view_only: ""
-    - name: Install client desktop files Full control
+    - name: Install client desktop files Full control @ra_install_client_desktop_files
       copy:
+        mode: u=rw,g=r,o=r
         dest: /usr/share/applications/remote-assistance-full-control.desktop
         content: |
           [Desktop Entry]
@@ -73,11 +75,12 @@
           Exec=/bin/bash -c '{{var_remote_assistance_exec}}'
           Icon=audio-headset
           StartupNotify=false
-    - name: Install client desktop files View only
+    - name: Install client desktop files View only @ra_install_client_desktop_files
       set_fact:
         var_view_only: "--viewonly"
-    - name: Install client desktop files View only
+    - name: Install client desktop files View only @ra_install_client_desktop_files
       copy:
+        mode: u=rw,g=r,o=r
         dest: /usr/share/applications/remote-assistance-view-only.desktop
         content: |
           [Desktop Entry]
@@ -87,8 +90,9 @@
           Exec=/bin/bash -c '{{var_remote_assistance_exec}}'
           Icon=audio-headset
           StartupNotify=false
-    - name: Install client desktop files Helpdesk
+    - name: Install client desktop files Helpdesk @ra_install_client_desktop_files
       copy:
+        mode: u=rw,g=r,o=r
         dest: /usr/share/applications/remote-assistance-helpdesk.desktop
         content: |
           [Desktop Entry]

@@ -1,7 +1,8 @@
 
-- name: Set Access control table
+- name: Set Access control table @set_access_control_table
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Set Access control table User
+    - name: Set Access control table User @set_access_control_table
       blockinfile:
         dest: /etc/security/access.conf
         marker_begin: BEGIN_GROUPS
@@ -13,7 +14,7 @@
           - : ALL : ALL
         insertafter: #
       when: var_admin_workstation|bool == false
-    - name: Set Access control table Admin
+    - name: Set Access control table Admin @set_access_control_table
       blockinfile:
         dest: /etc/security/access.conf
         marker_begin: BEGIN_GROUPS

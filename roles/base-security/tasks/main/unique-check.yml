@@ -1,12 +1,13 @@
-- name: Check non-unique gid
+- name: Check non-unique gid @check_non_unique_gid
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Check non-unique gid Find
+    - name: Check non-unique gid Find @check_non_unique_gid
       shell: cut -f 3 -d ":" /etc/group | sort | uniq -d
       failed_when: false
       check_mode: no
       register: result
       changed_when: false
-    - name: Check non-unique gid Check
+    - name: Check non-unique gid Check @check_non_unique_gid
       changed_when: true
       failed_when: false
       debug:
@@ -17,15 +18,16 @@
     - ws
     - check_non_unique_gid
 
-- name: Check non-unique uid
+- name: Check non-unique uid @check_non_unique_uid
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Check non-unique uid Find
+    - name: Check non-unique uid Find @check_non_unique_uid
       shell: cut -f 3 -d ":" /etc/passwd | sort | uniq -d
       failed_when: false
       check_mode: no
       register: result
       changed_when: false
-    - name: Check non-unique uid Check
+    - name: Check non-unique uid Check @check_non_unique_uid
       changed_when: true
       failed_when: false
       debug:
@@ -36,15 +38,16 @@
     - ws
     - check_non_unique_uid
 
-- name: Check non-unique group name
+- name: Check non-unique group name @check_non_unique_group_name
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Check non-unique group name Find
+    - name: Check non-unique group name Find @check_non_unique_group_name
       shell: cut -f 1 -d ":" /etc/group | sort | uniq -d
       failed_when: false
       check_mode: no
       register: result
       changed_when: false
-    - name: Check non-unique group name Check
+    - name: Check non-unique group name Check @check_non_unique_group_name
       changed_when: true
       failed_when: false
       debug:
@@ -55,15 +58,16 @@
     - ws
     - check_non_unique_group_name
 
-- name: Check non-unique user name
+- name: Check non-unique user name @check_non_unique_user_name
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Check non-unique user name Find
+    - name: Check non-unique user name Find @check_non_unique_user_name
       shell: cut -f 1 -d ":" /etc/passwd | sort | uniq -d
       failed_when: false
       check_mode: no
       register: result
       changed_when: false
-    - name: Check non-unique user name Check
+    - name: Check non-unique user name Check @check_non_unique_user_name
       changed_when: true
       failed_when: false
       debug:
@@ -74,19 +78,20 @@
     - ws
     - check_non_unique_user_name
 
-- name: Verify Only Root Has UID 0
+- name: Verify Only Root Has UID 0 @only_root_has_uid_0
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Verify Only Root Has UID 0 Get list
+    - name: Verify Only Root Has UID 0 Get list @only_root_has_uid_0
       command: awk -F ':' '($3 == "0") {print}' /etc/passwd
       changed_when: false
       check_mode: no
       register: items
-    - name: Verify Only Root Has UID 0 Print result
+    - name: Verify Only Root Has UID 0 Print result @only_root_has_uid_0
       changed_when: true
       debug:
         msg: "more than one user with UID 0"
       when: items.stdout_lines|length > 1
-    - name: Verify Only Root Has UID 0 Root only
+    - name: Verify Only Root Has UID 0 Root only @only_root_has_uid_0
       changed_when: true
       debug:
         msg: "no root user has UID 0"
@@ -97,19 +102,20 @@
     - mob
     - only_root_has_uid_0
 
-- name: Verify Only Root group Has GID 0
+- name: Verify Only Root group Has GID 0 @only_root_group_has_uid_0
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Verify Only Root group Has GID 0 Get list
+    - name: Verify Only Root group Has GID 0 Get list @only_root_group_has_uid_0
       command: awk -F ':' '($3 == "0") {print}' /etc/group
       changed_when: false
       check_mode: no
       register: items
-    - name: Verify Only Root group Has GID 0 Print result
+    - name: Verify Only Root group Has GID 0 Print result @only_root_group_has_uid_0
       changed_when: true
       debug:
         msg: "more than one group Has GID 0"
       when: items.stdout_lines|length > 1
-    - name: Verify Only Root group Has GID 0 Root only
+    - name: Verify Only Root group Has GID 0 Root only @only_root_group_has_uid_0
       changed_when: true
       debug:
         msg: "no root group Has GID 0"

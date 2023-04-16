@@ -1,14 +1,12 @@
-- name: Remove compilers execution bit
+- name: Remove execution bit @remove_execution_bit
+  ignore_errors: "{{ansible_check_mode}}"
   file:
     path: "{{item}}"
     mode: o-rwx
   failed_when: false
-  with_items:
-    - /usr/bin/x86_64-linux-gnu-cpp-8
-    - /usr/bin/x86_64-linux-gnu-gcc-8
-    - /usr/bin/x86_64-linux-gnu-g++-8
+  with_items: "{{var_remove_exec_bit}}"
   tags:
     - ws
     - sec
     - mob
-    - remove_compilers_execution_bit
+    - remove_execution_bit

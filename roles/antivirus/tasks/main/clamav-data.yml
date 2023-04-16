@@ -1,30 +1,30 @@
-- name: Clamav freshclam workaround # be careful
+- name: Clamav freshclam workaround # be careful @clamav_freshclam_workaround
   block:
-    - name: Clamav freshclam workaround Check files
+    - name: Clamav freshclam workaround Check files @clamav_freshclam_workaround
       stat:
         path: "/var/lib/clamav/main.cvd"
       register: result
-    - name: Clamav freshclam workaround Rpm present
+    - name: Clamav freshclam workaround Rpm present @clamav_freshclam_workaround
       package:
         name:
           - rpm2cpio
         state: present
       when: not result.stat.exists
-    - name: Clamav freshclam workaround Download
+    - name: Clamav freshclam workaround Download @clamav_freshclam_workaround
       get_url:
         url: "{{var_clamav_data_rpm_url}}"
         dest: /var/lib/clamav/
       when: not result.stat.exists
-    - name: Clamav freshclam workaround Unpack
+    - name: Clamav freshclam workaround Unpack @clamav_freshclam_workaround
       shell:
         cmd: "rpm2cpio /var/lib/clamav/{{var_clamav_data_rpm_url | basename}} | cpio -imd"
         chdir: "/"
-      when: not result.stat.exists      
-    - name: Clamav freshclam workaround Remove rpm
+      when: not result.stat.exists
+    - name: Clamav freshclam workaround Remove rpm @clamav_freshclam_workaround
       file:
         path: "/var/lib/clamav/{{var_clamav_data_rpm_url | basename}}"
         state: absent
-  when: ansible_os_family in ['Debian']        
+  when: ansible_os_family in ['Debian']
   tags:
     - ws
     - clamav_freshclam_workaround

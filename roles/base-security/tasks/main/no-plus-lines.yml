@@ -1,4 +1,5 @@
-- name: Remove lines starting with + from /etc/passwd
+- name: Remove lines starting with + from /etc/passwd @no_legacy_plus_entries_etc_passwd
+  ignore_errors: "{{ansible_check_mode}}"
   lineinfile:
     regexp: ^\+.*$
     state: absent
@@ -9,7 +10,8 @@
     - mob
     - no_legacy_plus_entries_etc_passwd
 
-- name: Remove lines starting with + from /etc/shadow
+- name: Remove lines starting with + from /etc/shadow @no_legacy_plus_entries_etc_shadow
+  ignore_errors: "{{ansible_check_mode}}"
   lineinfile:
     regexp: ^\+.*$
     state: absent
@@ -20,7 +22,8 @@
     - mob
     - no_legacy_plus_entries_etc_shadow
 
-- name: Remove lines starting with + from /etc/group
+- name: Remove lines starting with + from /etc/group @no_legacy_plus_entries_etc_group
+  ignore_errors: "{{ansible_check_mode}}"
   lineinfile:
     regexp: ^\+.*$
     state: absent

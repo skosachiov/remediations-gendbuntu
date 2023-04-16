@@ -1,18 +1,18 @@
-- name: Apt dist-upgrade
+- name: Apt dist-upgrade @apt_dist_upgrade
   block:
-    - name: Apt dist-upgrade Check flag
+    - name: Apt dist-upgrade Check flag @apt_dist_upgrade
       stat:
         path: /etc/ansible/dist-upgrade
       register: result
-    - name: Apt dist-upgrade Upgrade
+    - name: Apt dist-upgrade Upgrade @apt_dist_upgrade
       apt:
         update_cache: yes
         upgrade: dist
       when: result.stat.exists
-    - name: Apt dist-upgrade Remove flag
+    - name: Apt dist-upgrade Remove flag @apt_dist_upgrade
       file:
         path: /etc/ansible/dist-upgrade
         state: absent
   tags:
     - ws
-    - apt_dist_upgrade      
+    - apt_dist_upgrade

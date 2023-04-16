@@ -1,9 +1,9 @@
-- name: Add favorite-apps
+- name: Add favorite-apps @add_favorite_apps
   block:
-    - name: Add favorite-apps Add quotes
+    - name: Add favorite-apps Add quotes @add_favorite_apps
       set_fact:
         quotes_favorite_apps: "'{{var_favorite_apps|join(\"', '\")}}'"
-    - name: Add favorite-apps Copy set-script to profile.d
+    - name: Add favorite-apps Copy set-script to profile.d @add_favorite_apps
       copy:
         dest: /etc/profile.d/set-favorite-apps.sh
         mode: a+x

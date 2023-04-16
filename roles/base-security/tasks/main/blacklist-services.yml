@@ -1,4 +1,5 @@
-- name: Ensure blacklist services are removed
+- name: Ensure blacklist services are removed @remove_blacklist_services
+  ignore_errors: "{{ansible_check_mode}}"
   package:
     name: "{{item}}"
     state: absent

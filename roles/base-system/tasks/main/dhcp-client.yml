@@ -1,28 +1,40 @@
-- name: Comment out manual dhclient settings
+- name: Comment out manual dhclient settings @comment_out_manual_dhclient
   block:
-    - name: Comment out manual dhclient settings Supersede
+    - name: Comment out manual dhclient settings Supersede @comment_out_manual_dhclient
       replace:
         dest: /etc/dhcp/dhclient.conf
         regexp: '^\s*supersede\s*domain-name'
         replace: '# supersede domain-name'
-    - name: Comment out manual dhclient settings Prepend
+    - name: Comment out manual dhclient settings Prepend @comment_out_manual_dhclient
       replace:
         dest: /etc/dhcp/dhclient.conf
         regexp: '^\s*prepend\s*domain-name-servers'
         replace: '# prepend domain-name-servers'
-  when: ansible_os_family in ['Debian']        
+  when: ansible_os_family in ['Debian']
   tags:
     - ws
     - comment_out_manual_dhclient
 
-- name: Dhclient send hardware id
+- name: Dhclient send hardware id @comment_out_manual_dhclient
   lineinfile:
     create: true
     dest: /etc/dhcp/dhclient.conf
     regexp: ^\s*send\s*dhcp-client-identifier
     line: send dhcp-client-identifier = hardware;
     insertafter: EOF
-  when: ansible_os_family in ['Debian']    
+  when: ansible_os_family in ['Debian']
+  tags:
+    - ws
+    - dhclient_send_hardware_id
+
+- name: Dhclient send hardware id @dhclient_send_hardware_id
+  lineinfile:
+    create: true
+    dest: /etc/dhcp/dhclient.conf
+    regexp: ^\s*send\s*dhcp-client-identifier
+    line: send dhcp-client-identifier = hardware;
+    insertafter: EOF
+  when: ansible_os_family in ['Debian']
   tags:
     - ws
     - dhclient_send_hardware_id

@@ -48,11 +48,21 @@ var_suid_whitelist:
   - "/bin/su"
   - "/bin/mount"
   - "/bin/umount"
+  - "/usr/bin/mount"
+  - "/usr/bin/umount"
   - "/opt/Citrix/ICAClient/ctxusb"
 
 var_log_skip_permissions_check: 
-  - "MediaEngineSRV*"
   - "krb5_trace.log"
+
+var_remove_exec_bit:
+    - /usr/bin/x86_64-linux-gnu-cpp-8
+    - /usr/bin/x86_64-linux-gnu-gcc-8
+    - /usr/bin/x86_64-linux-gnu-g++-8
+    - /usr/lib/firefox/firefox
+    - /usr/bin/nmap
 
 var_superusers: root
 var_password_pbkdf2: grub.pbkdf2.sha512.10000.E3F286A301E64EB0234413E469860C9C4689184EDEB1116458D402A2709980F0BC1CAC8127217B5B5B94DD1E429F2FBC93220CE0460359116D08FE0E7387EB80.EF0E53D35560388021726E5F579ACA8F9AFF2C5AE2ACA06965042DCB86612F628D459016E9D3EFF0CEC9DEC0424A3FC2095E759BC9349BD3F02301E3D96FAF4D
+
+var_sudo_logfile: "/var/log/sudo.log"

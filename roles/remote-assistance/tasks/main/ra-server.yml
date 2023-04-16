@@ -1,23 +1,23 @@
-- name: Create no-shell user
+- name: Create no-shell user @ra_create_no_shell_user
   block:
-    - name: Create no-shell user Useradd
+    - name: Create no-shell user Useradd @ra_create_no_shell_user
       user:
         name: no-shell
         shell: /bin/false
-        password: "{{ var_no_shell_pass | password_hash('sha512') }}" 
+        password: "{{ var_no_shell_pass | password_hash('sha512') }}"
         generate_ssh_key: yes
   when: var_installation_type == "distribution-point"
   tags:
     - dp
     - ra_create_no_shell_user
 
-- name: Ensure openssh-server is installed
+- name: Ensure openssh-server is installed @ra_openssh_server_is_started
   block:
-    - name: Ensure openssh-server is installed Package
+    - name: Ensure openssh-server is installed Package @ra_openssh_server_is_started
       package:
         name: openssh-server
         state: present
-    - name: Ensure openssh-server is installed Started
+    - name: Ensure openssh-server is installed Started @ra_openssh_server_is_started
       service:
         name: sshd
         state: started

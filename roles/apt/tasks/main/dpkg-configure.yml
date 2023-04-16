@@ -1,4 +1,4 @@
-- name: Dpkg configure all
+- name: Dpkg configure all @dpkg_configure_all
   check_mode: no
   changed_when: false
   shell: 'dpkg --configure -a'
@@ -8,15 +8,15 @@
     - ws
     - dpkg_configure_all
 
-- name: Apt update
+- name: Apt update @apt_update
   command: apt update
   changed_when: false
-  when: ansible_os_family in ['Debian']  
+  when: ansible_os_family in ['Debian']
   tags:
     - ws
     - apt_update
 
-- name: Rpm rebuilddb
+- name: Rpm rebuilddb @rpm_rebuilddb
   check_mode: no
   changed_when: false
   shell: 'rpm --rebuilddb'

@@ -1,11 +1,12 @@
-- name: Remount with safe options
+- name: Remount with safe options @remount_with_safe_options
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Remount tmp and home with noexec Edit rc.local
+    - name: Remount tmp and home with noexec Edit rc.local @remount_with_safe_options
       blockinfile:
         dest: /etc/rc.local
         create: yes
         mode: u=rwx,g=x,o=x
-        owner: root 
+        owner: root
         marker_begin: BEGIN_REMOUNT
         marker_end: END_REMOUNT
         block: |
@@ -34,7 +35,8 @@
     - mob
     - remount_with_safe_options
 
-- name: Check mount with options
+- name: Check mount with options @check_mount_options
+  ignore_errors: "{{ansible_check_mode}}"
   vars:
     var_dir:
       - "/dev/shm"

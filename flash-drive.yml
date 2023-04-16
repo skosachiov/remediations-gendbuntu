@@ -4,12 +4,12 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # Remediations-gendbuntu is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with Remediations-gendbuntu.  If not, see <https://www.gnu.org/licenses/>.
 
@@ -32,7 +32,7 @@
     - include_tasks: roles/pre-tasks/tasks/main.yml
       tags: always
     - include_tasks: roles/apt/tasks/set-local-repo.yml
-      tags: always 
+      tags: always
 
   roles:
     # - ad-client
@@ -62,10 +62,11 @@
     - role: smb-client
     - role: ssh
     - role: terminal-server
+    - role: utmost-report
 
   post_tasks:
     - name: Debug
       debug:
         msg: "{{ansible_facts}}"
-    - include_tasks: roles/apt/tasks/set-external-repo.yml        
+    - include_tasks: roles/apt/tasks/set-external-repo.yml
 

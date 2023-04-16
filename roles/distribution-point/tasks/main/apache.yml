@@ -1,20 +1,23 @@
-- name: Apache server is started
+- name: Apache server is started @apache_server_is_started
   block:
-    - name: Apache server is started Present
+    - name: Apache server is started Present @apache_server_is_started
       package:
         name: "{{['apache2'] if ansible_os_family in ['Debian'] else ['httpd', 'mod_ssl']}}"
         state: present
-    - name: Apache server is started Started
+    - name: Apache server is started Started @apache_server_is_started
       service:
         name: "{{'apache2' if ansible_os_family in ['Debian'] else 'httpd'}}"
         state: started
+    - name: Apache server is started Ssl @apache_server_is_started
+      command: a2enmod ssl
+      notify: Apache restarted
   tags:
     - dp
     - apache_server_is_started
 
-- name: Apache Only Approved Ciphers
+- name: Apache Only Approved Ciphers @apache_only_approved_ciphers
   block:
-    - name: Apache Only Approved Ciphers SSLProtocol
+    - name: Apache Only Approved Ciphers SSLProtocol @apache_only_approved_ciphers
       lineinfile:
         path: "{{'/etc/apache2/mods-available/ssl.conf' if ansible_os_family in ['Debian'] else '/etc/httpd/conf.d/ssl.conf'}}"
         create: true
@@ -23,12 +26,48 @@
         state: present
         insertafter: ^[#\s]*<IfModule mod_ssl.c>
       notify: Apache restarted
-    - name: Apache Only Approved Ciphers SSLCipherSuite
+    - name: Apache Only Approved Ciphers SSLCipherSuite @apache_only_approved_ciphers
       lineinfile:
         path: "{{'/etc/apache2/mods-available/ssl.conf' if ansible_os_family in ['Debian'] else '/etc/httpd/conf.d/ssl.conf'}}"
         create: true
         regexp: ^\s*SSLCipherSuite\s*.*$
         line: SSLCipherSuite ALL:+HIGH:!ADH:!EXP:!SSLv2:!SSLv3:!MEDIUM:!LOW:!NULL:!aNULL
+        state: present
+        insertafter: ^[#\s]*<IfModule mod_ssl.c>
+      notify: Apache restarted
+    - name: Apache Only Approved Ciphers Honor @apache_only_approved_ciphers
+      lineinfile:
+        path: /etc/apache2/mods-available/ssl.conf
+        create: true
+        regexp: ^\s*SSLHonorCipherOrder\s*.*$
+        line: SSLHonorCipherOrder on
+        state: present
+        insertafter: ^[#\s]*<IfModule mod_ssl.c>
+      notify: Apache restarted
+    - name: Apache Only Approved Secure Renegotiation @apache_only_approved_ciphers
+      lineinfile:
+        path: /etc/apache2/mods-available/ssl.conf
+        create: true
+        regexp: ^\s*SSLInsecureRenegotiation\s*.*$
+        line: SSLInsecureRenegotiation off
+        state: present
+        insertafter: ^[#\s]*<IfModule mod_ssl.c>
+      notify: Apache restarted
+    - name: Apache Only Approved Secure Renegotiation @apache_only_approved_ciphers
+      lineinfile:
+        path: /etc/apache2/mods-available/ssl.conf
+        create: true
+        regexp: ^\s*SSLInsecureRenegotiation\s*.*$
+        line: SSLInsecureRenegotiation off
+        state: present
+        insertafter: ^[#\s]*<IfModule mod_ssl.c>
+      notify: Apache restarted
+    - name: Apache Only Approved Compression off @apache_only_approved_ciphers
+      lineinfile:
+        path: /etc/apache2/mods-available/ssl.conf
+        create: true
+        regexp: ^\s*SSLCompression\s*.*$
+        line: SSLCompression off
         state: present
         insertafter: ^[#\s]*<IfModule mod_ssl.c>
       notify: Apache restarted
@@ -38,9 +77,9 @@
     - sec
     - apache_only_approved_ciphers
 
-- name: Apache folder symlink
+- name: Apache folder symlink @apache_folder_symlink_focal
   block:
-    - name: Apache folder symlink Link repo
+    - name: Apache folder symlink Link repo @apache_folder_symlink_focal
       file:
         src: /var/spool/apt-mirror/mirror/{{var_ansible_fqdn}}/focal
         dest: /var/www/html/focal

@@ -1,0 +1,8 @@
+- name: Remove share apps desktop files @remove_share_apps_desktop_files
+  file:
+    path: "/usr/share/applications/{{item}}"
+    state: absent
+  with_items: "{{var_remove_share_apps_desktop}}"
+  tags:
+    - ws
+    - remove_share_apps_desktop_files

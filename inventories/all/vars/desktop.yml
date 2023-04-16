@@ -12,3 +12,10 @@ var_favorite_apps:
   - "libreoffice-calc.desktop"
   - "libreoffice-impress.desktop"
 
+var_desktop_files_remove:
+    - Dummy.desktop
+
+var_notification_list:
+  - [false, "critical", "Test header", "Test body"]
+  - [false, "normal", "Test header", "Test body"]
+  - [false, "critical", "Test header", "Test body"]

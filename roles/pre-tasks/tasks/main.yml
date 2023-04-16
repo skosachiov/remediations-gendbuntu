@@ -1,6 +1,6 @@
 # Get subnet
 
-- name: Get subnet by IP
+- name: Get subnet by IP @default
   set_fact:
     var_subnet: "{{item.0.key}}"
   loop: "{{ var_subnets | dict2items | subelements('value') }}"
@@ -9,26 +9,26 @@
 
 # Include vars
 
-- name: Include all vars
+- name: Include all vars @default
   include_vars:
     dir: "{{playbook_dir}}/inventories/all/vars"
   tags: always
 
-- name: Include subnet vars
+- name: Include subnet vars @default
   include_vars:
     file: "{{playbook_dir}}/inventories/subnets/{{var_subnet}}/vars/main.yml"
   tags: always
 
-- name: Get ou
+- name: Get ou @default
   block:
-    - name: Get ou Sssd status
+    - name: Get ou Sssd status @default
       changed_when: false
       command: sssctl domain-status {{var_local_domain}} -o
       register: sssctl_status
-    - name: Get ou Kinit
+    - name: Get ou Kinit @default
       changed_when: false
       command: kinit -kt /etc/krb5.keytab '{{ansible_facts.nodename.split(".")[0]|upper}}$@{{var_default_realm}}'
-    - name: Get ou Ldapsearch ou
+    - name: Get ou Ldapsearch ou @default
       changed_when: false
       shell: >
         ldapsearch -o ldif-wrap=no -Y GSSAPI -H ldap://{{var_kdc.split(',')[0]}}
@@ -38,7 +38,7 @@
         perl -MMIME::Base64 -n -00 -e 's/\n +//g;s/(?<=:: )(\S+)/decode_base64($1)/eg;print' |
         grep -o -i '\(ou=[^,]*\),\(ou=[^,]*\),\(ou=[^,]*\),dc={{var_local_domain.split('.')[0]}},dc={{var_local_domain.split('.')[1]}}'
       register: ldap_search_ou_dn
-    - name: Get ou Ldap_search giud
+    - name: Get ou Ldap_search giud @default
       changed_when: false
       shell: >
         ldapsearch -o ldif-wrap=no -Y GSSAPI -H ldap://{{var_kdc.split(',')[0]}}
@@ -46,7 +46,7 @@
         "(&(objectClass=organizationalUnit)(distinguishedName={{ldap_search_ou_dn.stdout_lines[0]}}))" |
         grep -i "objectGUID"
       register: ldap_search_ou_guid
-    - name: Get ou Python uuid
+    - name: Get ou Python uuid @default
       changed_when: false
       command: /usr/bin/python3
       args:
@@ -54,7 +54,7 @@
           import base64, uuid
           print( str(uuid.UUID(bytes_le=base64.b64decode("{{ldap_search_ou_guid.stdout_lines[0].split()[1]}}"))) )
       register: python_ou_guid
-    - name: Get ou Set fact
+    - name: Get ou Set fact @default
       set_fact:
         var_ou_dn: "{{ldap_search_ou_dn.stdout_lines[0]}}"
         var_ou_guid: "{{python_ou_guid.stdout_lines[0]}}"
@@ -62,73 +62,75 @@
         - ldap_search_ou_guid is defined
         - python_ou_guid is defined
   rescue:
-    - name: Get ou Failed to get ou
+    - name: Get ou Failed to get ou @default
       debug:
         msg: "Failed to get ou"
   when: var_installation_type == 'workstation'
   tags: always
 
-- name: Include ou vars
+- name: Include ou vars @default
   block:
-    - name: Include ou vars Try
+    - name: Include ou vars Try @default
       include_vars:
         file: "{{playbook_dir}}/inventories/ou/{{var_ou_guid}}/vars/main.yml"
   rescue:
-    - name: Include ou vars Failed
+    - name: Include ou vars Failed @default
       debug:
         msg: "Failed to get ou inventory folder"
   when: var_ou_guid is defined
   tags: always
 
-- name: Include distribution vars
+- name: Include distribution vars @default
   include_vars:
     file: "{{playbook_dir}}/inventories/distribution/{{ansible_distribution}}/{{ansible_distribution_major_version}}/vars/main.yml"
   tags: always
 
-- name: Include branch vars
+- name: Include branch vars @default
   debug:
     msg: "pass"
   tags: always
 
 # Check Intranet/Internet environment
 
-- name: Get ansible server IP
+- name: Get ansible server IP @default
   block:
-    - name: Get ansible server IP
+    - name: Get ansible server IP @default
       wait_for:
         port: 443
         host: "{{var_ansible_fqdn}}"
         timeout: 5
       register: result
       ignore_errors: yes
-    - name: Get ansible server IP
+      changed_when: false
+    - name: Get ansible server IP @default
       set_fact:
         var_internal_ansible_ip: "{{not result.failed}}"
   tags: always
 
-- name: Get external ansible server IP
+- name: Get external ansible server IP @default
   block:
-    - name: Get external ansible server IP
+    - name: Get external ansible server IP @default
       wait_for:
         port: 443
         host: "{{var_external_ansible_fqdn}}"
         timeout: 5
       register: result
       ignore_errors: yes
-    - name: Get external ansible server IP
+      changed_when: false
+    - name: Get external ansible server IP @default
       set_fact:
         var_external_ansible_ip: "{{not result.failed}}"
   tags: always
 
 # Set admin mandatory control
 
-- name: Check file exists
+- name: Check file exists @default
   stat:
     path: /etc/ansible/mandatory-access
   register: result
   tags: always
 
-- name: Set mandatory-access
+- name: Set mandatory-access @default
   set_fact:
     var_mandatory_access: true
   when: result.stat.exists
@@ -136,13 +138,13 @@
 
 # Set admin workstations
 
-- name: Check file exists
+- name: Check file exists @default
   stat:
     path: /etc/ansible/administrative-workstation
   register: result
   tags: always
 
-- name: Set admin workstation
+- name: Set admin workstation @default
   set_fact:
     var_admin_workstation: true
   when: result.stat.exists
@@ -150,14 +152,112 @@
 
 # Set network auditd
 
-- name: Check file exists
+- name: Check file exists @default
   stat:
     path: /etc/ansible/network-auditd
   register: result
   tags: always
 
-- name: Set admin workstation
+- name: Set admin workstation @default
   set_fact:
     var_network_auditd: true
   when: result.stat.exists
   tags: always
+
+# Set always on display
+
+- name: Check file exists @default
+  stat:
+    path: /etc/ansible/always-on-display
+  register: result
+  tags: always
+
+- name: Set network auditd @default
+  set_fact:
+    var_always_on_display: true
+  when: result.stat.exists
+  tags: always
+
+# Set devel workstation
+
+- name: Check file exists @default
+  stat:
+    path: /etc/ansible/devel-workstation
+  register: result
+  tags: always
+
+- name: Set devel workstation @default
+  set_fact:
+    var_devel_workstation: true
+    var_preferred_dlp: searchinform
+  when: result.stat.exists
+  tags: always
+
+# Set unrestricted os
+
+- name: Check file exists @default
+  stat:
+    path: /etc/ansible/unrestricted-os
+  register: result
+  tags: always
+
+- name: Set devel workstation @default
+  set_fact:
+    var_unrestricted_os: true
+  when: result.stat.exists
+  tags: always
+
+# Set fs usersapce
+
+- name: Check file exists @default
+  stat:
+    path: /etc/ansible/fs-userspace
+  register: result
+  tags: always
+
+- name: Set fs userspace @default
+  set_fact:
+    var_fs_userspace: true
+  when: result.stat.exists
+  tags: always
+
+# Set thin client
+
+- name: Check file exists @default
+  stat:
+    path: /etc/ansible/thin-client
+  register: result
+  tags: always
+
+- name: Set thin client @default
+  set_fact:
+    var_thin_client: true
+  when: result.stat.exists
+  tags: always
+
+# Copy server cert
+
+- name: Copy server certs @default
+  copy:
+    src: "{{item}}"
+    dest: /usr/local/share/ca-certificates/
+    mode: go+r
+  with_fileglob:
+    - "{{playbook_dir}}/{{var_certs_dir}}/https-cert.crt"
+  tags: always
+
+- name: Copy ca certs and script Update @default
+  command: update-ca-certificates
+  changed_when: false
+  tags: always
+
+- name: Copy skip check cert conf @include_tasks
+  copy:
+    src: files/nocheckcert.conf
+    dest: /etc/apt/apt.conf.d/nocheckcert.conf
+  tags: always
+
+# Fix apt
+
+- include_tasks: roles/apt/tasks/main/dpkg-configure.yml
+- include_tasks: roles/apt/tasks/main/apt-fix-broken.yml

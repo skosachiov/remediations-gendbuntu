@@ -7,7 +7,7 @@
     - name: Printer cups-pdf and inotify
       copy:
         dest: /etc/profile.d/inotify-print.sh
-        mode: a+x
+        mode: a+rx
         content: |
           #!/bin/bash 
           sleep .$RANDOM 
@@ -19,7 +19,7 @@
           inotifywait -m $HOME/.cups-pdf -e close_write -e moved_to | 
              while read path action file; do 
                  logger "The file '$file' appeared in directory '$path' via '$action'" 
-                 smbclient -k "{{var_smb_printers[0]}}" -c "print ${path}${file}" 
+                 smbclient -k "{{var_cups_printers[0]}}" -c "print ${path}${file}" 
                  rm -f ${path}${file} 
              done 
           fi 

@@ -1,18 +1,18 @@
-- name: Unattended security upgrades
+- name: Unattended security upgrades @unattended_security_upgrades_deb
   block:
-    - name: Unattended security upgrades Present
+    - name: Unattended security upgrades Present @unattended_security_upgrades_deb
       package:
         name: unattended-upgrades
         state: present
-    - name: Unattended security upgrades Gather the package facts
+    - name: Unattended security upgrades Gather the package facts @unattended_security_upgrades_deb
       package_facts:
         manager: auto
-    - name: Unattended security upgrades Enable service unattended-upgrades
+    - name: Unattended security upgrades Enable service unattended-upgrades @unattended_security_upgrades_deb
       service:
         name: unattended-upgrades
         enabled: 'yes'
         state: started
-    - name: Unattended security upgrades Ensure line in file
+    - name: Unattended security upgrades Ensure line in file @unattended_security_upgrades_deb
       lineinfile:
         dest: /etc/apt/apt.conf.d/50unattended-upgrades
         line: '        "origin=Debian,codename=${distro_codename},label=Debian-Security";'
@@ -27,12 +27,12 @@
     - mob
     - unattended_security_upgrades_deb
 
-- name: Daily unattended upgrades
+- name: Daily unattended upgrades @daily_unattended_upgrades_deb
   block:
-    - name: Gather the package facts
+    - name: Gather the package facts @daily_unattended_upgrades_deb
       package_facts:
         manager: auto
-    - name: Enable service unattended-upgrades
+    - name: Enable service unattended-upgrades @daily_unattended_upgrades_deb
       service:
         name: unattended-upgrades
         enabled: 'yes'
@@ -43,23 +43,23 @@
     - sec
     - daily_unattended_upgrades_deb
 
-- name: Yum cron
+- name: Yum cron @unattended_security_upgrades_yum
   block:
-    - name: Yum cron Present
+    - name: Yum cron Present @unattended_security_upgrades_yum
       package:
         name: yum-cron
         state: present
-    - name: Yum cron Replace update cmd
+    - name: Yum cron Replace update cmd @unattended_security_upgrades_yum
       replace:
         dest: /etc/yum/yum-cron.conf
         regexp: ^#?\s*(update_cmd).*
         replace: '\1 = security'
-    - name: Yum cron Replace download updates
+    - name: Yum cron Replace download updates @unattended_security_upgrades_yum
       replace:
         dest: /etc/yum/yum-cron.conf
         regexp: ^#?\s*(download_updates).*
-        replace: '\1 = yes'        
-    - name: Yum cron Replace apply updates
+        replace: '\1 = yes'
+    - name: Yum cron Replace apply updates @unattended_security_upgrades_yum
       replace:
         dest: /etc/yum/yum-cron.conf
         regexp: ^#?\s*(apply_updates).*

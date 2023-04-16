@@ -1,7 +1,8 @@
 
-- name: Accounts root path no write
+- name: Accounts root path no write @accounts_root_path_dirs_no_write
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Get root paths which are not symbolic links
+    - name: Get root paths which are not symbolic links @accounts_root_path_dirs_no_write
       become: yes
       stat:
         path: '{{ item }}'
@@ -9,7 +10,7 @@
       failed_when: false
       register: root_paths
       with_items: '{{ ansible_env.PATH.split('':'') }}'
-    - name: Disable writability to root directories
+    - name: Disable writability to root directories @accounts_root_path_dirs_no_write
       file:
         path: '{{ item.item }}'
         mode: g-w,o-w

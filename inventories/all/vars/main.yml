@@ -28,6 +28,12 @@ var_site_address: "default"
 
 var_admin_workstation: false
 var_network_auditd: false
+var_always_on_display: false
+var_devel_workstation: false
+var_unrestricted_os: false
+var_thin_client: false
+var_ad_server: false
+var_fs_userspace: false
 
 var_no_proxy: "127.0.0.1,10.0.0.0/8,localhost,*.si.mi"
 

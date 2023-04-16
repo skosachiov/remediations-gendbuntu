@@ -1,15 +1,16 @@
-- name: Disable autofs
+- name: Disable autofs @autofs_disabled
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Gather the service facts
+    - name: Gather the service facts @autofs_disabled
       service_facts: null
-    - name: Disable service autofs
+    - name: Disable service autofs @autofs_disabled
       systemd:
         name: autofs.service
         enabled: 'no'
         state: stopped
         masked: 'yes'
       when: '"autofs.service" in ansible_facts.services'
-    - name: Unit Socket Exists - autofs.socket
+    - name: Unit Socket Exists - autofs.socket @autofs_disabled
       command: systemctl list-unit-files autofs.socket
       args:
         warn: false

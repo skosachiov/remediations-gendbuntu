@@ -1,12 +1,12 @@
-- name: Check repo fingerprints
+- name: Check repo fingerprints @check_repo_fingerprints
   block:
-    - name: Check repo fingerprints Get
+    - name: Check repo fingerprints Get @check_repo_fingerprints
       shell: apt-key list --fingerprint --with-colons 2> /dev/null | grep "^fpr" | cut -f 10 -d ":"
       failed_when: false
       check_mode: no
       register: result
       changed_when: false
-    - name: Check repo fingerprints Check
+    - name: Check repo fingerprints Check @check_repo_fingerprints
       changed_when: true
       failed_when: false
       debug:

@@ -1,4 +1,5 @@
-- name: Auditd Present deb
+- name: Auditd Present deb @auditd_present
+  ignore_errors: "{{ansible_check_mode}}"
   package:
     name: "{{'auditd' if ansible_os_family in ['Debian'] else 'audit'}}"
     state: present
@@ -8,9 +9,10 @@
     - mob
     - auditd_present
 
-- name: Configure auditd max log file
+- name: Configure auditd max log file @auditd_max_log_file
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Configure auditd max_log_file
+    - name: Configure auditd max_log_file @auditd_max_log_file
       lineinfile:
         dest: /etc/audit/auditd.conf
         line: max_log_file = 128
@@ -18,15 +20,15 @@
         state: present
         create: true
       notify: Auditd restarted
-    - name: Configure auditd max_log_file_action
-      lineinfile: 
+    - name: Configure auditd max_log_file_action @auditd_max_log_file
+      lineinfile:
         dest: /etc/audit/auditd.conf
         line: max_log_file_action = ROTATE
         regexp: ^\s*max_log_file_action\s*=\s*.*$
         state: present
         create: true
       notify: Auditd restarted
-    - name: Configure auditd num_logs 
+    - name: Configure auditd num_logs @auditd_max_log_file
       lineinfile:
         dest: /etc/audit/auditd.conf
         line: num_logs = 5
@@ -34,7 +36,7 @@
         state: present
         create: true
       notify: Auditd restarted
-    - name: Configure auditd name_format
+    - name: Configure auditd name_format @auditd_max_log_file
       lineinfile:
         dest: /etc/audit/auditd.conf
         line: name_format = hostname
@@ -48,9 +50,10 @@
     - mob
     - auditd_max_log_file
 
-- name: Configure audspd q_depth
+- name: Configure audspd q_depth @audispd_conf_q_depth
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Configure audspd q_depth Change
+    - name: Configure audspd q_depth Change @audispd_conf_q_depth
       lineinfile:
         dest: /etc/audisp/audispd.conf
         line: q_depth = 512
@@ -63,9 +66,10 @@
     - sec
     - audispd_conf_q_depth
 
-- name: Set common auditd rules
+- name: Set common auditd rules @common_auditd_rules
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Set common auditd rules Exceptions
+    - name: Set common auditd rules Exceptions @common_auditd_rules
       blockinfile:
         dest: /etc/audit/rules.d/audit.rules
         marker_begin: BEGIN_EXCEPTIONS
@@ -73,7 +77,7 @@
         insertafter: "^-f 1"
         block: "{{var_auditd_exceptions}}"
       notify: Auditd restarted
-    - name: Set common auditd rules Sessions
+    - name: Set common auditd rules Sessions @common_auditd_rules
       blockinfile:
         dest: /etc/audit/rules.d/audit.rules
         marker_begin: BEGIN_SESSIONS
@@ -87,7 +91,7 @@
           -w /var/log/btmp -p wa -k audit_session
           -w /var/log/wtmp -p wa -k audit_session
       notify: Auditd restarted
-    - name: Set common auditd rules Time events
+    - name: Set common auditd rules Time events @common_auditd_rules
       blockinfile:
         dest: /etc/audit/rules.d/audit.rules
         marker_begin: BEGIN_TIME
@@ -102,7 +106,7 @@
           -a always,exit -F arch=b64 -S clock_settime -F a0=0x0 -F key=audit_time_rules
           -w /etc/localtime -p wa -k audit_time_rules
       notify: Auditd restarted
-    - name: Set common auditd rules Identity
+    - name: Set common auditd rules Identity @common_auditd_rules
       blockinfile:
         dest: /etc/audit/rules.d/audit.rules
         marker_begin: BEGIN_IDENTITY
@@ -114,7 +118,7 @@
           -w /etc/gshadow -p wa -k audit_rules_usergroup_modification
           -w /etc/shadow -p wa -k audit_rules_usergroup_modification
       notify: Auditd restarted
-    - name: Set common auditd rules System
+    - name: Set common auditd rules System @common_auditd_rules
       blockinfile:
         dest: /etc/audit/rules.d/audit.rules
         marker_begin: BEGIN_SYSTEM
@@ -130,7 +134,7 @@
           -w /etc/network/interfaces -p wa -k audit_rules_networkconfig_modification
           # -w /etc/sysconfig/network -p wa -k audit_rules_networkconfig_modification
       notify: Auditd restarted
-    - name: Set common auditd rules Selinux
+    - name: Set common auditd rules Selinux @common_auditd_rules
       blockinfile:
         dest: /etc/audit/rules.d/audit.rules
         marker_begin: BEGIN_SELINUX
@@ -139,7 +143,7 @@
         block: |
           # -a always,exit -F dir=/etc/selinux/ -F perm=wa -F key=audit_MAC-policy
       notify: Auditd restarted
-    - name: Set common auditd rules Sudoers
+    - name: Set common auditd rules Sudoers @common_auditd_rules
       blockinfile:
         dest: /etc/audit/rules.d/audit.rules
         marker_begin: BEGIN_SUDOERS
@@ -148,8 +152,9 @@
         block: |
           -w /etc/sudoers -p wa -k audit_sudoers
           -w /etc/sudoers.d/ -p wa -k audit_sudoers
+          -w {{var_sudo_logfile}} -p wa -k audit_sudoers
       notify: Auditd restarted
-    - name: Set common auditd rules Root
+    - name: Set common auditd rules Root @common_auditd_rules
       blockinfile:
         dest: /etc/audit/rules.d/audit.rules
         marker_begin: BEGIN_SETUID
@@ -161,7 +166,7 @@
           -a always,exit -F arch=b32 -S all -F egid=0 -F perm=awx -k audit_setgid
           -a always,exit -F arch=b64 -S all -F egid=0 -F perm=awx -k audit_setgid
       notify: Auditd restarted
-    - name: Set common auditd rules Home and media
+    - name: Set common auditd rules Home and media @common_auditd_rules
       blockinfile:
         dest: /etc/audit/rules.d/audit.rules
         marker_begin: BEGIN_HOME_MEDIA
@@ -171,7 +176,7 @@
           -w /home/ -p wxa -k audit_home
           -w /media/ -p wxa -k audit_media
       notify: Auditd restarted
-    - name: Set common auditd rules Cron
+    - name: Set common auditd rules Cron @common_auditd_rules
       blockinfile:
         dest: /etc/audit/rules.d/audit.rules
         marker_begin: BEGIN_CRON
@@ -184,7 +189,7 @@
           -w /etc/cron.monthly -p wa -k audit_cron
           -w /etc/cron.weekly -p wa -k audit_cron
       notify: Auditd restarted
-    - name: Set common auditd rules Certificates
+    - name: Set common auditd rules Certificates @common_auditd_rules
       blockinfile:
         dest: /etc/audit/rules.d/audit.rules
         marker_begin: BEGIN_CERT
@@ -193,9 +198,9 @@
         block: |
           -w /usr/share/ca-certificates/ -p wa -k audit_certificates
           -w /etc/ca-certificates/ -p wa -k audit_certificates
-          -w /etc/ssl/ -p wa -k audit_certificates      
+          -w /etc/ssl/ -p wa -k audit_certificates
       notify: Auditd restarted
-    - name: Set common auditd rule Delete
+    - name: Set common auditd rule Delete @common_auditd_rules
       blockinfile:
         dest: /etc/audit/rules.d/audit.rules
         marker_begin: BEGIN_DELETE
@@ -205,7 +210,7 @@
           -a always,exit -F arch=b32 -S unlink,unlinkat,rename,renameat -F euid=0 -F uid>=1000 -F key=audit_delete
           -a always,exit -F arch=b64 -S unlink,unlinkat,rename,renameat -F euid=0 -F uid>=1000 -F key=audit_delete
       notify: Auditd restarted
-    - name: Set common auditd rules Export
+    - name: Set common auditd rules Export @common_auditd_rules
       blockinfile:
         dest: /etc/audit/rules.d/audit.rules
         marker_begin: BEGIN_PERM
@@ -215,7 +220,7 @@
           -a always,exit -F arch=b32 -S mount -F auid>=1000 -F auid!=unset -F key=audit_perm_mod
           -a always,exit -F arch=b64 -S mount -F auid>=1000 -F auid!=unset -F key=audit_perm_mod
       notify: Auditd restarted
-    - name: Set common auditd rules Change stat
+    - name: Set common auditd rules Change stat @common_auditd_rules
       blockinfile:
         marker_begin: BEGIN_STAT
         marker_end: END_STAT
@@ -249,7 +254,7 @@
           -a always,exit -F arch=b64 -S fchmodat -F auid>=1000 -F auid!=unset -F key=audit_perm_mod
           -a always,exit -F arch=b32 -S fchmodat -F auid>=1000 -F auid!=unset -F key=audit_perm_mod
       notify: Auditd restarted
-    - name: Set common auditd rules Change stat
+    - name: Set common auditd rules Change stat @common_auditd_rules
       blockinfile:
         marker_begin: BEGIN_ACCESS
         marker_end: END_ACCESS
@@ -261,7 +266,7 @@
           -a always,exit -F arch=b64 -S creat -F exit=-EPERM -F auid>=1000 -F auid!=unset  -F key=audit_access
           -a always,exit -F arch=b32 -S creat -F exit=-EPERM -F auid>=1000 -F auid!=unset  -F key=audit_access
       notify: Auditd restarted
-    - name: Set common auditd rules Unlink
+    - name: Set common auditd rules Unlink @common_auditd_rules
       blockinfile:
         marker_begin: BEGIN_UNLINK
         marker_end: END_UNLINK
@@ -281,7 +286,7 @@
           -a always,exit -F arch=b64 -S rmdir,unlink,unlinkat,rename -S renameat -F auid>=1000 -F auid!=unset -F key=audit_delete
           -a always,exit -F arch=b32 -S rmdir,unlink,unlinkat,rename -S renameat -F auid>=1000 -F auid!=unset -F key=audit_delete
       notify: Auditd restarted
-    - name: Set common auditd rules Connect
+    - name: Set common auditd rules Connect @common_auditd_rules
       blockinfile:
         marker_begin: BEGIN_CONNECT
         marker_end: END_CONNECT
@@ -293,7 +298,7 @@
           -a always,exit -F arch=b64 -S connect -F a2=28 -F success=1 -F key=audit_connect
           -a always,exit -F arch=b32 -S connect -F a2=28 -F success=1 -F key=audit_connect
       notify: Auditd restarted
-    - name: Set common auditd rules Unsuccess
+    - name: Set common auditd rules Unsuccess @common_auditd_rules
       blockinfile:
         marker_begin: BEGIN_UNSUCCESS
         marker_end: END_UNSUCCESS
@@ -315,7 +320,7 @@
           -a always,exit -F arch=b64 -S open -F dir=/home -F success=0 -F key=audit_unsuccess
           -a always,exit -F arch=b32 -S open -F dir=/home -F success=0 -F key=audit_unsuccess
       notify: Auditd restarted
-    - name: Set common auditd rules Etc
+    - name: Set common auditd rules Etc @common_auditd_rules
       blockinfile:
         marker_begin: BEGIN_ETC
         marker_end: END_ETC
@@ -324,7 +329,7 @@
         block: |
           -w /etc -p wa -k audit_etc
       notify: Auditd restarted
-    - name: Set common auditd rules Firewall
+    - name: Set common auditd rules Firewall @common_auditd_rules
       blockinfile:
         marker_begin: BEGIN_FIREWALL
         marker_end: END_FIREWALL
@@ -333,7 +338,7 @@
         block: |
           # -a always,exit -F arch=b64 -S setsockopt -F key=audit_firewall
       notify: Auditd restarted
-    - name: Set common auditd rules Modules
+    - name: Set common auditd rules Modules @common_auditd_rules
       blockinfile:
         marker_begin: BEGIN_MODULES
         marker_end: END_MODULES
@@ -354,9 +359,10 @@
     - mob
     - common_auditd_rules
 
-- name: Audit rules increase buffer
+- name: Audit rules increase buffer @audit_rules_increase_buffer
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Audit rules increase buffer 
+    - name: Audit rules increase buffer @audit_rules_increase_buffer
       lineinfile:
         path: /etc/audit/rules.d/audit.rules
         regexp: ^\s*-b\s*
@@ -368,24 +374,25 @@
     - sec
     - audit_rules_increase_buffer
 
-- name: Audit rules immutable
+- name: Audit rules immutable @audit_rules_immutable
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Collect all files from /etc/audit/rules.d with .rules extension
+    - name: Collect all files from /etc/audit/rules.d with .rules extension @audit_rules_immutable
       find:
         paths: /etc/audit/rules.d/
         patterns: '*.rules'
       register: find_rules_d
-    - name: Remove the -e option from all Audit config files
+    - name: Remove the -e option from all Audit config files @audit_rules_immutable
       lineinfile:
         path: '{{ item }}'
         regexp: ^\s*(?:-e)\s+.*$
         state: absent
       loop: '{{ find_rules_d.files | map(attribute=''path'') | list + [''/etc/audit/audit.rules''] }}'
-      when: 
+      when:
         - item != '/etc/audit/audit.rules'
         - item != '/etc/audit/rules.d/audit.rules'
         - item != '/etc/audit/rules.d/immutable.rules'
-    - name: Add Audit -e option into /etc/audit/rules.d/immutable.rules and /etc/audit/audit.rules
+    - name: Add Audit -e option into /etc/audit/rules.d/immutable.rules and /etc/audit/audit.rules @audit_rules_immutable
       lineinfile:
         path: '{{ item }}'
         create: true
@@ -401,7 +408,8 @@
     - sec
     - audit_rules_immutable
 
-- name: Configure auditd space_left Action on Low Disk Space
+- name: Configure auditd space_left Action on Low Disk Space @auditd_data_retention_space_left_action
+  ignore_errors: "{{ansible_check_mode}}"
   lineinfile:
     dest: /etc/audit/auditd.conf
     # line: space_left_action = halt
@@ -415,7 +423,8 @@
     - mob
     - auditd_data_retention_space_left_action
 
-- name: Enable auditd syslog plugin
+- name: Enable auditd syslog plugin @auditd_audispd_syslog_plugin_activated
+  ignore_errors: "{{ansible_check_mode}}"
   lineinfile:
     dest: /etc/audisp/plugins.d/syslog.conf
     regexp: ^active
@@ -426,14 +435,15 @@
     - sec
     - auditd_audispd_syslog_plugin_activated
 
-- name: Auditd rules count
+- name: Auditd rules count @auditd_rules_count
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Auditd rules count Get
+    - name: Auditd rules count Get @auditd_rules_count
       command: auditctl -l
       changed_when: false
       check_mode: no
       register: items
-    - name: Auditd rules count Compare
+    - name: Auditd rules count Compare @auditd_rules_count
       changed_when: true
       debug:
         msg: "Auditd rules count is less than the norm"

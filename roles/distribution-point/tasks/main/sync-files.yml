@@ -1,0 +1,22 @@
+- name: Sync some files with ansible server @sync_some_files
+  block:
+    - name: Sync some files with ansible server Create folder @sync_some_files
+      file:
+        path: /var/www/html/security
+        state: directory
+        owner: www-data
+    - name: Sync some files with ansible server Create folder @sync_some_files
+      file:
+        path: /var/www/html/security/oval
+        state: directory
+        owner: www-data
+    - name: Sync some files with ansible server Get url @sync_some_files
+      get_url:
+        url: https://{{var_ansible_fqdn}}/security/oval/oval-definitions-buster.xml
+        dest: /var/www/html/security/oval/
+        owner: www-data
+  when: ansible_os_family in ['Debian']
+  tags:
+    - ws
+    - sync_some_files
+

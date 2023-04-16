@@ -1,11 +1,11 @@
-- name: Hide unused desktop apps home
+- name: Hide unused desktop apps home @hide_unused_desktop_apps_home
   block:
-    - name: Hide unused desktop apps home Find
+    - name: Hide unused desktop apps home Find @hide_unused_desktop_apps_home
       shell: find /home -xdev -name "*.desktop" | grep -e Desktops -e startmenu
       register: items
       failed_when: false
       changed_when: false
-    - name: Hide unused desktop apps home Hide
+    - name: Hide unused desktop apps home Hide @hide_unused_desktop_apps_home
       failed_when: false
       lineinfile:
         dest: "{{item}}"
@@ -19,15 +19,16 @@
     - ws
     - hide_unused_desktop_apps_home
 
-- name: Unhide desktop apps home
+- name: Unhide desktop apps home @unhide_desktop_apps_home
   block:
-    - name: Unhide desktop apps home Find
+    - name: Unhide desktop apps home Find @unhide_desktop_apps_home
       shell: find /home -xdev -name "*.desktop" | grep -e Desktops -e startmenu
       register: items
       failed_when: false
       changed_when: false
-    - name: Unhide desktop apps home Hide
+    - name: Unhide desktop apps home Hide @unhide_desktop_apps_home
       failed_when: false
+      changed_when: false
       lineinfile:
         dest: "{{item}}"
         state: present
@@ -40,15 +41,15 @@
     - ws
     - unhide_desktop_apps_home
 
-- name: Hide unused desktop apps share
+- name: Hide unused desktop apps share @hide_unused_desktop_apps_share
   block:
-    - name: Hide unused desktop apps share Find
+    - name: Hide unused desktop apps share Find @hide_unused_desktop_apps_share
       find:
         paths: /usr/share/applications
         patterns: "*.desktop"
         recurse: yes
       register: result
-    - name: Hide unused desktop apps share Hide
+    - name: Hide unused desktop apps share Hide @hide_unused_desktop_apps_share
       lineinfile:
         dest: "{{item.path}}"
         state: present
@@ -61,15 +62,15 @@
     - ws
     - hide_unused_desktop_apps_share
 
-- name: Unhide unused desktop apps share
+- name: Unhide unused desktop apps share @unhide_desktop_apps_share
   block:
-    - name: Unhide unused desktop apps share Find
+    - name: Unhide unused desktop apps share Find @unhide_desktop_apps_share
       find:
         paths: /usr/share/applications
         patterns: "*.desktop"
         recurse: yes
       register: result
-    - name: Unhide unused desktop apps share Hide
+    - name: Unhide unused desktop apps share Hide @unhide_desktop_apps_share
       lineinfile:
         dest: "{{item.path}}"
         state: present

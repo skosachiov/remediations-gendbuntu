@@ -1,15 +1,15 @@
-- name: Ensure third-party repos are disabled
+- name: Ensure third-party repos are disabled @rm_third_party_repo
   block:
-    - name: Ensure third-party repos are disabled List dir
+    - name: Ensure third-party repos are disabled List dir @rm_third_party_repo
       find:
         paths: /etc/apt/sources.list.d/
         recurse: no
         file_type: file
         excludes:
           - "libreoffice-ubuntu-libreoffice-still-focal.list"
-          - "dummy.list"          
+          - "dummy.list"
       register: result
-    - name: Ensure third-party repos are disabled Comment
+    - name: Ensure third-party repos are disabled Comment @rm_third_party_repo
       replace:
         dest: "{{item.path}}"
         regexp: '^(deb\s.*)'

@@ -1,16 +1,16 @@
-- name: Enable service chronyd
+- name: Enable service chronyd @service_chronyd_enabled
   block:
-    - name: Ensure ntp is removed
+    - name: Ensure ntp is removed @service_chronyd_enabled
       package:
         name: ntp
         state: absent
       failed_when: false
-    - name: Ensure chrony is installed
+    - name: Ensure chrony is installed @service_chronyd_enabled
       package:
         name: chrony
         state: present
       failed_when: false
-    - name: Gather the package facts
+    - name: Gather the package facts @service_chronyd_enabled
       package_facts:
         manager: auto
   tags:
@@ -19,30 +19,30 @@
     - mob
     - service_chronyd_enabled
 
-- name: Chronyd set internal pool
+- name: Chronyd set internal pool @chronyd_set_internal_pool
   block:
-    - name: Chrony remove external pools
+    - name: Chrony remove external pools @chronyd_set_internal_pool
       replace:
         path: /etc/chrony/chrony.conf
         regexp: ^(pool\s*ntp.ubuntu.com)
         replace: '# \1'
-    - name: Chrony remove external pools
+    - name: Chrony remove external pools @chronyd_set_internal_pool
       replace:
         path: /etc/chrony/chrony.conf
         regexp: ^(pool\s*[0-9].ubuntu.pool.ntp.org)
         replace: '# \1'
-    - name: Chrony remove external servers
+    - name: Chrony remove external servers @chronyd_set_internal_pool
       replace:
         path: /etc/chrony/chrony.conf
         regexp: ^(server)
         replace: '# \1'
-    - name: Chrony server set
+    - name: Chrony server set @chronyd_set_internal_pool
       lineinfile:
         dest: /etc/chrony/chrony.conf
         regexp: ^pool
-        line: 'pool {{var_kdc}} iburst'
+        line: "pool {{var_kdc.split(',')[0]}} iburst"
         create: true
-    - name: Enable service chronyd
+    - name: Enable service chronyd @chronyd_set_internal_pool
       service:
         name: chronyd
         enabled: 'yes'
@@ -50,16 +50,16 @@
       failed_when: false
       when:
         - '"chrony" in ansible_facts.packages'
-  when: var_installation_type == "workstation" and var_internal_ansible_ip        
+  when: var_installation_type == "workstation" and var_internal_ansible_ip
   tags:
     - ws
     - sec
     - mob
     - chronyd_set_internal_pool
 
-- name: Chronyd tracking
+- name: Chronyd tracking @service_chronyd_tracking
   block:
-    - name: Chronyd tracking
+    - name: Chronyd tracking @service_chronyd_tracking
       shell: 'chronyc tracking | grep "Leap\s*status\s*:\s*Normal"'
       register: items
       changed_when: items.stdout_lines|length != 1
@@ -70,15 +70,15 @@
     - mob
     - service_chronyd_tracking
 
-- name: Ensure permission 0644 on /etc/chrony/chrony.conf
+- name: Ensure permission 0644 on /etc/chrony/chrony.conf @file_0644_chrony_conf
   block:
-    - name: Ensure permission 0644 on /etc/chrony/chrony.conf Find
+    - name: Ensure permission 0644 on /etc/chrony/chrony.conf Find @file_0644_chrony_conf
       find:
         path: /etc/chrony
-        file_type: file 
+        file_type: file
         recurse: yes
       register: result
-    - name: Ensure permission 0644 on /etc/chrony/chrony.conf Chmod
+    - name: Ensure permission 0644 on /etc/chrony/chrony.conf Chmod @file_0644_chrony_conf
       file:
         path: "{{item.path}}"
         mode: u-x,go-wx

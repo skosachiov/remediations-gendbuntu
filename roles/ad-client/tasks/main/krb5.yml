@@ -1,4 +1,4 @@
-- name: Krb5 conf
+- name: Krb5 conf @krb5_conf
   # kdc = {{var_kdc}}
   # admin_server = {{var_admin_server}}
   copy:
@@ -28,23 +28,23 @@
     - sec
     - krb5_conf
 
-- name: Set krb5 trace
+- name: Set krb5 trace @set_krb5_trace
   block:
-    - name: Set krb5 trace in /etc/profile
+    - name: Set krb5 trace in /etc/profile @set_krb5_trace
       lineinfile:
         dest: /etc/profile
         line: export KRB5_TRACE="/var/log/krb5_trace.log"
         regexp: export\s*KRB5_TRACE
         state: present
         create: true
-    - name: Set krb5 trace in /etc/rc.local
+    - name: Set krb5 trace in /etc/rc.local @set_krb5_trace
       blockinfile:
         dest: /etc/rc.local
         marker_begin: BEGIN_KRB5_TRACE
         marker_end: END_KRB5_TRACE
         block: |
           touch /var/log/krb5_trace.log
-          chown root:root /var/log/krb5_trace.log 
+          chown root:root /var/log/krb5_trace.log
           chmod o=w /var/log/krb5_trace.log
         state: present
         create: true

@@ -1,4 +1,5 @@
-- name: Comment out ipv6 hosts
+- name: Comment out ipv6 hosts @comment_out_ipv6_hosts
+  ignore_errors: "{{ansible_check_mode}}"
   replace:
     dest: /etc/hosts
     regexp: '^::1 '
@@ -7,7 +8,8 @@
     - ws
     - comment_out_ipv6_hosts
 
-- name: Ensure sysctl net.ipv6.conf.all.disable_ipv6 is set to 1
+- name: Ensure sysctl net.ipv6.conf.all.disable_ipv6 is set to 1 @sysctl_net_ipv6_conf_all_disable_ipv6
+  ignore_errors: "{{ansible_check_mode}}"
   sysctl:
     name: net.ipv6.conf.all.disable_ipv6
     value: '1'
@@ -20,7 +22,8 @@
     - mob
     - sysctl_net_ipv6_conf_all_disable_ipv6
 
-- name: Ensure sysctl net.ipv6.conf.default.disable_ipv6 is set to 1
+- name: Ensure sysctl net.ipv6.conf.default.disable_ipv6 is set to 1 @sysctl_net_ipv6_conf_default_disable_ipv6
+  ignore_errors: "{{ansible_check_mode}}"
   sysctl:
     name: net.ipv6.conf.default.disable_ipv6
     value: '1'

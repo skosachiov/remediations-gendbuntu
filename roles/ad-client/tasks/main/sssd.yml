@@ -1,6 +1,6 @@
-- name: Sssd packages are present
+- name: Sssd packages are present @sssd_packages_are_present
   block:
-    - name: Sssd packages are present Common
+    - name: Sssd packages are present Common @sssd_packages_are_present
       package:
         name:
           - realmd
@@ -8,7 +8,7 @@
           - sssd-tools
           - adcli
         state: present
-    - name: Sssd packages are present Specific
+    - name: Sssd packages are present Specific @sssd_packages_are_present
       package:
         name: "{{['libnss-sss', 'libpam-sss'] if ansible_os_family in ['Debian'] else 'sssd-client'}}"
         state: present
@@ -16,7 +16,7 @@
     - ws
     - sssd_packages_are_present
 
-- name: Sssd fine tuning Enabled
+- name: Sssd fine tuning Enabled @sssd_service_enabled
   service:
     name: sssd
     enabled: yes
@@ -24,7 +24,7 @@
     - ws
     - sssd_service_enabled
 
-- name: Sssd fine turning Realm wrapper
+- name: Sssd fine turning Realm wrapper @copy_realm_wrapper
   template:
     src: realm.sh.j2
     dest: /root/realm.sh
@@ -33,7 +33,7 @@
     - ws
     - copy_realm_wrapper
 
-- name: Sssd fine turning Realm conf
+- name: Sssd fine turning Realm conf @copy_realmd_conf
   template:
     src: realmd.conf.j2
     dest: /etc/realmd.conf
@@ -41,7 +41,7 @@
     - ws
     - copy_realmd_conf
 
-- name: Sssd fine tuning Add block
+- name: Sssd fine tuning Add block @root_copy_sssd_conf
   template:
     src: sssd.conf.j2
     dest: /root/sssd.conf
@@ -49,7 +49,7 @@
     - ws
     - root_copy_sssd_conf
 
-- name: Sssd fine tuning Permissions
+- name: Sssd fine tuning Permissions @sssd_conf_permissions
   file:
     path: /root/sssd.conf
     mode: '0600'
@@ -58,23 +58,23 @@
     - sec
     - sssd_conf_permissions
 
-- name: Pam mkhomedir
+- name: Pam mkhomedir @pam_mkhomedir
   block:
-    - name: Pam mkhomedir deb
+    - name: Pam mkhomedir deb @pam_mkhomedir
       lineinfile:
         dest: /etc/pam.d/common-session
         regexp: ^\s*session\s*optional\s*pam_mkhomedir.so
         line: session optional pam_mkhomedir.so skel=/etc/skel umask=0077
         insertbefore: ^\s*session\s*required\s*pam_unix.so
-      when: ansible_os_family in ['Debian']      
-    - name: Pam mkhomedir rpm
+      when: ansible_os_family in ['Debian']
+    - name: Pam mkhomedir rpm @pam_mkhomedir
       shell: authconfig --enablemkhomedir --update
       when: ansible_os_family in ['RedHat', 'Rocky', 'RED']
   tags:
     - ws
     - pam_mkhomedir
 
-- name: Check ad_gpo_access_control enforcing 
+- name: Check ad_gpo_access_control enforcing @check_ad_gpo_access_control_enforcing
   failed_when: false
   check_mode: yes
   lineinfile:

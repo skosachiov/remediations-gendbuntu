@@ -1,13 +1,13 @@
-- name: Copy ca certs and script
+- name: Copy ca certs and script @copy_ca_certs_and_script
   block:
-    - name: Copy ca certs and script Certs
+    - name: Copy ca certs and script Certs @copy_ca_certs_and_script
       copy:
         src: "{{item}}"
         dest: /usr/local/share/ca-certificates/
         mode: go+r
       with_fileglob:
         - "{{playbook_dir}}/{{var_certs_dir}}/*"
-    - name: Copy ca certs and script Script
+    - name: Copy ca certs and script Script @copy_ca_certs_and_script
       copy:
         dest: /etc/profile.d/ca-cert-install-for-user.sh
         mode: a+rx
@@ -25,16 +25,16 @@
               done
             fi
           done
-    - name: Copy ca certs and script Chmod
+    - name: Copy ca certs and script Chmod @copy_ca_certs_and_script
       file:
         path: /usr/local/share/ca-certificates
         mode: go+r
         recurse: yes
-    - name: Copy ca certs and script Update
+    - name: Copy ca certs and script Update @copy_ca_certs_and_script
       command: update-ca-certificates
       changed_when: false
       when: ansible_os_family in ['Debian']
-    - name: Copy ca certs and script Update
+    - name: Copy ca certs and script Update @copy_ca_certs_and_script
       command: update-ca-trust
       changed_when: false
       when: ansible_os_family in ['RedHat', 'Rocky', 'RED']

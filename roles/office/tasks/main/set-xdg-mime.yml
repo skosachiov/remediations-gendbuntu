@@ -1,4 +1,4 @@
-- name: Set xdg-mime defaults
+- name: Set xdg-mime defaults @set_xdg_mime_defaults
   copy:
     dest: /etc/profile.d/set-xdg-mime.sh
     mode: a+x

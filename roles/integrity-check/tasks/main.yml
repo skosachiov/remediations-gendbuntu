@@ -1,44 +1,44 @@
-- name: Ensure aide is active
+- name: Ensure aide is active @aide_is_active
   block:
-    - name: Ensure aide is active State present
+    - name: Ensure aide is active State present @aide_is_active
       package:
         name: aide
         state: present
-    - name: Ensure aide is active Report syslog
+    - name: Ensure aide is active Report syslog @aide_is_active
       lineinfile:
         create: true
         dest: /etc/aide/aide.conf
         regexp: ^#?\s*report_url
         line: "report_url=syslog:LOG_INFO"
-    - name: Ensure aide is active Disable mail
+    - name: Ensure aide is active Disable mail @aide_is_active
       replace:
         dest: /etc/cron.daily/aide
         regexp: (mail\s*-s)
         replace: /bin/true \1
-    - name: Ensure aide is active Database is up-to-date
+    - name: Ensure aide is active Database is up-to-date @aide_is_active
       stat:
         path: /var/lib/aide/aide.db
       register: file_aide
-    - name: Ensure aide is active Warning
+    - name: Ensure aide is active Warning @aide_is_active
       debug:
         msg: "aide database is not up-to-date"
       when: file_aide.stat.mtime|int < (ansible_date_time.epoch|int - 60*60*48)
       changed_when: file_aide.stat.mtime|int < (ansible_date_time.epoch|int - 60*60*48)
       ignore_errors: "{{ansible_check_mode}}"
-  when: ansible_os_family in ['Debian']                  
+  when: ansible_os_family in ['Debian']
   tags:
     - ws
     - sec
     - mob
     - aide_is_active
 
-- name: Aide config file section
+- name: Aide config file section @aide_config_file_section
   blockinfile:
     create: yes
     dest: /etc/aide/aide.conf.d/99_aide_myrule
     block: |
       /temp R
-  when: ansible_os_family in ['Debian']                  
+  when: ansible_os_family in ['Debian']
   tags:
     - ws
     - sec

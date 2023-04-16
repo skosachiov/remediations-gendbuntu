@@ -1,2 +1,2 @@
-var_smb_printers:
-  - ipp://paris-prn.si.mi/prn
+var_cups_printers:
+  - { uri: 'smb://paris-prn.si.mi/prn', auth: negotiate, model: 'gutenprint.5.3://pcl-g_c/expert' }

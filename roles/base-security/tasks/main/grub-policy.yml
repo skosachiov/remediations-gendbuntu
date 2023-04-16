@@ -1,6 +1,7 @@
-- name: Set grub2 password
+- name: Set grub2 password @set_grub2_password
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Set grub2 password Hash focal
+    - name: Set grub2 password Hash focal @set_grub2_password
       blockinfile:
         dest: /etc/grub.d/07_password
         block: |
@@ -10,15 +11,16 @@
             EOF
         create: true
       notify: Update grub
-    - name: Set grub2 password for Begin
+    - name: Set grub2 password for Begin @set_grub2_password
       lineinfile:
         dest: /etc/grub.d/10_linux
         line: 'CLASS="--class gnu-linux --class gnu --class os --unrestricted"'
         insertbefore: ^SUPPORTED_INITS=.*
         state: present
+        mode: 0700
         create: true
-      notify: Update grub      
-    - name: Set grub2 password for Recovery
+      notify: Update grub
+    - name: Set grub2 password for Recovery @set_grub2_password
       lineinfile:
         dest: /etc/grub.d/10_linux
         line: '    CLASS="--class gnu-linux --class gnu --class os"'
@@ -26,7 +28,7 @@
         state: present
         create: true
       notify: Update grub
-    - name: Set grub2 password for Recovery end
+    - name: Set grub2 password for Recovery end @set_grub2_password
       lineinfile:
         dest: /etc/grub.d/10_linux
         line: '    CLASS="--class gnu-linux --class gnu --class os --unrestricted"'
@@ -34,26 +36,50 @@
         state: present
         create: true
       notify: Update grub
-  when: ansible_os_family in ['Debian']        
+  when: ansible_os_family in ['Debian']
   tags:
     - ws
     - sec
     - mob
     - set_grub2_password
 
-- name: Set grub cmdline
+- name: Set grub cmdline @set_grub_cmdline
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Set grub splash /etc/default/grub
-      lineinfile:
+    - name: Set grub cmdline /etc/default/grub @set_grub_cmdline
+      replace:
         dest: /etc/default/grub
-        line: GRUB_CMDLINE_LINUX_DEFAULT="quiet net.ifnames=0 audit=1 audit_backlog_limit=8192 splash"
-        regexp: ^#?\s*GRUB_CMDLINE_LINUX_DEFAULT
-        state: present
+        regexp: '(GRUB_CMDLINE_LINUX_DEFAULT=.*quiet net.ifnames=0).*$'
+        replace: '\1 audit=1 audit_backlog_limit=8192 splash"'
       notify: Update grub
-  when: ansible_os_family in ['Debian']        
+  when: ansible_os_family in ['Debian']
   tags:
     - ws
     - sec
     - mob
     - set_grub_cmdline
+
+- name: Set-unset unrestricted os @set_unset_unrestricted_os
+  ignore_errors: "{{ansible_check_mode}}"
+  block:
+    - name: Set-unset unrestricted os Set @set_unset_unrestricted_os
+      replace:
+        path: /etc/grub.d/30_os-prober
+        regexp: '(\-\-class os) \\'
+        replace: '\1 --unrestricted \\'
+      notify: Update grub
+      when: var_unrestricted_os
+    - name: Set-unset unrestricted os Unset @set_unset_unrestricted_os
+      replace:
+        path: /etc/grub.d/30_os-prober
+        regexp: '\-\-unrestricted '
+        replace: ''
+      notify: Update grub
+      when: not var_unrestricted_os
+  when: ansible_os_family in ['Debian']
+  tags:
+    - ws
+    - sec
+    - mob
+    - set_unset_unrestricted_os
 

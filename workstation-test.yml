@@ -67,6 +67,7 @@
       tags: always
     - role: terminal-server
       tags: always
+    - role: utmost-report
 
   post_tasks:
     - name: Debug

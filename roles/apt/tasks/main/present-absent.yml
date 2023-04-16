@@ -1,4 +1,4 @@
-- name: Ensure packages are installed
+- name: Ensure packages are installed @packages_are_installed
   package:
     name:
       - samba-common-bin
@@ -72,7 +72,7 @@
     - ws
     - packages_are_installed
 
-- name: Ensure unnecessary packages are removed
+- name: Ensure unnecessary packages are removed @packages_are_removed
   package:
     name:
       - ufw
@@ -90,7 +90,7 @@
     - mob
     - packages_are_removed
 
-- name: Ensure debuggers are removed
+- name: Ensure debuggers are removed @debuggers_are_removed
   package:
     name:
       - gdb
@@ -100,4 +100,4 @@
     - ws
     - sec
     - debuggers_are_removed
-    
+

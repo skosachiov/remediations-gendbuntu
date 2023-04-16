@@ -1,4 +1,4 @@
-- name: Xrdp installed
+- name: Xrdp installed @xrdp_installed
   package:
     name: xrdp
     state: present
@@ -6,15 +6,15 @@
     - ws
     - xrdp_installed
 
-- name: Xrdp tuning
+- name: Xrdp tuning @xrdp_tuning
   block:
-    - name: Xrdp tunung Copy Xrdp logo file Copy
+    - name: Xrdp tunung Copy Xrdp logo file Copy @xrdp_tuning
       copy:
         src: "{{playbook_dir}}/{{var_xrdp_logo_file}}"
         dest: "/usr/share/xrdp/"
         remote_src: no
         mode: a+r
-    - name: Xrdp tuning Top window bg
+    - name: Xrdp tuning Top window bg @xrdp_tuning
       lineinfile:
           path: /etc/xrdp/xrdp.ini
           create: true
@@ -23,7 +23,7 @@
           state: present
           insertafter: \[Globals\]
       notify: Xrdp restarted
-    - name: Xrdp tuning Logo ls_logo_filename
+    - name: Xrdp tuning Logo ls_logo_filename @xrdp_tuning
       lineinfile:
           path: /etc/xrdp/xrdp.ini
           create: true
@@ -32,7 +32,7 @@
           state: present
           insertafter: \[Globals\]
       notify: Xrdp restarted
-    - name: Xrdp tuning colors used by windows in RGB format
+    - name: Xrdp tuning colors used by windows in RGB format @xrdp_tuning
       lineinfile:
           path: /etc/xrdp/xrdp.ini
           create: true
@@ -41,7 +41,7 @@
           state: present
           insertafter: \[Globals\]
       notify: Xrdp restarted
-    - name: Xrdp tuning Bg color
+    - name: Xrdp tuning Bg color @xrdp_tuning
       lineinfile:
           path: /etc/xrdp/xrdp.ini
           create: true
@@ -50,7 +50,7 @@
           state: present
           insertafter: \[Globals\]
       notify: Xrdp restarted
-    - name: Xrdp tuning Hide thinclient_drivers
+    - name: Xrdp tuning Hide thinclient_drivers @xrdp_tuning
       lineinfile:
           path: /etc/xrdp/sesman.ini
           create: true
@@ -63,9 +63,10 @@
     - ws
     - xrdp_tuning
 
-- name: XRDP disable Root Login
+- name: XRDP disable Root Login @xrdp_disable_root_login
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: XRDP disable Root Login Line
+    - name: XRDP disable Root Login Line @xrdp_disable_root_login
       lineinfile:
         path: /etc/xrdp/sesman.ini
         create: true
@@ -78,10 +79,11 @@
     - ws
     - sec
     - xrdp_disable_root_login
-  
-- name: XRDP set AllowGroups
+
+- name: XRDP set AllowGroups @xrdp_set_allowgroups
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: XRDP set AllowGroups AllowGroupsCheck
+    - name: XRDP set AllowGroups AllowGroupsCheck @xrdp_set_allowgroups
       lineinfile:
         path: /etc/xrdp/sesman.ini
         create: true
@@ -90,7 +92,7 @@
         state: present
         insertafter: ^\[Security\]
       notify: Xrdp restarted
-    - name: XRDP set AllowGroups TerminalServerUsers User
+    - name: XRDP set AllowGroups TerminalServerUsers User @xrdp_set_allowgroups
       lineinfile:
         path: /etc/xrdp/sesman.ini
         create: true
@@ -100,7 +102,7 @@
         insertafter: ^\[Security\]
       notify: Xrdp restarted
       when: var_admin_workstation|bool == false
-    - name: XRDP set AllowGroups TerminalServerAdmins User
+    - name: XRDP set AllowGroups TerminalServerAdmins User @xrdp_set_allowgroups
       lineinfile:
         path: /etc/xrdp/sesman.ini
         create: true
@@ -110,7 +112,7 @@
         insertafter: ^\[Security\]
       notify: Xrdp restarted
       when: var_admin_workstation|bool == false
-    - name: XRDP set AllowGroups TerminalServerUsers Admin
+    - name: XRDP set AllowGroups TerminalServerUsers Admin @xrdp_set_allowgroups
       lineinfile:
         path: /etc/xrdp/sesman.ini
         create: true
@@ -120,7 +122,7 @@
         insertafter: ^\[Security\]
       notify: Xrdp restarted
       when: var_admin_workstation|bool == true
-    - name: XRDP set AllowGroups TerminalServerAdmins Admin
+    - name: XRDP set AllowGroups TerminalServerAdmins Admin @xrdp_set_allowgroups
       lineinfile:
         path: /etc/xrdp/sesman.ini
         create: true
@@ -135,13 +137,14 @@
     - sec
     - xrdp_set_allowgroups
 
-- name: Xrdp crypt level
+- name: Xrdp crypt level @xrdp_crypt_level
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Xrdp crypt level Present
+    - name: Xrdp crypt level Present @xrdp_crypt_level
       package:
         name: xrdp
         state: present
-    - name: Xrdp crypt level create high
+    - name: Xrdp crypt level create high @xrdp_crypt_level
       lineinfile:
           path: /etc/xrdp/xrdp.ini
           create: true

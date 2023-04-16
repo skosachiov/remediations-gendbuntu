@@ -1,0 +1,41 @@
+- name: Set unset ad server @set_unset_ad_server
+  block:
+    - name: Set unset ad server Check @set_unset_ad_server
+      stat:
+        path: /etc/sssd/sssd.conf
+      register: result
+    - name: Set unset ad server Set @set_unset_ad_server
+      lineinfile:
+        dest: /etc/sssd/sssd.conf
+        line: "ad_server = {{var_kdc}}"
+        state: present
+        insertafter: ad_site
+      notify: Sssd restarted
+      when: result.stat.exists and var_ad_server
+    - name: Set unset ad server Set backup @set_unset_ad_server
+      failed_when: false
+      lineinfile:
+        dest: /etc/sssd/sssd.conf
+        line: "ad_server_backup = {{var_kdc_backup}}"
+        state: present
+        insertafter: ad_server
+      notify: Sssd restarted
+      when: result.stat.exists and var_ad_server and var_kdc_backup is defined
+    - name: Set unset ad server Unset @set_unset_ad_server
+      lineinfile:
+        dest: /etc/sssd/sssd.conf
+        regexp: "ad_server"
+        state: absent
+      notify: Sssd restarted
+      when: result.stat.exists and not var_ad_server
+    - name: Set unset ad server Unset backup @set_unset_ad_server
+      failed_when: false
+      lineinfile:
+        dest: /etc/sssd/sssd.conf
+        regexp: "ad_server_backup"
+        state: absent
+      notify: Sssd restarted
+      when: result.stat.exists and ((not var_ad_server) or (var_kdc_backup is undefined))
+  tags:
+    - ws
+    - set_unset_ad_server

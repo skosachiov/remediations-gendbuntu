@@ -1,12 +1,13 @@
-- name: Check file system devices permissions
+- name: Check file system devices permissions @check_fs_devices_permissions
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Check file system devices permissions Find
+    - name: Check file system devices permissions Find @check_fs_devices_permissions
       shell: cat /proc/mounts | cut -f 1 -d " " | grep -v "\/fuse" | grep "\/dev\/" | sort -u
       failed_when: false
       check_mode: no
       register: result
       changed_when: false
-    - name: Check file system devices permissions Check
+    - name: Check file system devices permissions Check @check_fs_devices_permissions
       check_mode: no
       failed_when: false
       file:
@@ -17,15 +18,16 @@
     - ws
     - check_fs_devices_permissions
 
-- name: Check swap files permissions
+- name: Check swap files permissions @check_swap_files_permissions
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Check swap files permissions Find
+    - name: Check swap files permissions Find @check_swap_files_permissions
       shell: cat /proc/swaps | grep "\(partition\|file\)" | cut -f 1 -d " "
       failed_when: false
       check_mode: no
       register: result
       changed_when: false
-    - name: Check swap files permissions Check
+    - name: Check swap files permissions Check @check_swap_files_permissions
       check_mode: no
       file:
         path: "{{item}}"
@@ -36,7 +38,8 @@
     - sec
     - check_swap_files_permissions
 
-- name: Ensure group owner 0 and permissions 0700 on /etc/grub.d/
+- name: Ensure group owner 0 and permissions 0700 on /etc/grub.d/ @file_owner_and_permissions_grub_d
+  ignore_errors: "{{ansible_check_mode}}"
   file:
     path: /etc/grub.d/
     group: '0'
@@ -48,48 +51,51 @@
     - sec
     - file_owner_and_permissions_grub_d
 
-- name: Ensure permissions on /etc/timezone
+- name: Ensure permissions on /etc/timezone @etc_timezone_perm
+  ignore_errors: "{{ansible_check_mode}}"
   file:
     path: /etc/timezone
     mode: go-w,a-x
     owner: root
     group: root
-  when: ansible_os_family in ['Debian']    
+  when: ansible_os_family in ['Debian']
   tags:
     - ws
     - sec
     - etc_timezone_perm
 
-- name: Ensure permissions on /usr/share/zoneinfo
+- name: Ensure permissions on /usr/share/zoneinfo @usr_share_zoneinfo_perm
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Ensure permissions on /usr/share/zoneinfo Find
+    - name: Ensure permissions on /usr/share/zoneinfo Find @usr_share_zoneinfo_perm
       find:
         path: /usr/share/zoneinfo
-        file_type: file 
+        file_type: file
         recurse: yes
       register: result
-    - name: Ensure permissions on /usr/share/zoneinfo      
+    - name: Ensure permissions on /usr/share/zoneinfo @usr_share_zoneinfo_perm
       file:
         path: "{{item.path}}"
         mode: go-w
         owner: root
         group: root
       with_items: "{{result.files}}"
-  when: ansible_os_family in ['Debian']          
+  when: ansible_os_family in ['Debian']
   tags:
     - ws
     - sec
     - usr_share_zoneinfo_perm
 
-- name: Ensure permissions on /etc/audit
+- name: Ensure permissions on /etc/audit @etc_audit_perm
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Ensure permissions on /etc/audit Find
+    - name: Ensure permissions on /etc/audit Find @etc_audit_perm
       find:
         path: /etc/audit
-        file_type: file 
+        file_type: file
         recurse: yes
       register: result
-    - name: Ensure permissions on /etc/audit Chmod
+    - name: Ensure permissions on /etc/audit Chmod @etc_audit_perm
       file:
         path: "{{item.path}}"
         mode: u-x,g-wx,o-rwx
@@ -101,15 +107,16 @@
     - sec
     - etc_audit_perm
 
-- name: Ensure permissions on /var/log/audit
+- name: Ensure permissions on /var/log/audit @var_log_audit_perm
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Ensure permissions on /var/log/audit Find
+    - name: Ensure permissions on /var/log/audit Find @var_log_audit_perm
       find:
         path: /var/log/audit
-        file_type: file 
+        file_type: file
         recurse: yes
       register: result
-    - name: Ensure permissions on /var/log/audit Chmod
+    - name: Ensure permissions on /var/log/audit Chmod @var_log_audit_perm
       file:
         path: "{{item.path}}"
         mode: ug-x,o-rwx
@@ -121,16 +128,17 @@
     - mob
     - var_log_audit_perm
 
-- name: Ensure permissions on /var/log
+- name: Ensure permissions on /var/log @var_log_perm
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Ensure permissions on /var/log Find
+    - name: Ensure permissions on /var/log Find @var_log_perm
       find:
         paths: /var/log
         file_type: file
         excludes: "{{var_log_skip_permissions_check}}"
         recurse: yes
       register: result
-    - name: Ensure permissions on /var/log Check
+    - name: Ensure permissions on /var/log Check @var_log_perm
       file:
         path: "{{item.path}}"
         mode: o-wx
@@ -141,19 +149,21 @@
     - mob
     - var_log_perm
 
-- name: Ensure permission 0644 on /etc/passwd
+- name: Ensure permission 0644 on /etc/passwd @file_0644_etc_passwd
+  ignore_errors: "{{ansible_check_mode}}"
   file:
     path: /etc/passwd
     mode: '0644'
     owner: root
-    group: root    
+    group: root
   tags:
     - ws
     - sec
     - mob
     - file_0644_etc_passwd
-      
-- name: Ensure permission 0644 on /etc/group
+
+- name: Ensure permission 0644 on /etc/group @file_0644_etc_group
+  ignore_errors: "{{ansible_check_mode}}"
   file:
     path: /etc/group
     mode: '0644'
@@ -165,7 +175,8 @@
     - mob
     - file_0644_etc_group
 
-- name: Ensure permission on user account files backup
+- name: Ensure permission on user account files backup @account_files_backup_permission
+  ignore_errors: "{{ansible_check_mode}}"
   file:
     path: "{{item}}"
     mode: '0600'
@@ -182,42 +193,46 @@
     - sec
     - account_files_backup_permission
 
-- name: Ensure permission 0640 on /etc/shadow
+- name: Ensure permission 0640 on /etc/shadow @file_0640_etc_shadow
+  ignore_errors: "{{ansible_check_mode}}"
   file:
     path: /etc/shadow
     mode: '0640'
     owner: root
     group: shadow
-  when: ansible_os_family in ['Debian']    
+  when: ansible_os_family in ['Debian']
   tags:
     - ws
     - sec
     - mob
     - file_0640_etc_shadow
 
-- name: Ensure permission 0640 on /etc/gshadow
+- name: Ensure permission 0640 on /etc/gshadow @file_0640_etc_gshadow
+  ignore_errors: "{{ansible_check_mode}}"
   file:
     path: /etc/gshadow
     mode: '0640'
     owner: root
     group: shadow
-  when: ansible_os_family in ['Debian']    
+  when: ansible_os_family in ['Debian']
   tags:
     - ws
     - sec
     - file_0640_etc_gshadow
 
-- name: Ensure group owner 42 on /etc/shadow
+- name: Ensure group owner 42 on /etc/shadow @file_groupowner_etc_shadow
+  ignore_errors: "{{ansible_check_mode}}"
   file:
     path: /etc/shadow
     group: '42'
-  when: ansible_os_family in ['Debian']    
+  when: ansible_os_family in ['Debian']
   tags:
     - ws
     - sec
     - file_groupowner_etc_shadow
 
-- name: Ensure owner 0 and permissions 0600 on /etc/crontab
+- name: Ensure owner 0 and permissions 0600 on /etc/crontab @crontab_owner_and_permissions
+  ignore_errors: "{{ansible_check_mode}}"
   file:
     path: /etc/crontab
     owner: '0'
@@ -228,7 +243,8 @@
     - mob
     - crontab_owner_and_permissions
 
-- name: Ensure owner 0 and permissions 0600 /etc/sysctl.conf
+- name: Ensure owner 0 and permissions 0600 /etc/sysctl.conf @sysctl_conf_owner_and_permissions
+  ignore_errors: "{{ansible_check_mode}}"
   file:
     path: /etc/sysctl.conf
     owner: '0'
@@ -238,21 +254,22 @@
     - sec
     - sysctl_conf_owner_and_permissions
 
-- name: Ensure cron and at permissions
+- name: Ensure cron and at permissions @cron_and_at_permissions
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Ensure cron and at permissions Absent /etc/at.deny
+    - name: Ensure cron and at permissions Absent /etc/at.deny @cron_and_at_permissions
       file:
         state: absent
         path: /etc/at.deny
-    - name: Ensure cron and at permissions Absent /etc/cron.deny
+    - name: Ensure cron and at permissions Absent /etc/cron.deny @cron_and_at_permissions
       file:
         state: absent
         path: /etc/cron.deny
-    - name: Ensure cron and at permissions Absent /etc/at.allow
+    - name: Ensure cron and at permissions Absent /etc/at.allow @cron_and_at_permissions
       file:
         state: absent
         path: /etc/at.allow
-    - name: Ensure cron and at permissions Absent /etc/cron.allow
+    - name: Ensure cron and at permissions Absent /etc/cron.allow @cron_and_at_permissions
       file:
         state: absent
         path: /etc/cron.allow
@@ -262,7 +279,8 @@
     - mob
     - cron_and_at_permissions
 
-- name: Ensure group owner 0 and permissions 0700 on /etc/cron.d/
+- name: Ensure group owner 0 and permissions 0700 on /etc/cron.d/ @file_owner_and_permissions_cron_d
+  ignore_errors: "{{ansible_check_mode}}"
   file:
     path: /etc/cron.d/
     group: '0'
@@ -274,7 +292,8 @@
     - mob
     - file_owner_and_permissions_cron_d
 
-- name: Ensure group owner 0 and permissions 0700 on /etc/cron.hourly/
+- name: Ensure group owner 0 and permissions 0700 on /etc/cron.hourly/ @file_owner_and_permissions_cron_hourly
+  ignore_errors: "{{ansible_check_mode}}"
   file:
     path: /etc/cron.hourly/
     group: '0'
@@ -286,7 +305,8 @@
     - mob
     - file_owner_and_permissions_cron_hourly
 
-- name: Ensure group owner 0 and permissions 0700 on /etc/cron.daily/
+- name: Ensure group owner 0 and permissions 0700 on /etc/cron.daily/ @file_owner_and_permissions_cron_daily
+  ignore_errors: "{{ansible_check_mode}}"
   file:
     path: /etc/cron.daily/
     group: '0'
@@ -298,7 +318,8 @@
     - mob
     - file_owner_and_permissions_cron_daily
 
-- name: Ensure group owner 0 and permissions 0700 on /etc/cron.weekly/
+- name: Ensure group owner 0 and permissions 0700 on /etc/cron.weekly/ @file_owner_and_permissions_cron_weekly
+  ignore_errors: "{{ansible_check_mode}}"
   file:
     path: /etc/cron.weekly/
     group: '0'
@@ -310,7 +331,8 @@
     - mob
     - file_owner_and_permissions_cron_weekly
 
-- name: Ensure group owner 0 and permissions 0700 on /etc/cron.monthly/
+- name: Ensure group owner 0 and permissions 0700 on /etc/cron.monthly/ @file_owner_and_permissions_cron_monthly
+  ignore_errors: "{{ansible_check_mode}}"
   file:
     path: /etc/cron.monthly/
     group: '0'
@@ -322,7 +344,8 @@
     - mob
     - file_owner_and_permissions_cron_monthly
 
-- name: Ensure permission 0600 on /etc/ssh/sshd_config
+- name: Ensure permission 0600 on /etc/ssh/sshd_config @file_permissions_sshd_config
+  ignore_errors: "{{ansible_check_mode}}"
   file:
     path: /etc/ssh/sshd_config
     mode: '0600'
@@ -335,16 +358,17 @@
     - mob
     - file_permissions_sshd_config
 
-- name: Set 0700 permissions on home
+- name: Set 0700 permissions on home @set_700_permissions_home
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Set 0700 permissions on home Find
+    - name: Set 0700 permissions on home Find @set_700_permissions_home
       find:
         paths: /home/
         patterns: '*'
         file_type: directory
         recurse: no
       register: find_home
-    - name: Set 0700 permissions on home Chmod
+    - name: Set 0700 permissions on home Chmod @set_700_permissions_home
       file:
         path: "{{item.path}}"
         mode: '0700'
@@ -353,13 +377,14 @@
     - ws
     - sec
     - set_700_permissions_home
-      
-- name: Ensure owner 0 and permissions 0600 on /boot/grub/grub.cfg
+
+- name: Ensure owner 0 and permissions 0600 on /boot/grub/grub.cfg @grub_cfg_owner_and_permissions
+  ignore_errors: "{{ansible_check_mode}}"
   file:
-    path: 
+    path:
     path: "{{'/boot/grub/grub.cfg' if ansible_os_family in ['Debian'] else '/boot/grub2/grub.cfg'}}"
     owner: '0'
-    mode: '0600'        
+    mode: '0600'
   when: ansible_os_family in ['Debian']
   tags:
     - ws
@@ -367,7 +392,8 @@
     - mob
     - grub_cfg_owner_and_permissions
 
-- name: Folder /etc/cups 0644 permissions
+- name: Folder /etc/cups 0644 permissions @folder_etc_cups_0644_perm
+  ignore_errors: "{{ansible_check_mode}}"
   file:
     path: /etc/cups
     mode: g-w,o-w
@@ -379,7 +405,8 @@
     - sec
     - folder_etc_cups_0644_perm
 
-- name: Folder /etc/hp 0644 permissions
+- name: Folder /etc/hp 0644 permissions @folder_etc_hp_0644_perm
+  ignore_errors: "{{ansible_check_mode}}"
   file:
     path: /etc/hp
     mode: g-w,o-w
@@ -391,15 +418,16 @@
     - sec
     - folder_etc_hp_0644_perm
 
-- name: Check dot files other write permission
+- name: Check dot files other write permission @check_dot_files_write_perm
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Check dot files with write permission Find
+    - name: Check dot files with write permission Find @check_dot_files_write_perm
       shell: find /home/ -maxdepth 2 -type f -name "\.[a-zA-Z]*" -perm /go+w
       failed_when: false
       check_mode: no
       register: result
       changed_when: false
-    - name: Check dot files with write permission Chmod
+    - name: Check dot files with write permission Chmod @check_dot_files_write_perm
       file:
         path: "{{item}}"
         mode: go-w
@@ -410,9 +438,10 @@
     - sec
     - check_dot_files_write_perm
 
-- name: Check shadow group users
+- name: Check shadow group users @check_shadow_group_users
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Check shadow group users Group file
+    - name: Check shadow group users Group file @check_shadow_group_users
       failed_when: false
       check_mode: yes
       lineinfile:
@@ -421,7 +450,7 @@
         regexp: ^shadow:x:42:ansible$
         line: shadow:x:42:ansible
         state: present
-    - name: Check shadow group users Passwd file
+    - name: Check shadow group users Passwd file @check_shadow_group_users
       failed_when: false
       check_mode: yes
       lineinfile:
@@ -430,8 +459,22 @@
         state: absent
         regexp: "^.*:.*:.*:42:"
         line: ""
-  when: ansible_os_family in ['Debian']        
+  when: ansible_os_family in ['Debian']
   tags:
     - ws
     - sec
     - check_shadow_group_users
+
+- name: Ensure permission 0644 on /etc/resolv.conf @file_permissions_resolv_conf
+  ignore_errors: "{{ansible_check_mode}}"
+  file:
+    path: /etc/resolv.conf
+    mode: '0644'
+    owner: root
+    group: root
+  when:
+  tags:
+    - ws
+    - sec
+    - mob
+    - file_permissions_resolv_conf

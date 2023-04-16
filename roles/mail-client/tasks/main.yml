@@ -1,21 +1,21 @@
-- name: Set gsettings
+- name: Set gsettings @set_gsettings
   block:
-    - name: Set gsettings Mkdir
+    - name: Set gsettings Mkdir @set_gsettings
       file:
         path: /usr/local/etc/evolution
         state: directory
         mode: ugo+rx
-    - name: Set gsettings Copy
+    - name: Set gsettings Copy @set_gsettings
       copy:
         src: "{{item}}"
         dest: /usr/local/etc/evolution/
         mode: go+r
       with_fileglob:
         - "{{playbook_dir}}/inventories/all/files/mail-client/*"
-    - name: Set gsettings Set
+    - name: Set gsettings Set @set_gsettings
       copy:
         dest: /etc/profile.d/set-gsettings.sh
-        mode: a+x
+        mode: a+rx
         content: |
           #!/bin/bash
           #

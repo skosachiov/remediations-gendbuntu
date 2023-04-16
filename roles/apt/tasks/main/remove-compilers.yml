@@ -1,4 +1,4 @@
-- name: Ensure compilers are removed
+- name: Ensure compilers are removed @compilers_are_removed
   package:
     name:
       - g++

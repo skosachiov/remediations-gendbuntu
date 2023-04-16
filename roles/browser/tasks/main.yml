@@ -1,16 +1,16 @@
-- name: Chromium browser latest
+- name: Chromium browser latest @chromium_browser_latest
   package:
     name: "{{ ['chromium-browser', 'libnss3-tools'] if ansible_os_family in ['Debian'] else 'chromium'}}"
     state: latest
-  when: ansible_os_family in ['Debian']    
+  when: ansible_os_family in ['Debian']
   tags:
     - ws
     - chromium_browser_latest
 
-- name: Set xdg-settings defaults
+- name: Set xdg-settings defaults @set_xdg_settings_defaults
   copy:
     dest: /etc/profile.d/set-xdg-settings.sh
-    mode: a+x
+    mode: a+rx
     content: |
       #!/bin/bash
       #
@@ -27,9 +27,32 @@
     - ws
     - set_xdg_settings_defaults
 
-- name: Set chromium variables
+- name: Set browser dict @set_browser_dict
+  copy:
+    dest: /etc/profile.d/set-browser-dict.sh
+    mode: a+rx
+    content: |
+      #!/bin/bash
+      #
+      if [ $UID -gt {{var_min_domain_uid}} ]; then
+      FLAG=~/.set-browser-dict.2023022702
+      BDICURL=https://{{var_ansible_fqdn}}/files/chromium
+      BDICDIR=~/.config/chromium/Dictionaries
+      if [ ! -f "$FLAG" ]; then
+          #
+          curl $BDICURL/en-GB-10-1.bdic -o $BDICDIR/en-GB-10-1.bdic
+          curl $BDICURL/en-US-10-1.bdic -o $BDICDIR/en-US-10-1.bdic
+          #
+          touch $FLAG
+      fi
+      fi
+  tags:
+    - ws
+    - set_browser_dict
+
+- name: Set chromium variables @set_chromium_variables
   block:
-    - name: Set chromium variables Defaults
+    - name: Set chromium variables Defaults @set_chromium_variables
       failed_when: false
       blockinfile:
         dest: /etc/chromium/default
@@ -39,7 +62,7 @@
           export CHROMIUM_FLAGS="$CHROMIUM_FLAGS --auth-server-whitelist=*.{{var_local_domain}},*.{{var_external_domain}}"
           export CHROMIUM_FLAGS="$CHROMIUM_FLAGS --password-store=gnome"
           export CHROMIUM_FLAGS="$CHROMIUM_FLAGS --disable-gpu"
-    - name: Set chromium variables Chromium
+    - name: Set chromium variables Chromium @set_chromium_variables
       failed_when: false
       blockinfile:
         dest: /etc/default/chromium
@@ -53,24 +76,32 @@
     - ws
     - set_chromium_variables
 
-- name: Chromium policies
+- name: Chromium policies @chromium_policies
   block:
-    - name: Chromium policies Copy
+    - name: Chromium policies Copy @chromium_policies
       copy:
         src: "{{item}}"
         dest: /etc/chromium/policies/managed/
+        mode: '0755'
       with_fileglob:
         - "{{playbook_dir}}/inventories/all/files/browser/chromium/*.json"
-    - name: Chromium policies Mode
+    - name: Chromium policies Templates @chromium_policies
+      template:
+        src: "{{item}}"
+        dest: '/etc/chromium/policies/managed/{{(item|basename).split(".")[0]}}.json'
+        mode: '0755'
+      with_fileglob:
+        - "{{playbook_dir}}/roles/browser/templates/*"
+    - name: Chromium policies Mode @chromium_policies
       file:
-        path: /etc/chromium/policies/managed 
+        path: /etc/chromium/policies/managed
         mode: '0755'
         recurse: yes
-    - name: Status initial_bookmarks.html
+    - name: Status initial_bookmarks.html @chromium_policies
       failed_when: false
       stat: path=/usr/share/chromium/initial_bookmarks.html
       register: init_bookmarks_stat
-    - name: Rename initial_bookmarks.html
+    - name: Rename initial_bookmarks.html @chromium_policies
       command: mv /usr/share/chromium/initial_bookmarks.html /usr/share/chromium/initial_bookmarks.html.orig
       when: init_bookmarks_stat.stat.exists
   tags:

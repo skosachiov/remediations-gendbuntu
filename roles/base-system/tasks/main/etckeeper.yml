@@ -1,6 +1,6 @@
-- name: Ensure etckeeper active
+- name: Ensure etckeeper active @ensure_etckeeper_active
   block:
-    - name: Ensure etckeeper active Package present
+    - name: Ensure etckeeper active Package present @ensure_etckeeper_active
       package:
         name: etckeeper
         state: present
@@ -8,12 +8,12 @@
       register: package_result
     - debug:
         msg: "{{package_result}}"
-    - name: Ensure etckeeper active Git folder exists
+    - name: Ensure etckeeper active Git folder exists @ensure_etckeeper_active
       stat:
         path: /etc/.git
       register: stat_result
       when: package_result
-    - name: Ensure etckeeper active Init
+    - name: Ensure etckeeper active Init @ensure_etckeeper_active
       shell: 'etckeeper init -d /etc'
       when: not stat_result.stat.exists and package_result.changed
   tags:

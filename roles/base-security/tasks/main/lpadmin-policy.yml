@@ -1,5 +1,7 @@
-- name: Check lpadmin group
+- name: Check lpadmin group @check_lpadmin_group
+  ignore_errors: "{{ansible_check_mode}}"
   check_mode: yes
+  changed_when: false # workaround
   replace:
     dest: /etc/group
     regexp: "^({{'lpadmin' if ansible_os_family in ['Debian'] else 'lp'}}:x:[0-9]*:[^,]*),.*"
@@ -9,7 +11,8 @@
     - sec
     - check_lpadmin_group
 
-- name: Ensure cups SystemGroup
+- name: Ensure cups SystemGroup @ensure_cups_systemgroup
+  ignore_errors: "{{ansible_check_mode}}"
   lineinfile:
     path: /etc/cups/cups-files.conf
     regexp: ^\s*SystemGroup\s

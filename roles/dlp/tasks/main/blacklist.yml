@@ -1,20 +1,20 @@
-- name: Ensure kernel modules are disabled
+- name: Ensure kernel modules are disabled @kernel_modules_are_disabled
   block:
-    - name: Ensure kernel modules are disabled deb
+    - name: Ensure kernel modules are disabled deb @kernel_modules_are_disabled
       template:
         src: 50-blacklist.conf.j2
         dest: /etc/modprobe.d/50-blacklist.conf
-      when: ansible_os_family in ['Debian']      
+      when: ansible_os_family in ['Debian']
       notify:
         - Depmod
         - Update initramfs
-    - name: Ensure kernel modules are disabled rpm
+    - name: Ensure kernel modules are disabled rpm @kernel_modules_are_disabled
       template:
         src: 50-blacklist.conf.j2
         dest: /etc/modprobe.d/50-blacklist.conf
       when: ansible_os_family in ['RedHat', 'Rocky', 'RED']
       notify:
-        - Dracut update        
+        - Dracut update
   tags:
     - ws
     - sec

@@ -1,4 +1,4 @@
-- name: Flatpak installed
+- name: Flatpak installed @flatpak_intsalled
   package:
     name: flatpak
     state: latest
@@ -6,7 +6,7 @@
     - ws
     - flatpak_intsalled
 
-- name: Ensure flathub installed in system space
+- name: Ensure flathub installed in system space @flatpak_remote_add
   shell: "flatpak remote-add --system --if-not-exists {{var_flathub_name}} {{var_flathub_url}}"
   register: result
   changed_when: result.rc != 0
@@ -15,17 +15,17 @@
     - ws
     - flatpak_remote_add
 
-- name: Flatpak apps install
+- name: Flatpak apps install @flatpak_apps_install
   block:
-    - name: Flatpak apps install List
+    - name: Flatpak apps install List @flatpak_apps_install
       changed_when: false
       shell: "flatpak --columns=application list"
       register: fp_installed
-    - name: Flatpak apps install Install diff
+    - name: Flatpak apps install Install diff @flatpak_apps_install
       shell: "flatpak install --system --noninteractive -y {{item}}"
       with_items: "{{var_fp_applications | difference(fp_installed.stdout_lines)}}"
   when: ansible_distribution_major_version|int > 7
   tags:
     - ws
-    - flatpak_apps_install      
+    - flatpak_apps_install
 

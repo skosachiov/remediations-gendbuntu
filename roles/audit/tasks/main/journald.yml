@@ -1,20 +1,21 @@
-- name: Set journald config
+- name: Set journald config @set_journald_config
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Set journald config ForwardToSyslog
+    - name: Set journald config ForwardToSyslog @set_journald_config
       lineinfile:
         create: true
         dest: /etc/systemd/journald.conf
         regexp: ^#?\s*ForwardToSyslog
         line: ForwardToSyslog=yes
         insertafter: [Journal]
-    - name: Set journald config Compress
+    - name: Set journald config Compress @set_journald_config
       lineinfile:
         create: true
         dest: /etc/systemd/journald.conf
         regexp: ^#?\s*Compress
         line: Compress=yes
         insertafter: [Journal]
-    - name: Set journald config Storage
+    - name: Set journald config Storage @set_journald_config
       lineinfile:
         create: true
         dest: /etc/systemd/journald.conf

@@ -1,4 +1,5 @@
-- name: Set sudoers default noexec
+- name: Set sudoers default noexec @set_sudoers_default_noexec
+  ignore_errors: "{{ansible_check_mode}}"
   lineinfile:
     path: /etc/sudoers
     create: true
@@ -11,9 +12,10 @@
     - sec
     - set_sudoers_default_noexec
 
-- name: Set sudoers groups
+- name: Set sudoers groups @set_sudoers_groups
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Set sudoers groups User
+    - name: Set sudoers groups User @set_sudoers_groups
       blockinfile:
         dest: /etc/sudoers
         marker_begin: BEGIN_GROUPS
@@ -23,7 +25,7 @@
           %{{var_domain_admins_group}} ALL=(ALL) EXEC:ALL, PASSWD:ALL
         insertafter: EOF
       when: var_admin_workstation|bool == false
-    - name: Set sudoers groups Admin
+    - name: Set sudoers groups Admin @set_sudoers_groups
       blockinfile:
         dest: /etc/sudoers
         marker_begin: BEGIN_GROUPS
@@ -37,15 +39,16 @@
     - sec
     - set_sudoers_groups
 
-- name: Check sudoers users
+- name: Check sudoers users @check_sudoers_users
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Check sudoers users Get groups
+    - name: Check sudoers users Get groups @check_sudoers_users
       shell: awk '{print $1}' /etc/sudoers | grep "%" | cut -c 2- | xargs -I {} grep {} /etc/group
       failed_when: false
       check_mode: no
       register: result
       changed_when: false
-    - name: Check sudoers users Whitelist compare
+    - name: Check sudoers users Whitelist compare @check_sudoers_users
       changed_when: true
       failed_when: false
       debug:
@@ -57,14 +60,15 @@
     - sec
     - check_sudoers_users
 
-- name: Remove lines containing NOPASSWD from sudoers files
+- name: Remove lines containing NOPASSWD from sudoers files @sudo_remove_nopasswd
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Find /etc/sudoers.d/ files
+    - name: Find /etc/sudoers.d/ files @sudo_remove_nopasswd
       find:
         paths:
           - /etc/sudoers.d/
       register: sudoers
-    - name: Remove lines containing NOPASSWD
+    - name: Remove lines containing NOPASSWD @sudo_remove_nopasswd
       replace:
         regexp: '(^(?!#).*^(?!.*({{var_ansible_username}})).*[\s]+NOPASSWD[\s]*\:.*$)'
         replace: '# \g<1>'
@@ -78,7 +82,8 @@
     - sec
     - sudo_remove_nopasswd
 
-- name: Ensure env_reset and timeout is enabled in /etc/sudoers
+- name: Ensure env_reset and timeout is enabled in /etc/sudoers @sudo_add_env_reset_and_timeout
+  ignore_errors: "{{ansible_check_mode}}"
   lineinfile:
     path: /etc/sudoers
     regexp: ^[\s]*Defaults.*\benv_reset\b.*$
@@ -89,7 +94,8 @@
     - sec
     - sudo_add_env_reset_and_timeout
 
-- name: Ensure use_pty is enabled in /etc/sudoers
+- name: Ensure use_pty is enabled in /etc/sudoers @sudo_add_use_pty
+  ignore_errors: "{{ansible_check_mode}}"
   lineinfile:
     path: /etc/sudoers
     regexp: ^[\s]*Defaults.*\buse_pty\b.*$
@@ -101,7 +107,8 @@
     - sec
     - sudo_add_use_pty
 
-- name: Ensure tty_tickets is enabled in /etc/sudoers
+- name: Ensure tty_tickets is enabled in /etc/sudoers @sudo_add_tty_tickets
+  ignore_errors: "{{ansible_check_mode}}"
   lineinfile:
     path: /etc/sudoers
     regexp: ^[\s]*Defaults.*\btty_tickets\b.*$
@@ -113,7 +120,8 @@
     - sec
     - sudo_add_tty_tickets
 
-- name: Enable logfile option with appropriate value in /etc/sudoers
+- name: Enable logfile option with appropriate value in /etc/sudoers @sudo_custom_logfile
+  ignore_errors: "{{ansible_check_mode}}"
   lineinfile:
     path: /etc/sudoers
     line: Defaults logfile={{ var_sudo_logfile }}

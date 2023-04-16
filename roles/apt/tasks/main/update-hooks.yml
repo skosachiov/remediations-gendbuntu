@@ -1,4 +1,11 @@
-- name: Remove specific package versions
+- name: Ensure package facts auto @package_facts_auto
+  package_facts:
+    manager: auto
+  tags:
+    - ws
+    - package_facts_auto
+
+- name: Remove specific package versions @remove_pkg_specific_version
   shell: "dpkg --remove --force-all {{item}}"
   when: (ansible_facts.packages[item] is defined) and (ansible_facts.packages[item][0].version == var_pkg_versions_absent[item])
   with_items: "{{var_pkg_versions_absent.keys() | list}}"
@@ -7,7 +14,7 @@
     - ws
     - remove_pkg_specific_version
 
-- name: Present specific package versions
+- name: Present specific package versions @present_pkg_specific_version
   package:
     name: "{{item}}"
     state: present
@@ -16,4 +23,4 @@
     - ws
     - present_pkg_specific_version
 
-      
+

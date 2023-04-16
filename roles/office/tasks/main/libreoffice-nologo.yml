@@ -1,11 +1,11 @@
-- name: Libreoffice nologo
+- name: Libreoffice nologo @libreoffice_nologo
   vars:
-    var_lo_nologo: 
+    var_lo_nologo:
       - "libreoffice-calc.desktop"
       - "libreoffice-writer.desktop"
       - "libreoffice-impress.desktop"
   block:
-    - name: Libreoffice nologo Find
+    - name: Libreoffice nologo Find @libreoffice_nologo
       find:
         file_type: any
         paths:
@@ -14,7 +14,7 @@
         patterns: "libreoffice*.desktop"
         recurse: yes
       register: result
-    - name: Libreoffice nologo Replace
+    - name: Libreoffice nologo Replace @libreoffice_nologo
       replace:
         dest: "{{item.path}}"
         regexp:  '(Exec=libreoffice)\s*--(calc|writer|impress)'

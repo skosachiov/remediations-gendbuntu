@@ -1,13 +1,14 @@
-- name: Enable service rsyslog
+- name: Enable service rsyslog @service_rsyslog_enabled
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Ensure rsyslog is installed
+    - name: Ensure rsyslog is installed @service_rsyslog_enabled
       package:
         name: rsyslog
         state: present
-    - name: Gather the package facts
+    - name: Gather the package facts @service_rsyslog_enabled
       package_facts:
         manager: auto
-    - name: Enable service rsyslog
+    - name: Enable service rsyslog @service_rsyslog_enabled
       service:
         name: rsyslog
         enabled: 'yes'
@@ -20,59 +21,62 @@
     - mob
     - service_rsyslog_enabled
 
-- name: Remove rsyslog all to remote loghost
+- name: Remove rsyslog all to remote loghost @remove_rsyslog_all_remote
+  ignore_errors: "{{ansible_check_mode}}"
   lineinfile:
     dest: /etc/rsyslog.conf
     regexp: ^\*\.\*
     line: '*.* @{{ var_dp_rsyslog_server }}'
     state: absent
-  when: ansible_facts.nodename != var_dp_rsyslog_server
+  when: (ansible_facts.nodename != var_dp_rsyslog_server) and (not var_devel_workstation)
   tags:
     - ws
     - sec
     - remove_rsyslog_all_remote
 
-- name: Set rsyslog access to remote loghost
+- name: Set rsyslog access to remote loghost @rsyslog_access_remote_loghost
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Set rsyslog access to remote loghost Remove line
+    - name: Set rsyslog access to remote loghost Remove line @rsyslog_access_remote_loghost
       lineinfile:
         dest: /etc/rsyslog.conf
         regexp: ^\*\.\*
         state: absent
       notify: Rsyslog restarted
-    - name: Set rsyslog access to remote loghost Replace
+      when: not var_devel_workstation
+    - name: Set rsyslog access to remote loghost Replace @rsyslog_access_remote_loghost
       replace:
         path: /etc/rsyslog.conf
         regexp: ^user\.\*
         replace: '#user.*'
       notify: Rsyslog restarted
-    - name: Set rsyslog access to remote loghost Replace
+    - name: Set rsyslog access to remote loghost Replace @rsyslog_access_remote_loghost
       replace:
         path: /etc/rsyslog.conf
         regexp: ^#cron\.\*
         replace: 'cron.*'
       notify: Rsyslog restarted
-    - name: Set rsyslog access to remote loghost Replace
+    - name: Set rsyslog access to remote loghost Replace @rsyslog_access_remote_loghost
       replace:
         path: /etc/rsyslog.conf
         regexp: ^\*\.=info;\*\.=notice;\*\.=warn;
         replace: '*.=notice;*.=warn;'
       notify: Rsyslog restarted
-    - name: Set rsyslog to remote loghost Block
+    - name: Set rsyslog to remote loghost Block @rsyslog_access_remote_loghost
       blockinfile:
         dest: /etc/rsyslog.conf
         marker_begin: BEGIN_REMOTE
         marker_end: END_REMOTE
         insertafter: auth,authpriv\.\*\s*\/var\/log\/auth\.log
         block: |
-          {{var_rsyslog_filter}}        
+          {{var_rsyslog_filter}}
           auth.* @{{ var_dp_rsyslog_server }}
           authpriv.* @{{ var_dp_rsyslog_server }}
           daemon.* @{{ var_dp_rsyslog_server }}
         create: true
         state: "{{'present' if var_installation_type == 'workstation' else 'absent' }}"
       notify: Rsyslog restarted
-    - name: Set rsyslog access to remote loghost Block
+    - name: Set rsyslog access to remote loghost Block @rsyslog_access_remote_loghost
       blockinfile:
         dest: /etc/rsyslog.conf
         marker_begin: BEGIN_AUDITD
@@ -82,14 +86,15 @@
           *.info @{{ var_dp_rsyslog_server }}
         create: true
         state: "{{'present' if var_network_auditd else 'absent' }}"
-      notify: Rsyslog restarted      
+      notify: Rsyslog restarted
   when: ansible_facts.nodename != var_dp_rsyslog_server
   tags:
     - ws
     - sec
     - rsyslog_access_remote_loghost
 
-- name: Set rsyslog remote loghost
+- name: Set rsyslog remote loghost @logstash_remote_loghost
+  ignore_errors: "{{ansible_check_mode}}"
   lineinfile:
     dest: /etc/rsyslog.conf
     regexp: ^\*\.\*
@@ -101,7 +106,8 @@
     - sec
     - logstash_remote_loghost
 
-- name: Set rsyslog FileCreateMode
+- name: Set rsyslog FileCreateMode @set_rsyslog_filecreatemode
+  ignore_errors: "{{ansible_check_mode}}"
   lineinfile:
     dest: /etc/rsyslog.conf
     regexp: ^\$FileCreateMode

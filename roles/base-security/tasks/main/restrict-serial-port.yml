@@ -1,5 +1,6 @@
 
-- name: Restrict Serial Port Root Logins
+- name: Restrict Serial Port Root Logins @restrict_serial_port_logins
+  ignore_errors: "{{ansible_check_mode}}"
   lineinfile:
     dest: /etc/securetty
     regexp: ttyS[0-9]

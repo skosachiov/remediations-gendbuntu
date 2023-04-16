@@ -1,28 +1,28 @@
-- name: Clamav latest
+- name: Clamav latest @clamav_latest
   package:
     name:
       - clamav
       - clamav-daemon
       - clamdscan
     state: latest
-  when: ansible_os_family in ['Debian']    
+  when: ansible_os_family in ['Debian']
   tags:
     - ws
     - clamav_latest
 
-- name: Clamav Set local mirror
+- name: Clamav Set local mirror @clamav_set_mirror
   replace:
     path: /etc/clamav/freshclam.conf
     regexp: ^(DatabaseMirror).*
     replace: '\1 {{var_clamav_server}}'
   when: var_installation_type == "workstation" and var_internal_ansible_ip
   notify: Clamav freshclam restarted
-  when: ansible_os_family in ['Debian']  
+  when: ansible_os_family in ['Debian']
   tags:
     - ws
     - clamav_set_mirror
 
-- name: Clamd on access scanning
+- name: Clamd on access scanning @clamad_on_access_scanning
   blockinfile:
     dest: /etc/clamav/clamd.conf
     marker_begin: BEGIN_ONACCESS

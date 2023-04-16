@@ -1,4 +1,5 @@
-- name: Ensure openssh-server is installed
+- name: Ensure openssh-server is installed @openssh_server_is_installed
+  ignore_errors: "{{ansible_check_mode}}"
   package:
     name:
       - openssh-server
@@ -7,9 +8,10 @@
     - ws
     - openssh_server_is_installed
 
-- name: SSHD Only Approved Ciphers
+- name: SSHD Only Approved Ciphers @sshd_only_approved_ciphers
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: SSHD Only Approved Ciphers Ciphers
+    - name: SSHD Only Approved Ciphers Ciphers @sshd_only_approved_ciphers
       lineinfile:
         path: /etc/ssh/sshd_config
         create: true
@@ -25,9 +27,10 @@
     - mob
     - sshd_only_approved_ciphers
 
-- name: SSHD Only Approved Macs
+- name: SSHD Only Approved Macs @sshd_only_approved_macs
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: SSHD Only Approved Ciphers Macs
+    - name: SSHD Only Approved Ciphers Macs @sshd_only_approved_macs
       lineinfile:
         path: /etc/ssh/sshd_config
         create: true
@@ -43,7 +46,8 @@
     - mac
     - sshd_only_approved_macs
 
-- name: SSHD disable Host-Based Authentication
+- name: SSHD disable Host-Based Authentication @sshd_disable_hostbased_auth
+  ignore_errors: "{{ansible_check_mode}}"
   lineinfile:
     path: /etc/ssh/sshd_config
     create: true
@@ -57,7 +61,8 @@
     - sec
     - sshd_disable_hostbased_auth
 
-- name: SSHD IgnoreRhosts
+- name: SSHD IgnoreRhosts @sshd_ignorerhosts
+  ignore_errors: "{{ansible_check_mode}}"
   lineinfile:
     path: /etc/ssh/sshd_config
     create: true
@@ -71,7 +76,8 @@
     - sec
     - sshd_ignorerhosts
 
-- name: SSHD LogLevel info
+- name: SSHD LogLevel info @sshd_loglevel_info
+  ignore_errors: "{{ansible_check_mode}}"
   lineinfile:
     path: /etc/ssh/sshd_config
     create: true
@@ -85,7 +91,8 @@
     - sec
     - sshd_loglevel_info
 
-- name: SSHD LoginGraceTime
+- name: SSHD LoginGraceTime @sshd_logingracetime
+  ignore_errors: "{{ansible_check_mode}}"
   lineinfile:
     path: /etc/ssh/sshd_config
     create: true
@@ -99,7 +106,8 @@
     - sec
     - sshd_logingracetime
 
-- name: SSHD disable PermitEmptyPasswords
+- name: SSHD disable PermitEmptyPasswords @sshd_disable_emptypasswords
+  ignore_errors: "{{ansible_check_mode}}"
   lineinfile:
     path: /etc/ssh/sshd_config
     create: true
@@ -113,7 +121,8 @@
     - sec
     - sshd_disable_emptypasswords
 
-- name: SSHD set max auth tries
+- name: SSHD set max auth tries @sshd_set_maxauthtries
+  ignore_errors: "{{ansible_check_mode}}"
   lineinfile:
     path: /etc/ssh/sshd_config
     create: true
@@ -127,7 +136,8 @@
     - sec
     - sshd_set_maxauthtries
 
-- name: SSHD disable PermitRootLogin
+- name: SSHD disable PermitRootLogin @sshd_set_maxauthtries
+  ignore_errors: "{{ansible_check_mode}}"
   lineinfile:
     path: /etc/ssh/sshd_config
     create: true
@@ -141,7 +151,8 @@
     - sec
     - sshd_set_maxauthtries
 
-- name: SSHD disable PermitUserEnvironment
+- name: SSHD disable PermitUserEnvironment @sshd_disable_userenvironment
+  ignore_errors: "{{ansible_check_mode}}"
   lineinfile:
     path: /etc/ssh/sshd_config
     create: true
@@ -155,9 +166,10 @@
     - sec
     - sshd_disable_userenvironment
 
-- name: SSHD disable PermitRootLogin
+- name: SSHD disable PermitRootLogin @sshd_disable_root_login
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Check for duplicate values
+    - name: Check for duplicate values @sshd_disable_root_login
       lineinfile:
         path: /etc/ssh/sshd_config
         create: false
@@ -166,14 +178,14 @@
       check_mode: true
       changed_when: false
       register: dupes
-    - name: Deduplicate values from /etc/ssh/sshd_config
+    - name: Deduplicate values from /etc/ssh/sshd_config @sshd_disable_root_login
       lineinfile:
         path: /etc/ssh/sshd_config
         create: false
         regexp: (?i)^\s*PermitRootLogin\s+
         state: absent
       when: dupes.found is defined and dupes.found > 1
-    - name: Insert correct line to /etc/ssh/sshd_config
+    - name: Insert correct line to /etc/ssh/sshd_config @sshd_disable_root_login
       lineinfile:
         path: /etc/ssh/sshd_config
         create: true
@@ -187,7 +199,8 @@
     - sec
     - sshd_disable_root_login
 
-- name: SSHD Protocol 2 only
+- name: SSHD Protocol 2 only @sshd_protocol_2
+  ignore_errors: "{{ansible_check_mode}}"
   lineinfile:
     path: /etc/ssh/sshd_config
     create: true
@@ -201,7 +214,8 @@
     - sec
     - sshd_protocol_2
 
-- name: SSHD disable X11Forwarding
+- name: SSHD disable X11Forwarding @sshd_disable_x11forwarding
+  ignore_errors: "{{ansible_check_mode}}"
   lineinfile:
     path: /etc/ssh/sshd_config
     create: true
@@ -215,9 +229,10 @@
     - sec
     - sshd_disable_x11forwarding
 
-- name: Set SSH Idle Timeout Interval
+- name: Set SSH Idle Timeout Interval @sshd_set_idle_timeout
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Check for duplicate values
+    - name: Check for duplicate values @sshd_set_idle_timeout
       lineinfile:
         path: /etc/ssh/sshd_config
         create: false
@@ -226,14 +241,14 @@
       check_mode: true
       changed_when: false
       register: dupes
-    - name: Deduplicate values from /etc/ssh/sshd_config
+    - name: Deduplicate values from /etc/ssh/sshd_config @sshd_set_idle_timeout
       lineinfile:
         path: /etc/ssh/sshd_config
         create: false
         regexp: (?i)^\s*ClientAliveInterval\s+
         state: absent
       when: dupes.found is defined and dupes.found > 1
-    - name: Insert correct line to /etc/ssh/sshd_config
+    - name: Insert correct line to /etc/ssh/sshd_config @sshd_set_idle_timeout
       lineinfile:
         path: /etc/ssh/sshd_config
         create: true
@@ -247,9 +262,10 @@
     - sec
     - sshd_set_idle_timeout
 
-- name: Set SSH Client Alive Count Max
+- name: Set SSH Client Alive Count Max @sshd_set_keepalive
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Check for duplicate values
+    - name: Check for duplicate values @sshd_set_keepalive
       lineinfile:
         path: /etc/ssh/sshd_config
         create: false
@@ -258,14 +274,14 @@
       check_mode: true
       changed_when: false
       register: dupes
-    - name: Deduplicate values from /etc/ssh/sshd_config
+    - name: Deduplicate values from /etc/ssh/sshd_config @sshd_set_keepalive
       lineinfile:
         path: /etc/ssh/sshd_config
         create: false
         regexp: (?i)^\s*ClientAliveCountMax\s+
         state: absent
       when: dupes.found is defined and dupes.found > 1
-    - name: Insert correct line to /etc/ssh/sshd_config
+    - name: Insert correct line to /etc/ssh/sshd_config @sshd_set_keepalive
       lineinfile:
         path: /etc/ssh/sshd_config
         create: true
@@ -279,9 +295,10 @@
     - sec
     - sshd_set_keepalive
 
-- name: Set SSH MaxSessions limit
+- name: Set SSH MaxSessions limit @sshd_set_max_sessions
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Check for duplicate values
+    - name: Check for duplicate values @sshd_set_max_sessions
       lineinfile:
         path: /etc/ssh/sshd_config
         create: false
@@ -290,14 +307,14 @@
       check_mode: true
       changed_when: false
       register: dupes
-    - name: Deduplicate values from /etc/ssh/sshd_config
+    - name: Deduplicate values from /etc/ssh/sshd_config @sshd_set_max_sessions
       lineinfile:
         path: /etc/ssh/sshd_config
         create: false
         regexp: (?i)^\s*MaxSessions\s+
         state: absent
       when: dupes.found is defined and dupes.found > 1
-    - name: Insert correct line to /etc/ssh/sshd_config
+    - name: Insert correct line to /etc/ssh/sshd_config @sshd_set_max_sessions
       lineinfile:
         path: /etc/ssh/sshd_config
         create: true
@@ -311,9 +328,10 @@
     - sec
     - sshd_set_max_sessions
 
-- name: SSHD set AllowGroups
+- name: SSHD set AllowGroups @sshd_set_allowgroups
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: SSHD set AllowGroups User
+    - name: SSHD set AllowGroups User @sshd_set_allowgroups
       lineinfile:
         path: /etc/ssh/sshd_config
         create: true
@@ -324,7 +342,7 @@
         validate: /usr/sbin/sshd -t -f %s
       register: service_conf
       when: var_admin_workstation|bool == false
-    - name: SSHD set AllowGroups Admin
+    - name: SSHD set AllowGroups Admin @sshd_set_allowgroups
       lineinfile:
         path: /etc/ssh/sshd_config
         create: true
@@ -339,3 +357,18 @@
     - ws
     - sec
     - sshd_set_allowgroups
+
+- name: SSHD LogLevel info @sshd_maxstartups
+  ignore_errors: "{{ansible_check_mode}}"
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    create: true
+    line: MaxStartups 10:30:60
+    regexp: ^#?\s*MaxStartups
+    state: present
+    insertbefore: ^[#\s]*Match
+    validate: /usr/sbin/sshd -t -f %s
+  tags:
+    - ws
+    - sec
+    - sshd_maxstartups

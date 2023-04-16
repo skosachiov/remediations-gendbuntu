@@ -1,11 +1,12 @@
-- name: Verify No netrc Files Exist
+- name: Verify No netrc Files Exist @no_netrc_files_exist
+  ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Verify No netrc Files Exist Find
+    - name: Verify No netrc Files Exist Find @no_netrc_files_exist
       command: find /home -xdev -name .netrc
       register: items
       failed_when: false
       changed_when: false
-    - name: Verify No netrc Files Exist Absent
+    - name: Verify No netrc Files Exist Absent @no_netrc_files_exist
       file:
         path: "{{item}}"
         state: absent

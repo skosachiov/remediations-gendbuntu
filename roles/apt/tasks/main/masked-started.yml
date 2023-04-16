@@ -1,39 +1,39 @@
-- name: Connman masked
+- name: Connman masked @connman_masked
   block:
-    - name: Connman masked Stop
+    - name: Connman masked Stop @connman_masked
       failed_when: false
       service:
         name: connman
         state: stopped
-    - name: Connman masked Masked
+    - name: Connman masked Masked @connman_masked
       failed_when: false
       service:
         name: connman
-        masked: yes 
+        masked: yes
       notify: Networking restarted
-    - name: Connman wait online masked Stop
+    - name: Connman wait online masked Stop @connman_masked
       failed_when: false
       service:
         name: connman-wait-online
         state: stopped
-    - name: Connman wait online masked Masked
+    - name: Connman wait online masked Masked @connman_masked
       failed_when: false
       service:
         name: connman-wait-online
-        masked: yes 
+        masked: yes
       notify: Networking restarted
   tags:
     - ws
     - connman_masked
 
-- name: Packagekit started
+- name: Packagekit started @packagekit_started
   block:
-    - name: Packagekit masked Masked
+    - name: Packagekit masked Masked @packagekit_started
       failed_when: false
       systemd:
         name: packagekit
         masked: no
-    - name: Packagekit masked Stopped
+    - name: Packagekit masked Stopped @packagekit_started
       failed_when: false
       service:
         name: packagekit
@@ -42,18 +42,18 @@
     - ws
     - packagekit_started
 
-- name: Apt-daily.timer masked
+- name: Apt-daily.timer masked @apt_daily_masked
   block:
-    - name: Apt-daily.timer masked Stopped
+    - name: Apt-daily.timer masked Stopped @apt_daily_masked
       failed_when: false
       service:
         name: apt-daily.timer
         state: stopped
-    - name: Apt-daily.timer masked Masked
+    - name: Apt-daily.timer masked Masked @apt_daily_masked
       failed_when: false
       service:
         name: apt-daily.timer
-        masked: yes 
+        masked: yes
   tags:
     - ws
     - apt_daily_masked

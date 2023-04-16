@@ -1,34 +1,34 @@
-- name: Disable service ufw
-  package: 
+- name: Disable service ufw @service_ufw_disabled
+  package:
     name: ufw
     state: absent
-  tags: 
+  tags:
     - ws
     - service_ufw_disabled
 
-- name: Enable service firewalld 
-  block: 
-    - name: Gather the package facts 
-      package_facts: 
+- name: Enable service firewalld @service_firewalld_enabled
+  block:
+    - name: Gather the package facts @service_firewalld_enabled
+      package_facts:
         manager: auto
-    - name: Enable service firewalld Present
+    - name: Enable service firewalld Present @service_firewalld_enabled
       package:
         name: firewalld
         state: present
-    - name: Enable service firewalld 
-      service: 
-        name: firewalld 
-        enabled: 'yes' 
-        state: started 
-      when: 
-        - '"firewalld" in ansible_facts.packages' 
-  tags: 
+    - name: Enable service firewalld @service_firewalld_enabled
+      service:
+        name: firewalld
+        enabled: 'yes'
+        state: started
+      when:
+        - '"firewalld" in ansible_facts.packages'
+  tags:
     - ws
     - service_firewalld_enabled
 
-- name: Set initial firewalld rules
+- name: Set initial firewalld rules @initial_firewalld_rules
   block:
-    - name: Set initial firewalld rules Clear other zones
+    - name: Set initial firewalld rules Clear other zones @initial_firewalld_rules
       copy:
         dest: "/etc/firewalld/zones/{{item}}.xml"
         content: |
@@ -44,25 +44,25 @@
         - internal
         - public
       notify: Firewalld restarted
-    - name: Set initial firewalld rules Trusted zone
-      copy:
-        src: inventories/all/files/firewall/trusted.xml
+    - name: Set initial firewalld rules Trusted zone @initial_firewalld_rules
+      template:
+        src: inventories/all/files/firewall/trusted.xml.j2
         dest: "/etc/firewalld/zones/trusted.xml"
-      when: var_installation_type == "workstation" 
+      when: var_installation_type == 'workstation' or var_installation_type == 'distribution-point'
       notify: Firewalld restarted
-    - name: Set initial firewalld rules DMZ zone
-      copy:
-        src: inventories/all/files/firewall/dmz.xml
+    - name: Set initial firewalld rules DMZ zone @initial_firewalld_rules
+      template:
+        src: inventories/all/files/firewall/dmz.xml.j2
         dest: "/etc/firewalld/zones/dmz.xml"
-      when: var_installation_type == "workstation" 
+      when: var_installation_type == 'workstation' or var_installation_type == 'distribution-point'
       notify: Firewalld restarted
-    - name: Set initial firewalld rules Work zone
-      copy:
-        src: inventories/all/files/firewall/work.xml
+    - name: Set initial firewalld rules Work zone @initial_firewalld_rules
+      template:
+        src: inventories/all/files/firewall/work.xml.j2
         dest: "/etc/firewalld/zones/work.xml"
-      when: var_installation_type == "workstation" 
+      when: var_installation_type == 'workstation' or var_installation_type == 'distribution-point'
       notify: Firewalld restarted
-    - name: Set initial firewalld rules LogDenied
+    - name: Set initial firewalld rules LogDenied @initial_firewalld_rules
       lineinfile:
         path: /etc/firewalld/firewalld.conf
         # line: LogDenied=unicast
@@ -70,21 +70,21 @@
         regexp: ^\s*LogDenied
         state: present
       notify: Firewalld restarted
-    - name: Set initial firewalld rules DefaultZone
+    - name: Set initial firewalld rules DefaultZone @initial_firewalld_rules
       lineinfile:
         path: /etc/firewalld/firewalld.conf
         line: DefaultZone=work
         regexp: ^\s*DefaultZone
         state: present
-      when: var_installation_type == "workstation"
+      when: var_installation_type == 'workstation' or var_installation_type == 'distribution-point'
       notify: Firewalld restarted
-    - name: Set initial firewalld rules DefaultZone
+    - name: Set initial firewalld rules DefaultZone @initial_firewalld_rules
       lineinfile:
         path: /etc/firewalld/firewalld.conf
         line: DefaultZone=public
         regexp: ^\s*DefaultZone
         state: present
-      when: var_installation_type == "workstation" 
+      when: var_installation_type == 'mobile-device' or var_installation_type == 'flash-drive'
       notify: Firewalld restarted
   tags:
     - ws
@@ -92,79 +92,81 @@
     - mob
     - initial_firewalld_rules
 
-- name: Drop ougoing traffic
+- name: Drop ougoing traffic @drop_outgoing_traffic
   block:
-    - name: Drop ougoing traffic Service started
+    - name: Drop ougoing traffic Service started @drop_outgoing_traffic
       service:
         name: firewalld
         state: started
-    - name: Drop ougoing traffic Ftp
+    - name: Drop ougoing traffic Ftp @drop_outgoing_traffic
       changed_when: false
+      failed_when: no
       shell: firewall-cmd --permanent --direct --add-rule ipv4 filter OUTPUT 0 -p tcp -m tcp --dport=21 -j DROP
-    - name: Drop ougoing traffic Telnet
+    - name: Drop ougoing traffic Telnet @drop_outgoing_traffic
       changed_when: false
+      failed_when: no
       shell: firewall-cmd --permanent --direct --add-rule ipv4 filter OUTPUT 0 -p tcp -m tcp --dport=23 -j DROP
   tags:
     - mob
     - drop_outgoing_traffic
 
-- name: Verify firewalld rules
+- name: Verify firewalld rules @verify_firewalld_rules
   block:
-    - name: Verify firewalld rules Get services
+    - name: Verify firewalld rules Get services @verify_firewalld_rules
       shell: "firewall-cmd --list-all-zones | grep 'services: [a-z]' | awk '{print $2}'"
       register: items
       failed_when: no
       check_mode: no
       changed_when: false
-    - name: Verify firewalld rules Check services
+    - name: Verify firewalld rules Check services @verify_firewalld_rules
       changed_when: true
       debug:
         msg: "{{item}}"
       with_items: "{{items.stdout.split()}}"
       when: item not in var_fw_services_whitelist
-    - name: Verify firewalld Get ports
+    - name: Verify firewalld Get ports @verify_firewalld_rules
       shell: 'firewall-cmd --list-all-zones | grep -Eo "[0-9]{1,5}\/(tcp|udp)"'
       register: items
       failed_when: no
       check_mode: no
       changed_when: false
-    - name: Verify firewalld rules Check ports
+    - name: Verify firewalld rules Check ports @verify_firewalld_rules
       changed_when: true
       debug:
         msg: "{{item}}"
       with_items: "{{items.stdout.split()}}"
       when: item not in var_fw_ports_whitelist
-    - name: Verify firewalld rules Get active zones
+    - name: Verify firewalld rules Get active zones @verify_firewalld_rules
       shell: "firewall-cmd --get-active-zones | grep '^[a-z]' | awk '{print $1}'"
       register: items
       failed_when: no
       check_mode: no
       changed_when: false
-    - name: Verify firewalld rules Check active zones
+    - name: Verify firewalld rules Check active zones @verify_firewalld_rules
       changed_when: true
       debug:
         msg: "{{item}}"
       with_items: "{{items.stdout.split()}}"
       when: item not in var_fw_active_zones
-    - name: Verify firewalld rules Get default zone
+    - name: Verify firewalld rules Get default zone @verify_firewalld_rules
       shell: "firewall-cmd --get-default-zone"
       register: items
       failed_when: no
       check_mode: no
       changed_when: false
-    - name: Verify firewalld rules Check default zone
+    - name: Verify firewalld rules Check default zone @verify_firewalld_rules
       changed_when: true
       debug:
         msg: "{{item}}"
       with_items: "{{items.stdout.split()}}"
       when: item not in var_fw_default_zone
-    - name: Verify firewalld rules Get target
+    - name: Verify firewalld rules Get target @verify_firewalld_rules
       shell: "firewall-cmd --zone={{var_fw_default_zone[0]}} --permanent --get-target"
       register: items
       failed_when: no
       check_mode: no
       changed_when: false
-    - name: Verify firewalld rules Check target
+    - name: Verify firewalld rules Check target @verify_firewalld_rules
       changed_when: true
       debug:
         msg: "{{item}}"
@@ -175,9 +177,9 @@
     - sec
     - verify_firewalld_rules
 
-- name: Set iptables persistent
+- name: Set iptables persistent @set_iptables_persistent
   block:
-    - name: Set iptables persistent Present
+    - name: Set iptables persistent Present @set_iptables_persistent
       package:
         name:
           - iptables-persistent
@@ -185,7 +187,7 @@
         state: present
       ignore_errors: yes
       register: package_result
-    - name: Set iptables persistent V4
+    - name: Set iptables persistent V4 @set_iptables_persistent
       copy:
         dest: /etc/iptables/rules.v4
         content: |
@@ -195,7 +197,7 @@
           :OUTPUT ACCEPT [0:0]
           COMMIT
       when: not package_result.failed
-    - name: Set iptables persistent V6
+    - name: Set iptables persistent V6 @set_iptables_persistent
       copy:
         dest: /etc/iptables/rules.v6
         content: |
@@ -211,21 +213,21 @@
     - mob
     - set_iptables_persistent
 
-- name: Disable netfilter-persistent # temporary workaround
+- name: Disable netfilter-persistent # temporary workaround @check_listening_ports
   service:
     name: netfilter-persistent
     enabled: no
   when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int == 22
 
-- name: Check listening ports
+- name: Check listening ports @check_listening_ports
   block:
-    - name: Check listening ports Get
+    - name: Check listening ports Get @check_listening_ports
       shell: ss -pnl | awk '{print $1,$5}'
       failed_when: false
       check_mode: no
       register: result
       changed_when: false
-    - name: Check listening ports Check
+    - name: Check listening ports Check @check_listening_ports
       changed_when: true
       failed_when: false
       debug:

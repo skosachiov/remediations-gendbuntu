@@ -1,30 +1,30 @@
-- name: Ensure apparmor is active
+- name: Ensure apparmor is active @apparmor_is_active
   block:
-    - name: Ensure apparmor is active Installed
+    - name: Ensure apparmor is active Installed @apparmor_is_active
       package:
         name: apparmor
         state: present
-    - name: Gather the package facts
+    - name: Gather the package facts @apparmor_is_active
       package_facts:
         manager: auto
-    - name: Ensure apparmor is active Service started
+    - name: Ensure apparmor is active Service started @apparmor_is_active
       service:
         name: apparmor
         enabled: 'yes'
         state: started
       when:
         - '"apparmor" in ansible_facts.packages'
-    - name: Ensure apparmor is active Profiled
+    - name: Ensure apparmor is active Profiled @apparmor_is_active
       shell: 'aa-status --profiled'
       register: result
       failed_when: false
       changed_when: result.stdout|int != var_aa_profiled
-    - name: Ensure apparmor is active Enforced
+    - name: Ensure apparmor is active Enforced @apparmor_is_active
       shell: 'aa-status --enforced'
       register: result
       failed_when: false
       changed_when: result.stdout|int != var_aa_enforced
-    - name: Ensure apparmor is active Complaining
+    - name: Ensure apparmor is active Complaining @apparmor_is_active
       shell: 'aa-status --complaining'
       register: result
       failed_when: false
@@ -35,7 +35,7 @@
     - sec
     - apparmor_is_active
 
-- name: Apparmor complain
+- name: Apparmor complain @apparmor_complain
   command: "aa-complain {{item}}"
   failed_when: false
   with_items:

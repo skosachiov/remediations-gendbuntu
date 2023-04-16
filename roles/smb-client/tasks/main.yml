@@ -1,26 +1,26 @@
-- name: Enable service autofs Present
+- name: Enable service autofs Present @set_symlinks_in_home_folder
   package:
     name: autofs
     state: present
 
-- name: Set symlinks in home folder
+- name: Set symlinks in home folder @set_symlinks_in_home_folder
   copy:
     dest: /etc/profile.d/set-symlinks.sh
-    mode: a+x
+    mode: a+rx
     content: |
       #!/bin/bash
       #
       username=$(echo $USER | sed -e 's/^.*\\//g' -e 's/@.*$//g' -e 's/\(.*\)/\L\1/')
       find /media/$username/* -maxdepth 0 -type d -exec sh -c 'ln -s {} ~/$(basename {})' \; 2>/dev/null
-  when: 
+  when:
   tags:
     - ws
     - set_symlinks_in_home_folder
 
-- name: Set gtk bookmarks
+- name: Set gtk bookmarks @set_gtk_bookmarks
   copy:
     dest: /etc/profile.d/set-gtk-bookmarks.sh
-    mode: a+x
+    mode: a+rx
     content: |
       #!/bin/bash
       #
@@ -46,18 +46,18 @@
     - set_gtk_bookmarks
     - never
 
-- name: Set autofs volume definitions
+- name: Set autofs volume definitions @set_autofs_volume
   block:
-    - name: Set autofs volume definitions Create auto.master.d
+    - name: Set autofs volume definitions Create auto.master.d @set_autofs_volume
       file:
         path: /etc/auto.master.d
         state: directory
-    - name: Set autofs volume definitions Remove line
+    - name: Set autofs volume definitions Remove line @set_autofs_volume
       lineinfile:
         dest: /etc/auto.media
         state: absent
         regexp: '^\*'
-    - name: Set autofs volume definitions Copy
+    - name: Set autofs volume definitions Copy @set_autofs_volume
       blockinfile:
         dest: /etc/auto.media
         create: yes
@@ -65,12 +65,12 @@
         content: |
           {{item.dir}} -fstype=cifs,sec=krb5,user=&,uid=$UID,gid=$GID,cruid=$UID,file_mode=0600,dir_mode=0700,cache=loose ://{{item.server}}/{{item.service}}
       with_items: "{{var_dfs}}"
-    - name: Set autofs volume definitions Browse
+    - name: Set autofs volume definitions Browse @set_autofs_volume
       lineinfile:
         dest: /etc/autofs.conf
         regexp: ^\s*browse_mode
-        line: browse_mode = yes 
-    - name: Set autofs volume definitions Copy script
+        line: browse_mode = yes
+    - name: Set autofs volume definitions Copy script @set_autofs_volume
       copy:
         dest: /usr/local/bin/autofs-media.sh
         mode: a+rx
@@ -83,17 +83,17 @@
             /bin/echo "/media/$username /etc/auto.media" > /etc/auto.master.d/$username.autofs
             /bin/systemctl reload autofs
           fi
-    - name: Set autofs volume definitions Pam exec
+    - name: Set autofs volume definitions Pam exec @set_autofs_volume
       lineinfile:
         dest: "{{'/etc/pam.d/common-session' if ansible_os_family in ['Debian'] else '/etc/pam.d/login'}}"
         regexp: ^\s*session\s*optional\s*pam_exec.so
-        line: session optional pam_exec.so /usr/local/bin/autofs-media.sh 
+        line: session optional pam_exec.so /usr/local/bin/autofs-media.sh
         insertafter: EOF
   tags:
     - ws
     - set_autofs_volume
 
-- name: Samba client min protocol
+- name: Samba client min protocol @samba_client_min_protocol
   lineinfile:
       path: /etc/samba/smb.conf
       create: true
@@ -107,7 +107,7 @@
     - mob
     - samba_client_min_protocol
 
-- name: Samba client encrypt passwords absent
+- name: Samba client encrypt passwords absent @samba_client_encrypt_passwords_absent
   lineinfile:
       path: /etc/samba/smb.conf
       regexp: ^\s*encrypt\s*passwords
@@ -117,7 +117,7 @@
     - sec
     - samba_client_encrypt_passwords_absent
 
-- name: Samba client smb encrypt required
+- name: Samba client smb encrypt required @samba_client_smb_encrypt_required
   lineinfile:
       path: /etc/samba/smb.conf
       create: true
@@ -130,3 +130,13 @@
     - sec
     - samba_client_smb_encrypt_required
 
+- name: Cifs upcall trust dns option @cifs_upcall_trust_dns
+  ignore_errors: yes
+  replace:
+      path: /etc/request-key.d/cifs.spnego.conf
+      regexp: 'cifs.upcall\s%k'
+      replace: 'cifs.upcall -t %k'
+  tags:
+    - ws
+    - sec
+    - cifs_upcall_trust_dns

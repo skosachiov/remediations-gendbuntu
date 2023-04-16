@@ -1,0 +1,8 @@
+- name: Notify all users @notify_all_users
+  ignore_errors: yes
+  command: "/usr/local/bin/notify-send-all.sh -u '{{item.1}}' '{{item.2}}' '{{item.3}}'"
+  when: item.0
+  loop: "{{var_notification_list}}"
+  tags:
+    - ws
+    - notify_all_users

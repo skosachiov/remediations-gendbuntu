@@ -3,7 +3,9 @@
     <short>work</short>
     <port protocol="tcp" port="88"/>
     <port protocol="udp" port="88"/>
+{% if var_installation_type == 'distribution-point' %}
     <port protocol="tcp" port="80"/>
-    <port protocol="tcp" port="443"/>    
-    <port protocol="udp" port="514"/>    
+    <port protocol="tcp" port="443"/>
+    <port protocol="udp" port="514"/>
+{% endif %}
 </zone>

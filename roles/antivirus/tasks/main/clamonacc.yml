@@ -1,4 +1,4 @@
-- name: Clamav onacc service
+- name: Clamav onacc service @clamav_onacc_service
   template:
     src: clamav-onacc.service.j2
     dest: /usr/lib/systemd/system/clamav-onacc.service
@@ -6,12 +6,12 @@
   notify:
     - Systemctl daemon reload
     - Clamav onacc restarted
-  when: ansible_os_family in ['Debian']    
+  when: ansible_os_family in ['Debian']
   tags:
     - ws
     - clamav_onacc_service
 
-- name: Clamav onacc enabled
+- name: Clamav onacc enabled @clamav_onacc_enabled
   service:
     name: clamav-onacc
     enabled: yes
@@ -19,4 +19,4 @@
   when: ansible_os_family in ['Debian']
   tags:
     - ws
-    - clamav_onacc_enabled    
+    - clamav_onacc_enabled

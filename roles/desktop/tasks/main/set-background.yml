@@ -1,11 +1,11 @@
-- name: Set desktop background
+- name: Set desktop background @set_desktop_background
   block:
-    - name: Set desktop background Copy file
+    - name: Set desktop background Copy file @set_desktop_background
       copy:
         src: "{{playbook_dir}}/inventories/all/files/desktop/images/{{var_backgroung_image}}"
         dest: /usr/share/backgrounds/
         mode: a+r
-    - name: Set desktop background Copy to profile
+    - name: Set desktop background Copy to profile @set_desktop_background
       copy:
         dest: /etc/profile.d/set-desktop-background.sh
         mode: a+x

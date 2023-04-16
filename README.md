@@ -6,7 +6,7 @@ Remediations is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
- 
+
 Remediations is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -57,12 +57,13 @@ The project is adapted for development in the Internet environment with or witho
 # Folder structure
 
     ├── inventories         # vars based on various parameters
-    │   ├── all             #   
+    │   ├── all             #
     │   │    ├─ group_vars  # vars for certain hosts, for example, for distribution-points
     │   │        └── dp     #
-    │   ├── branches        # vars based on OU membership
+    │   ├── branches        # vars based on Company
+    │   ├── ou              # vars based on OU membership
     │   ├── distribution    # vars based on OS distribution
-    │   └── subnets         # vars based on subnet
+    │   └── subnets         # vars based on Subnet
     │                       #
     ├── roles               # roles
     │   ├── ad-client       #
@@ -316,3 +317,4 @@ Create flag: `touch /etc/ansible/dist-upgrade`
 
 - Push to the git repo. After that, the tasks will be received and executed by all workstations through the ansible-pull mechanism.
 `git push --all origin`
+
