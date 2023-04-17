@@ -10,8 +10,8 @@ var_ad_gpo: false
 var_dfs:
   - { service: dfs, server: versailles-dc.si.mi, dir: dfs }
 var_proxy_server: "http://paris-proxy.si.mi:3128"
-var_smb_printers:
-  - ipp://versailles-prn.si.mi/prn
+var_cups_printers:
+  - { uri: 'ipp://versailles-prn.si.mi/prn', auth: negotiate, model: 'everywhere' } 
 var_domain_admins_group: gend_admins
 var_clamav_server: paris-clamav.si.mi
 var_site_address: "versailles_19_avenue_de_paris"

@@ -12,3 +12,7 @@ var_favorite_apps:
   - "libreoffice-calc.desktop"
   - "libreoffice-impress.desktop"
 
+var_remove_share_apps_desktop:
+  - org.gnome.Mines.desktop
+  - org.gnome.Mahjongg.desktop
+  - sol.desktop

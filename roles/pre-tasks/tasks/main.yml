@@ -253,11 +253,8 @@
 
 - name: Copy skip check cert conf @include_tasks
   copy:
-    src: files/nocheckcert.conf
+    src: "{{playbook_dir}}/roles/pre-tasks/files/nocheckcert.conf"
     dest: /etc/apt/apt.conf.d/nocheckcert.conf
   tags: always
 
-# Fix apt
 
-- include_tasks: roles/apt/tasks/main/dpkg-configure.yml
-- include_tasks: roles/apt/tasks/main/apt-fix-broken.yml

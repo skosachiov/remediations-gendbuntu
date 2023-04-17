@@ -37,7 +37,6 @@
     - role: apt
     - role: ad-client
     - role: ansible-client
-      tags: always
     - role: antivirus
     - role: audit
     - role: base-security
@@ -53,8 +52,11 @@
     - role: mail-client
     - role: mandatory-access
     - role: office
+      tags: always
     - role: polkit-restrictions
+      tags: always
     - role: print
+      tags: always
     - role: remote-assistance
       tags: always
     - role: scap
@@ -68,6 +70,7 @@
     - role: terminal-server
       tags: always
     - role: utmost-report
+      tags: always
 
   post_tasks:
     - name: Debug

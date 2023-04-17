@@ -25,6 +25,8 @@ var_domain_admins_group: gend_admins
 var_clamav_server: paris-clamav.si.mi
 
 var_site_address: "default"
+var_geo_coord: [0.0, 0.0]
+var_company: gendarmerie
 
 var_admin_workstation: false
 var_network_auditd: false

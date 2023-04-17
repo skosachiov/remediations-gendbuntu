@@ -1,0 +1,12 @@
+var_monitored_apps:
+  - soffice
+  - evolution
+  - chromium
+  - pidgin
+
+var_monitored_pkgs:
+  - chromium
+  - libreoffice
+  - evolution
+  - pidgin
+  - firefox

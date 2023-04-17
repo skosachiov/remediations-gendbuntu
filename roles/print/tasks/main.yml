@@ -68,7 +68,13 @@
         diff_cups_printers: "{{ (var_cups_printers | map(attribute='uri') | list) | difference(result.stdout_lines)}}"
       changed_when: false
       when: var_cups_printers|length > 0
+    - name: CUPS printer Group @cups_printers
+      user:
+        name: "{{var_ansible_username}}"
+        groups: "{{'lpadmin' if ansible_os_family in ['Debian'] else 'lp'}}"
     - name: CUPS printer Generic printer @cups_printers
+      become: true
+      become_user: "{{var_ansible_username}}"
       command: >
         lpadmin -p {{item.uri | basename}} -E -v {{item.uri}}
         {{ '-o auth-info-required=negotiate' if item.auth == 'negotiate' else '' }}
@@ -78,6 +84,8 @@
       notify: Cups restarted
       when: diff_cups_printers|length > 0 and var_cups_printers|length > 0
     - name: CUPS printer Default @cups_printers
+      become: true
+      become_user: "{{var_ansible_username}}"
       command: lpadmin -d {{var_cups_printers[0].uri | basename}}
       when: service_conf.changed
   tags:

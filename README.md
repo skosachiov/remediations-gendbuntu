@@ -245,8 +245,8 @@ sh late-script-mob.sh
 
 ## Check Workstation security in push mode
 
-For information security purpose.
-`sshpass -p password ansible-playbook -vv --ask-pass -e "ansible_become_password=password" -b -i 192.168.122.230, -u admin workstation.yml -tags sec`
+For information security purpose (check only).
+`ANSIBLE_HOST_KEY_CHECKING=no sshpass -p password ansible-playbook -vv --check --ask-pass -e "ansible_become_password=password" -b -i 192.168.122.230, -u admin workstation.yml`
 
 ## Get changed only tasks in push mode
 

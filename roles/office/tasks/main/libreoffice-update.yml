@@ -1,6 +1,8 @@
 - name: Libreoffice add ppa @libreoffice_still_ppa
   shell: add-apt-repository ppa:libreoffice/libreoffice-still -y
-  when: ansible_os_family in ['Debian']
+  when:
+    - ansible_os_family in ['Debian']
+    - var_libreoffice_ppa
   tags:
     - ws
     - libreoffice_still_ppa
@@ -74,7 +76,9 @@
           - libreoffice-style-galaxy={{var_libreoffice_version_prev}}
           - libreoffice-style-oxygen={{var_libreoffice_version_prev}}
         state: absent
-  when: ansible_os_family in ['Debian']
+  when:
+    - ansible_os_family in ['Debian']
+    - var_libreoffice_ppa
   tags:
     - ws
     - libreoffice_update

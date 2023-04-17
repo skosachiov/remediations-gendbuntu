@@ -15,6 +15,7 @@
     - remove_pkg_specific_version
 
 - name: Present specific package versions @present_pkg_specific_version
+  ignore_errors: yes
   package:
     name: "{{item}}"
     state: present

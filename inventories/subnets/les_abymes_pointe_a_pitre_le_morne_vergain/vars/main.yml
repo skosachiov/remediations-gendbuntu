@@ -11,8 +11,8 @@ var_ad_gpo: false
 var_dfs:
   - { service: dfs, server: les-abymes-dc.si.mi, dir: dfs }
 var_proxy_server: "http://paris-proxy.si.mi:3128"
-var_smb_printers:
-  - ipp://les-abymes-prn.si.mi/followme
+var_cups_printers:
+  - { uri: 'ipp://les-abymes-prn.si.mi/followme', auth: negotiate, model: 'everywhere' } 
 var_domain_admins_group: gend_admins
 var_clamav_server: les-abymes-clamav.si.mi
 var_site_address: "les_abymes_pointe_a_pitre_le_morne_vergain"

@@ -12,8 +12,8 @@ var_dfs:
   - { service: dfs, server: paris-dc.si.mi, dir: dfs }
   - { service: limoges-dfs, server: limoges-dc.si.mi, dir: limoges-dfs }
 var_proxy_server: "http://paris-proxy.si.mi:3128"
-var_smb_printers:
-  - ipp://limoges-dc.si.mi/prn
+var_cups_printers:
+  - { uri: 'ipp://limoges-dc.si.mi/prn', auth: negotiate, model: 'everywhere' } 
 var_domain_admins_group: gend_admins
 var_clamav_server: paris-clamav.si.mi
 var_site_address: "limoges_84_avenue_emile_labussiere"

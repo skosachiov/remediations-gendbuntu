@@ -1,11 +1,8 @@
 - name: Update grub
-  block:
-    - name:
-      command: update-grub
-      when: ansible_os_family in ['Debian']
-    - name:
-      command: grub2-mkconfig --output /boot/grub2/grub.cfg    
-      when: ansible_os_family in ['RedHat', 'Rocky', 'RED']
+  command: update-grub
+
+- name: Grub2 mkconfig
+  command: grub2-mkconfig --output /boot/grub2/grub.cfg
 
 - name: Rc-local restarted
   changed_when: false
