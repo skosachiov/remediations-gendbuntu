@@ -68,6 +68,11 @@
         insertbefore: ^\s*session\s*required\s*pam_unix.so
       when: ansible_os_family in ['Debian']
     - name: Pam mkhomedir rpm @pam_mkhomedir
+      package:
+        name: authselect-compat
+        state: present
+      when: ansible_os_family in ['RedHat', 'Rocky', 'RED'] and ansible_distribution_major_version|int > 8
+    - name: Pam mkhomedir rpm @pam_mkhomedir
       shell: authconfig --enablemkhomedir --update
       when: ansible_os_family in ['RedHat', 'Rocky', 'RED']
   tags:

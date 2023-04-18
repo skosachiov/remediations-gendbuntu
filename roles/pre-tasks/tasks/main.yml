@@ -247,7 +247,7 @@
   tags: always
 
 - name: Copy ca certs and script Update @default
-  command: update-ca-certificates
+  command: "{{'update-ca-certificates' if ansible_os_family in ['Debian'] else 'update-ca-trust'}}"
   changed_when: false
   tags: always
 
@@ -255,6 +255,7 @@
   copy:
     src: "{{playbook_dir}}/roles/pre-tasks/files/nocheckcert.conf"
     dest: /etc/apt/apt.conf.d/nocheckcert.conf
+  when: ansible_os_family in ['Debian']
   tags: always
 
 

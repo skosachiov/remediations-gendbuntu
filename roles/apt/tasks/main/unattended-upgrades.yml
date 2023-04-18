@@ -64,7 +64,7 @@
         dest: /etc/yum/yum-cron.conf
         regexp: ^#?\s*(apply_updates).*
         replace: '\1 = yes'
-  when: ansible_os_family in ['RedHat', 'Rocky', 'RED']
+  when: ansible_os_family in ['RedHat', 'Rocky', 'RED'] and ansible_distribution_major_version|int < 9
   tags:
     - ws
     - sec

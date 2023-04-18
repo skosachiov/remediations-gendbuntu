@@ -197,6 +197,7 @@ The terminal service is provided through XRDP. The role configures accesses, dis
 2. Create deploy user: `useradd -n ansible`
 3. Set password: `passwd ansible`
 4. Add ansible to sudoers: `echo "ansible ALL=(ALL) EXEC:ALL, NOPASSWD:ALL" >> /etc/sudoers`
+5. (Ubuntu/Debian) apt install openssh-server
 
 ## Deploy Master Distribution Point
 
@@ -214,8 +215,11 @@ Set the kernel option at the time of installation:
 
 ## Deploy Workstation in push mode
 
+`ANSIBLE_HOST_KEY_CHECKING=False sshpass -p password ansible-playbook -vv --ask-pass -b -i 192.168.122.230, -u ansible workstation.yml`
 Regular cron procedures will be configured automatically by default.
-`sshpass -p password ansible-playbook -vv --ask-pass -e "ansible_become_password=password" -b -i 192.168.122.230, -u admin workstation.yml`
+
+If you have not created an encible user:
+`ANSIBLE_HOST_KEY_CHECKING=False sshpass -p password ansible-playbook -vv --ask-pass -e "ansible_become_password=password" -b -i 192.168.122.230, -u admin workstation.yml`
 
 ## Deploy workstation in pull mode
 
