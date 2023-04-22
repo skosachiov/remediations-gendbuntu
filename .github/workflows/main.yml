@@ -12,5 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
+      - uses: actions/checkout@v3
       - run: sudo apt -y install ansible
       - run: ansible-playbook -b --connection=local 127.0.0.1, workstation.yml
