@@ -13,5 +13,6 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v3
-      - run: sudo apt -y install ansible python3-netaddr
+      - run: sudo apt -y install ansible
+      - run: pip install netaddr
       - run: ansible-playbook -b --connection=local -i 127.0.0.1, workstation.yml
