@@ -194,7 +194,7 @@ The terminal service is provided through XRDP. The role configures accesses, dis
 ## Pre tasks for push mode
 
 1. See inventories/distribution/<distribution>/<major_version>/vars for a list of supported platforms.
-2. Create deploy user: `useradd -n ansible`
+2. Create deploy user: `groupadd ansible; useradd -m -g ansible ansible`
 3. Set password: `passwd ansible`
 4. Add ansible to sudoers: `echo "ansible ALL=(ALL) EXEC:ALL, NOPASSWD:ALL" >> /etc/sudoers`
 5. (Ubuntu/Debian) apt install openssh-server

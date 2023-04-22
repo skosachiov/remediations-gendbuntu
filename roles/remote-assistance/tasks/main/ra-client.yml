@@ -32,6 +32,7 @@
     - ra_install_client_dependencies
 
 - name: Wayland disable @wayland_disable
+  failed_when: false
   replace:
     dest: /etc/gdm3/custom.conf
     regexp: ^#?(WaylandEnable).*

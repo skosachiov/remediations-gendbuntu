@@ -92,9 +92,9 @@
 
 - name: Create ansible user @create_ansible_user
   block:
-    - name: Create ansible user Check @create_ansible_user
+    - name: Create ansible user Check group @create_ansible_user
       changed_when: false
-      shell: "getent passwd {{var_ansible_username}} | wc -l"
+      shell: "getent group {{var_ansible_group}} | wc -l"
       register: result
     - name: Create ansible user Group @create_ansible_user
       group:
@@ -102,6 +102,10 @@
         gid: "{{var_ansible_gid}}"
         state: present
       when: result.stdout_lines[0] == '0'
+    - name: Create ansible user Check user @create_ansible_user
+      changed_when: false
+      shell: "getent passwd {{var_ansible_username}} | wc -l"
+      register: result
     - name: Create ansible user Useradd @create_ansible_user
       user:
         name: "{{var_ansible_username}}"

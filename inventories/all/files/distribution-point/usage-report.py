@@ -158,7 +158,7 @@ def analize_logs(log_startswith, interval, shift, cache):
                 a = line.split()
                 if (len(a) < 15): continue
                 a[2] = str(dateutil.parser.parse(a[0] + " " + a[1] + " " + a[2]))
-                try: a.remove("fly-dm:")
+                try: a.remove("gdm3:")
                 except ValueError: pass
                 if 'authentication' not in a[6]: continue
                 a = a[2:4] + a[14:15] + a[9:10]

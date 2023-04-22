@@ -49,15 +49,10 @@
     - role: flatpak
     - role: integrity-check
     - role: inventory
-      tags: always
     - role: mail-client
-      tags: always
     - role: mandatory-access
-      tags: always
     - role: office
-      tags: always
     - role: polkit-restrictions
-      tags: always
     - role: print
       tags: always
     - role: remote-assistance

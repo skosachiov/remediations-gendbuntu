@@ -156,12 +156,12 @@
         result_ma:  false
         result_mcs: false
         result_mls: false
-        result_ima: "{{result_proc_cmdline.stdout | regex_search('ima=[a-z]+', multiline=True)}}"
+        result_ima: "{{ result_proc_cmdline.stdout_lines | regex_search('ima=[a-z]+') }}"
     - name: Print mandatory access facts Set @basic_security_facts
       set_fact:
-        result_ma:  "{{ (result_sestatus.stdout | regex_search('SELinux status:\\s[a-z]+', multiline=True)).split(':')[1].map('trim') }}"
-        result_mcs: "{{ (result_sestatus.stdout | regex_search('Current mode:\\s[a-z]+', multiline=True)).split(':')[1].map('trim') }}"
-        result_mls: "{{ (result_sestatus.stdout | regex_search('Policy MLS status:\\s[a-z]+', multiline=True)).split(':')[1].map('trim') }}"
+        result_ma:  "{{ result_sestatus.stdout_lines | regex_search('SELinux status:\\s[a-z]+') }}"
+        result_mcs: "{{ result_sestatus.stdout_lines | regex_search('Current mode:\\s[a-z]+') }}"
+        result_mls: "{{ result_sestatus.stdout_lines | regex_search('Policy MLS status:\\s[a-z]+') }}"
       when: result_sestatus.rc == 0
     - name: Print host flags Vars @basic_security_facts
       set_fact:

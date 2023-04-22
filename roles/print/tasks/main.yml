@@ -73,6 +73,7 @@
         name: "{{var_ansible_username}}"
         groups: "{{'lpadmin' if ansible_os_family in ['Debian'] else 'lp'}}"
     - name: CUPS printer Generic printer @cups_printers
+      failed_when: false
       become: true
       become_user: "{{var_ansible_username}}"
       command: >
@@ -84,6 +85,7 @@
       notify: Cups restarted
       when: diff_cups_printers|length > 0 and var_cups_printers|length > 0
     - name: CUPS printer Default @cups_printers
+      failed_when: false
       become: true
       become_user: "{{var_ansible_username}}"
       command: lpadmin -d {{var_cups_printers[0].uri | basename}}

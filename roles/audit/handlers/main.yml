@@ -1,12 +1,9 @@
 - name: Auditd restarted
+  ignore_errors: true
   service:
     name: auditd
     enabled: 'yes'
     state: restarted
-  tags:
-    - ws
-    - sec
-    - auditd_restarted
 
 - name: Rsyslog restarted
   service:
