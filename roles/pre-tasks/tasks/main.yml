@@ -1,6 +1,7 @@
 # Get subnet
 
 - name: Get subnet by IP @default
+  ignore_errors: true
   set_fact:
     var_subnet: "{{item.0.key}}"
   loop: "{{ var_subnets | dict2items | subelements('value') }}"
