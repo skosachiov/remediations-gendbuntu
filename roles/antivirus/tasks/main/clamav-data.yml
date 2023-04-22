@@ -10,6 +10,12 @@
           - rpm2cpio
         state: present
       when: not result.stat.exists
+    - name: Clamav freshclam workaround Mkdir @clamav_freshclam_workaround
+      file:
+        path: /var/lib/clamav
+        state: directory
+        mode: 0755
+      when: not result.stat.exists
     - name: Clamav freshclam workaround Download @clamav_freshclam_workaround
       get_url:
         url: "{{var_clamav_data_rpm_url}}"
