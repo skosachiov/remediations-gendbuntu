@@ -13,6 +13,7 @@
 
 - name: Ensure cups SystemGroup @ensure_cups_systemgroup
   ignore_errors: "{{ansible_check_mode}}"
+  failed_when: false
   lineinfile:
     path: /etc/cups/cups-files.conf
     regexp: ^\s*SystemGroup\s
