@@ -34,6 +34,9 @@
           %{{var_local_admins_group}} ALL=(ALL) EXEC:ALL, PASSWD:ALL
         insertafter: EOF
       when: var_admin_workstation|bool == true
+  rescue:
+    - debug:
+        msg: "Failed set sudoers groups"
   tags:
     - ws
     - sec
