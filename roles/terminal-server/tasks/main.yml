@@ -101,7 +101,7 @@
         state: present
         insertafter: ^\[Security\]
       notify: Xrdp restarted
-      when: var_admin_workstation|bool == false
+      when: not var_admin_workstation|bool
     - name: XRDP set AllowGroups TerminalServerAdmins User @xrdp_set_allowgroups
       lineinfile:
         path: /etc/xrdp/sesman.ini
@@ -111,7 +111,7 @@
         state: present
         insertafter: ^\[Security\]
       notify: Xrdp restarted
-      when: var_admin_workstation|bool == false
+      when: not var_admin_workstation|bool
     - name: XRDP set AllowGroups TerminalServerUsers Admin @xrdp_set_allowgroups
       lineinfile:
         path: /etc/xrdp/sesman.ini
@@ -121,7 +121,7 @@
         state: present
         insertafter: ^\[Security\]
       notify: Xrdp restarted
-      when: var_admin_workstation|bool == true
+      when: not var_admin_workstation|bool
     - name: XRDP set AllowGroups TerminalServerAdmins Admin @xrdp_set_allowgroups
       lineinfile:
         path: /etc/xrdp/sesman.ini
@@ -131,7 +131,7 @@
         state: present
         insertafter: ^\[Security\]
       notify: Xrdp restarted
-      when: var_admin_workstation|bool == true
+      when: not var_admin_workstation|bool
   tags:
     - ws
     - sec

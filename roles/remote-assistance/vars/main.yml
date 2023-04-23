@@ -32,4 +32,3 @@ var_helpdesk_exec: >-
   vncviewer -passwd ~/.vncpasswd ::$port; rm -f ~/.vncpasswd;
   kill $(cat ~/.sshpid-$port);
   rm -f ~/.sshpid-$port
-

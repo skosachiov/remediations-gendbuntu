@@ -66,4 +66,3 @@
     - name: Debug
       debug:
         msg: "{{ansible_facts}}"
-

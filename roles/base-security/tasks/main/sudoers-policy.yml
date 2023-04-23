@@ -36,7 +36,7 @@
       when: var_admin_workstation|bool == true
   rescue:
     - debug:
-        msg: "Failed set sudoers groups"
+        msg: "Failed to set sudoers groups"
   tags:
     - ws
     - sec
@@ -80,6 +80,9 @@
       with_items:
         - path: /etc/sudoers
         - '{{ sudoers.files }}'
+  rescue:
+    - debug:
+        msg: "Failed to remove nopasswd"
   tags:
     - ws
     - sec

@@ -11,8 +11,8 @@ var_dfs:
   - { service: dfs, server: ajaccio-dc.si.mi, dir: dfs }
 var_proxy_server: "http://paris-proxy.si.mi:3128"
 var_cups_printers:
-  - { uri: 'ipp://ajaccio-prn.si.mi/prn', auth: negotiate, model: 'everywhere' } -a
-  - { uri: 'ipp://ajaccio-prn.si.mi/prn', auth: negotiate, model: 'everywhere' } -b
+  - { uri: 'ipp://ajaccio-prn.si.mi/prn', auth: negotiate, model: 'everywhere' }
+  - { uri: 'ipp://ajaccio-prn.si.mi/prn', auth: negotiate, model: 'everywhere' }
 var_domain_admins_group: gend_admins
 var_clamav_server: paris-clamav.si.mi
 var_site_address: "ajaccio_rue_du_general_fiorella"

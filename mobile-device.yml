@@ -53,7 +53,6 @@
     - role: inventories
     - role: mail-client
     - role: mandatory-access
-    - role: mobile-system
     - role: office
     - role: polkit-restrictions
     # - role: print

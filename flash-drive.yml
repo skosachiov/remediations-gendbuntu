@@ -52,7 +52,6 @@
     - role: integrity-check
     - role: inventory
     - role: mail-client
-    - role: mobile-system
     - role: office
     - role: polkit-restrictions
     - role: print
