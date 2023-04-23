@@ -16,48 +16,48 @@
         mode: a+r
     - name: Xrdp tuning Top window bg @xrdp_tuning
       lineinfile:
-          path: /etc/xrdp/xrdp.ini
-          create: true
-          regexp: ^[\s]*ls_top_window_bg_color
-          line: ls_top_window_bg_color=000000
-          state: present
-          insertafter: \[Globals\]
+        path: /etc/xrdp/xrdp.ini
+        create: true
+        regexp: ^[\s]*ls_top_window_bg_color
+        line: ls_top_window_bg_color=000000
+        state: present
+        insertafter: \[Globals\]
       notify: Xrdp restarted
     - name: Xrdp tuning Logo ls_logo_filename @xrdp_tuning
       lineinfile:
-          path: /etc/xrdp/xrdp.ini
-          create: true
-          regexp: ^[\s]*ls_logo_filename
-          line: ls_logo_filename=/usr/share/xrdp/{{var_xrdp_logo_file | basename}}
-          state: present
-          insertafter: \[Globals\]
+        path: /etc/xrdp/xrdp.ini
+        create: true
+        regexp: ^[\s]*ls_logo_filename
+        line: ls_logo_filename=/usr/share/xrdp/{{var_xrdp_logo_file | basename}}
+        state: present
+        insertafter: \[Globals\]
       notify: Xrdp restarted
     - name: Xrdp tuning colors used by windows in RGB format @xrdp_tuning
       lineinfile:
-          path: /etc/xrdp/xrdp.ini
-          create: true
-          regexp: ^[\s]*blue
-          line: blue=0079ba
-          state: present
-          insertafter: \[Globals\]
+        path: /etc/xrdp/xrdp.ini
+        create: true
+        regexp: ^[\s]*blue
+        line: blue=0079ba
+        state: present
+        insertafter: \[Globals\]
       notify: Xrdp restarted
     - name: Xrdp tuning Bg color @xrdp_tuning
       lineinfile:
-          path: /etc/xrdp/xrdp.ini
-          create: true
-          regexp: ^[\s]*ls_bg_color
-          line: ls_bg_color=ffffff
-          state: present
-          insertafter: \[Globals\]
+        path: /etc/xrdp/xrdp.ini
+        create: true
+        regexp: ^[\s]*ls_bg_color
+        line: ls_bg_color=ffffff
+        state: present
+        insertafter: \[Globals\]
       notify: Xrdp restarted
     - name: Xrdp tuning Hide thinclient_drivers @xrdp_tuning
       lineinfile:
-          path: /etc/xrdp/sesman.ini
-          create: true
-          regexp: ^\s*FuseMountName
-          line: FuseMountName=.thinclient_drives
-          state: present
-          insertafter: \[Chansrv\]
+        path: /etc/xrdp/sesman.ini
+        create: true
+        regexp: ^\s*FuseMountName
+        line: FuseMountName=.thinclient_drives
+        state: present
+        insertafter: \[Chansrv\]
       notify: Xrdp restarted
   tags:
     - ws
@@ -138,6 +138,11 @@
     - xrdp_set_allowgroups
 
 - name: Xrdp crypt level @xrdp_crypt_level
+  tags:
+    - ws
+    - sec
+    - mob
+    - xrdp_crypt_level
   ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Xrdp crypt level Present @xrdp_crypt_level
@@ -153,8 +158,3 @@
           state: present
           insertafter: \[Globals\]
       notify: Xrdp restarted
-  tags:
-    - ws
-    - sec
-    - mob
-    - xrdp_crypt_level

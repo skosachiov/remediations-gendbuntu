@@ -135,15 +135,15 @@
   block:
     - name: Cifs upcall trust dns option Set @cifs_upcall_trust_dns
       replace:
-          path: /etc/request-key.d/cifs.spnego.conf
-          regexp: 'cifs.upcall\s%k'
-          replace: 'cifs.upcall -t %k'
+        path: /etc/request-key.d/cifs.spnego.conf
+        regexp: 'cifs.upcall\s%k'
+        replace: 'cifs.upcall -t %k'
       when: var_dfs[0]['server'] == var_local_domain
     - name: Cifs upcall trust dns option Unset @cifs_upcall_trust_dns
       replace:
-          path: /etc/request-key.d/cifs.spnego.conf
-          regexp: 'cifs.upcall\s-t\s%k'
-          replace: 'cifs.upcall %k'
+        path: /etc/request-key.d/cifs.spnego.conf
+        regexp: 'cifs.upcall\s-t\s%k'
+        replace: 'cifs.upcall %k'
       when: var_dfs[0]['server'] != var_local_domain
   tags:
     - ws

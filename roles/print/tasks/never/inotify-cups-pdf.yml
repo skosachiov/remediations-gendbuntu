@@ -9,20 +9,20 @@
         dest: /etc/profile.d/inotify-print.sh
         mode: a+rx
         content: |
-          #!/bin/bash 
-          sleep .$RANDOM 
-          ( 
-          if pgrep -U $UID inotifywait > /dev/null 
-          then 
-                 logger "inotifywait is already running" 
-          else 
-          inotifywait -m $HOME/.cups-pdf -e close_write -e moved_to | 
-             while read path action file; do 
-                 logger "The file '$file' appeared in directory '$path' via '$action'" 
-                 smbclient -k "{{var_cups_printers[0]}}" -c "print ${path}${file}" 
-                 rm -f ${path}${file} 
-             done 
-          fi 
+          #!/bin/bash
+          sleep .$RANDOM
+          (
+          if pgrep -U $UID inotifywait > /dev/null
+          then
+                 logger "inotifywait is already running"
+          else
+          inotifywait -m $HOME/.cups-pdf -e close_write -e moved_to |
+             while read path action file; do
+                 logger "The file '$file' appeared in directory '$path' via '$action'"
+                 smbclient -k "{{var_cups_printers[0]}}" -c "print ${path}${file}"
+                 rm -f ${path}${file}
+             done
+          fi
           )&
   when:
     - "{{var_inotify_printer}}"
