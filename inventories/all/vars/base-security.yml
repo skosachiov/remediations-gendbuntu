@@ -52,7 +52,7 @@ var_suid_whitelist:
   - "/usr/bin/umount"
   - "/opt/Citrix/ICAClient/ctxusb"
 
-var_log_skip_permissions_check: 
+var_log_skip_permissions_check:
   - "krb5_trace.log"
 
 var_remove_exec_bit:
