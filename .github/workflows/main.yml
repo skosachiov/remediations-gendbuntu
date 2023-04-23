@@ -13,6 +13,6 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v3
-      - run: sudo apt -y install ansible
+      - run: sudo apt -y install ansible ansible-lint
       - run: ansible-lint --profile min
       - run: ansible-playbook -b --connection=local -i 127.0.0.1, workstation.yml
