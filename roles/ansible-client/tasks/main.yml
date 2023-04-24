@@ -75,6 +75,7 @@
     - config_ansible_environment
 
 - name: Config ansible stdout @config_ansible_stdout
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Config ansible stdout @config_ansible_stdout
       lineinfile:
@@ -93,6 +94,7 @@
     - config_ansible_stdout
 
 - name: Create ansible user @create_ansible_user
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Create ansible user Check group @create_ansible_user
       changed_when: false
@@ -143,6 +145,7 @@
     - create_ansible_user
 
 - name: Cron ansible pull @cron_ansible_pull
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Cron ansible pull Package present @cron_ansible_pull
       package:
@@ -161,6 +164,7 @@
     - cron_ansible_pull
 
 - name: Ansible pull systemd service @ansible_pull_systemd_service
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Ansible pull systemd service Copy @ansible_pull_systemd_service
       template:
