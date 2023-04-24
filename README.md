@@ -1,3 +1,5 @@
+[![remediations-gendbuntu](https://github.com/skosachiov/remediations-gendbuntu/actions/workflows/main.yml/badge.svg)](https://github.com/skosachiov/remediations-gendbuntu/actions/workflows/main.yml)
+
 # License
 
 This file is part of Remediations-gendbuntu.
