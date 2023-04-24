@@ -1,4 +1,5 @@
 - name: Install apps for hostname @hostname_apps_install
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Install apps for hostname Is defined @hostname_apps_install
       set_fact:
@@ -18,6 +19,7 @@
     - hostname_apps_install
 
 - name: Remove apps for hostname @hostname_apps_remove
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Install apps for hostname Is defined @hostname_apps_remove
       set_fact:

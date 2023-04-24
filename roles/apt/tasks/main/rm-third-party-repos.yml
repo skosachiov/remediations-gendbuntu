@@ -1,4 +1,5 @@
 - name: Ensure third-party repos are disabled @rm_third_party_repo
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Ensure third-party repos are disabled List dir @rm_third_party_repo
       find:

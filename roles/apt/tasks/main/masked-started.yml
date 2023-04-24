@@ -1,4 +1,5 @@
 - name: Connman masked @connman_masked
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Connman masked Stop @connman_masked
       failed_when: false
@@ -27,6 +28,7 @@
     - connman_masked
 
 - name: Packagekit started @packagekit_started
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Packagekit masked Masked @packagekit_started
       failed_when: false
@@ -43,6 +45,7 @@
     - packagekit_started
 
 - name: Apt-daily.timer masked @apt_daily_masked
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Apt-daily.timer masked Stopped @apt_daily_masked
       failed_when: false

@@ -1,4 +1,5 @@
 - name: Unattended security upgrades @unattended_security_upgrades_deb
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Unattended security upgrades Present @unattended_security_upgrades_deb
       package:
@@ -45,6 +46,7 @@
     - daily_unattended_upgrades_deb
 
 - name: Yum cron @unattended_security_upgrades_yum
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Yum cron Present @unattended_security_upgrades_yum
       package:

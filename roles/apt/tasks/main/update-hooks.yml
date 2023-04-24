@@ -1,4 +1,5 @@
 - name: Ensure package facts auto @package_facts_auto
+  ignore_errors: "{{ansible_check_mode}}"
   package_facts:
     manager: auto
   tags:

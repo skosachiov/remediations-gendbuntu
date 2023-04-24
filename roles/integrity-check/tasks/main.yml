@@ -1,4 +1,5 @@
 - name: Ensure aide is active @aide_is_active
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Ensure aide is active State present @aide_is_active
       package:
@@ -33,6 +34,7 @@
     - aide_is_active
 
 - name: Aide config file section @aide_config_file_section
+  ignore_errors: "{{ansible_check_mode}}"
   blockinfile:
     create: yes
     dest: /etc/aide/aide.conf.d/99_aide_myrule

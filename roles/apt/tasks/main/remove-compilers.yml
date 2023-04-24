@@ -1,4 +1,5 @@
 - name: Ensure compilers are removed @compilers_are_removed
+  ignore_errors: "{{ansible_check_mode}}"
   package:
     name:
       - g++

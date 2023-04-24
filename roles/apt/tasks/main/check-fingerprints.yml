@@ -1,4 +1,5 @@
 - name: Check repo fingerprints @check_repo_fingerprints
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Check repo fingerprints Get @check_repo_fingerprints
       shell: apt-key list --fingerprint --with-colons 2> /dev/null | grep "^fpr" | cut -f 10 -d ":"

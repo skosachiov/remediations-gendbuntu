@@ -9,6 +9,7 @@
     - dpkg_configure_all
 
 - name: Apt update @apt_update
+  ignore_errors: "{{ansible_check_mode}}"
   command: apt update
   changed_when: false
   when: ansible_os_family in ['Debian']
@@ -17,6 +18,7 @@
     - apt_update
 
 - name: Rpm rebuilddb @rpm_rebuilddb
+  ignore_errors: "{{ansible_check_mode}}"
   check_mode: no
   changed_when: false
   shell: 'rpm --rebuilddb'

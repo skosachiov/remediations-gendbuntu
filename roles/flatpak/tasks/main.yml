@@ -1,4 +1,5 @@
 - name: Flatpak installed @flatpak_intsalled
+  ignore_errors: "{{ansible_check_mode}}"
   package:
     name: flatpak
     state: latest
@@ -7,6 +8,7 @@
     - flatpak_intsalled
 
 - name: Ensure flathub installed in system space @flatpak_remote_add
+  ignore_errors: "{{ansible_check_mode}}"
   shell: "flatpak remote-add --system --if-not-exists {{var_flathub_name}} {{var_flathub_url}}"
   register: result
   changed_when: result.rc != 0
@@ -16,6 +18,7 @@
     - flatpak_remote_add
 
 - name: Flatpak apps install @flatpak_apps_install
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Flatpak apps install List @flatpak_apps_install
       changed_when: false
@@ -28,4 +31,3 @@
   tags:
     - ws
     - flatpak_apps_install
-

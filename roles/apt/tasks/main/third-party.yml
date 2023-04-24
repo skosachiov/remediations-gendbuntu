@@ -1,4 +1,5 @@
 - name: Ensure third-party packages are installed @third_party_packages_are_installed
+  ignore_errors: "{{ansible_check_mode}}"
   failed_when: false
   package:
     name:

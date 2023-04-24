@@ -73,6 +73,7 @@
     - packages_are_installed
 
 - name: Ensure unnecessary packages are removed @packages_are_removed
+  ignore_errors: "{{ansible_check_mode}}"
   package:
     name:
       - ufw
@@ -91,6 +92,7 @@
     - packages_are_removed
 
 - name: Ensure debuggers are removed @debuggers_are_removed
+  ignore_errors: "{{ansible_check_mode}}"
   package:
     name:
       - gdb
