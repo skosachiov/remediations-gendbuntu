@@ -1,4 +1,5 @@
 - name: Ensure kernel modules are disabled @kernel_modules_are_disabled
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Ensure kernel modules are disabled deb @kernel_modules_are_disabled
       template:

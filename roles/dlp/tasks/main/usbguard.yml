@@ -1,4 +1,5 @@
 - name: Ensure usbguard is installed @usbguard_is_installed
+  ignore_errors: "{{ansible_check_mode}}"
   package:
     name:
       - usbguard
@@ -9,6 +10,7 @@
     - usbguard_is_installed
 
 - name: Usbguard allowed devices @usbguard_allowed_devices
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Usbguard allowed devices Create rules @usbguard_allowed_devices
       copy:
@@ -44,6 +46,7 @@
     - usbguard_allowed_devices
 
 - name: Usbguard list devices @usbguad_list_devices
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Usbguard list devices List @usbguad_list_devices
       command: usbguard list-devices
@@ -59,6 +62,7 @@
     - usbguad_list_devices
 
 - name: Usbguard linter @usbguad_linter
+  ignore_errors: "{{ansible_check_mode}}"
   lineinfile:
     path: /etc/usbguard/rules.conf
     regexp: '^(?!(allow id|block serial))'
@@ -70,6 +74,7 @@
       - usbguad_linter
 
 - name: Ensure usbguard is active @usbguard_is_active
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Ensure usbguard is installed @usbguard_is_active
       package:

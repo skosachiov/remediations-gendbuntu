@@ -1,4 +1,3 @@
-
 - name: Copy applications desktop files @copy_apps_desktop_files
   ignore_errors: "{{ansible_check_mode}}"
   copy:
