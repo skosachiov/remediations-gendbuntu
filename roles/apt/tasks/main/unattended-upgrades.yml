@@ -28,6 +28,7 @@
     - unattended_security_upgrades_deb
 
 - name: Daily unattended upgrades @daily_unattended_upgrades_deb
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Gather the package facts @daily_unattended_upgrades_deb
       package_facts:
