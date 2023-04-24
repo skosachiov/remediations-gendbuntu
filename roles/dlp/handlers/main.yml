@@ -8,6 +8,7 @@
   command: dracut -f
 
 - name: Usbguard restarted
+  ignore_errors: "{{ansible_check_mode}}"
   service:
     name: usbguard
     state: restarted
