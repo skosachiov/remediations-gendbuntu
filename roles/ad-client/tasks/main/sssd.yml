@@ -51,6 +51,7 @@
     - root_copy_sssd_conf
 
 - name: Sssd fine tuning Permissions @sssd_conf_permissions
+  ignore_errors: "{{ansible_check_mode}}"
   file:
     path: /root/sssd.conf
     mode: '0600'
