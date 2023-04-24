@@ -1,6 +1,7 @@
 # use Hidden=true to hide
 
 - name: Users desktop files @users_desktop_files
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Users desktop files Create tmp dir @users_desktop_files
       changed_when: false
@@ -52,6 +53,7 @@
     - users_desktop_files
 
 - name: Users desktop files remove Find home @users_desktop_files
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Users desktop files remove Find home @users_desktop_files
       find:

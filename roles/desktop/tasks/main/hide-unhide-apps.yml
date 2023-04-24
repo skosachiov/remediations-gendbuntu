@@ -1,4 +1,5 @@
 - name: Hide unused desktop apps home @hide_unused_desktop_apps_home
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Hide unused desktop apps home Find @hide_unused_desktop_apps_home
       shell: find /home -xdev -name "*.desktop" | grep -e Desktops -e startmenu
@@ -20,6 +21,7 @@
     - hide_unused_desktop_apps_home
 
 - name: Unhide desktop apps home @unhide_desktop_apps_home
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Unhide desktop apps home Find @unhide_desktop_apps_home
       shell: find /home -xdev -name "*.desktop" | grep -e Desktops -e startmenu
@@ -42,6 +44,7 @@
     - unhide_desktop_apps_home
 
 - name: Hide unused desktop apps share @hide_unused_desktop_apps_share
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Hide unused desktop apps share Find @hide_unused_desktop_apps_share
       find:
@@ -63,6 +66,7 @@
     - hide_unused_desktop_apps_share
 
 - name: Unhide unused desktop apps share @unhide_desktop_apps_share
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Unhide unused desktop apps share Find @unhide_desktop_apps_share
       find:
@@ -82,5 +86,3 @@
   tags:
     - ws
     - unhide_desktop_apps_share
-
-

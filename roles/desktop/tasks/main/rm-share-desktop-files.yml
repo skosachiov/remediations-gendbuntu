@@ -1,4 +1,5 @@
 - name: Remove share apps desktop files @remove_share_apps_desktop_files
+  ignore_errors: "{{ansible_check_mode}}"
   file:
     path: "/usr/share/applications/{{item}}"
     state: absent

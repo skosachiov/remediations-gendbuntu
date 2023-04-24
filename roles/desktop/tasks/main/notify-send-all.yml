@@ -1,4 +1,5 @@
 - name: Copy notify send all script @notify_send_all
+  ignore_errors: "{{ansible_check_mode}}"
   copy:
     dest: /usr/local/bin/notify-send-all.sh
     mode: a+rx

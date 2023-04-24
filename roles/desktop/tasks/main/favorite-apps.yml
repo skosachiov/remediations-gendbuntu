@@ -1,4 +1,5 @@
 - name: Add favorite-apps @add_favorite_apps
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Add favorite-apps Add quotes @add_favorite_apps
       set_fact:

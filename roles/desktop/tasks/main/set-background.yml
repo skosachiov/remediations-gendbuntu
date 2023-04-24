@@ -1,4 +1,5 @@
 - name: Set desktop background @set_desktop_background
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Set desktop background Copy file @set_desktop_background
       copy:
