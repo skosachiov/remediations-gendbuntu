@@ -34,9 +34,6 @@
           %{{var_local_admins_group}} ALL=(ALL) EXEC:ALL, PASSWD:ALL
         insertafter: EOF
       when: var_admin_workstation|bool == true
-  rescue:
-    - debug:
-        msg: "Failed to set sudoers groups"
   tags:
     - ws
     - sec
@@ -80,9 +77,6 @@
       with_items:
         - path: /etc/sudoers
         - '{{ sudoers.files }}'
-  rescue:
-    - debug:
-        msg: "Failed to remove nopasswd"
   tags:
     - ws
     - sec
@@ -90,16 +84,11 @@
 
 - name: Ensure env_reset and timeout is enabled in /etc/sudoers @sudo_add_env_reset_and_timeout
   ignore_errors: "{{ansible_check_mode}}"
-  block:
-    - name: Ensure env_reset and timeout is enabled in /etc/sudoers Block @sudo_add_env_reset_and_timeout
-      lineinfile:
-        path: /etc/sudoers
-        regexp: ^[\s]*Defaults.*\benv_reset\b.*$
-        line: Defaults env_reset, timestamp_timeout=0
-        validate: /usr/sbin/visudo -cf %s
-  rescue:
-    - debug:
-        msg: "Failed to set env_reset and timeout"
+  lineinfile:
+    path: /etc/sudoers
+    regexp: ^[\s]*Defaults.*\benv_reset\b.*$
+    line: Defaults env_reset, timestamp_timeout=0
+    validate: /usr/sbin/visudo -cf %s
   tags:
     - ws
     - sec
@@ -107,17 +96,12 @@
 
 - name: Ensure use_pty is enabled in /etc/sudoers @sudo_add_use_pty
   ignore_errors: "{{ansible_check_mode}}"
-  block:
-    - name: Ensure use_pty is enabled in /etc/sudoers Block @sudo_add_use_pty
-      lineinfile:
-        path: /etc/sudoers
-        regexp: ^[\s]*Defaults.*\buse_pty\b.*$
-        line: Defaults use_pty
-        insertafter: Defaults
-        validate: /usr/sbin/visudo -cf %s
-  rescue:
-    - debug:
-        msg: "Failed to set use_pty"
+  lineinfile:
+    path: /etc/sudoers
+    regexp: ^[\s]*Defaults.*\buse_pty\b.*$
+    line: Defaults use_pty
+    insertafter: Defaults
+    validate: /usr/sbin/visudo -cf %s
   tags:
     - ws
     - sec
@@ -125,17 +109,12 @@
 
 - name: Ensure tty_tickets is enabled in /etc/sudoers @sudo_add_tty_tickets
   ignore_errors: "{{ansible_check_mode}}"
-  block:
-    - name: Ensure tty_tickets is enabled in /etc/sudoers Block @sudo_add_tty_tickets
-      lineinfile:
-        path: /etc/sudoers
-        regexp: ^[\s]*Defaults.*\btty_tickets\b.*$
-        line: Defaults tty_tickets
-        insertafter: Defaults
-        validate: /usr/sbin/visudo -cf %s
-  rescue:
-    - debug:
-        msg: "Failed to set tty_tickets"
+  lineinfile:
+    path: /etc/sudoers
+    regexp: ^[\s]*Defaults.*\btty_tickets\b.*$
+    line: Defaults tty_tickets
+    insertafter: Defaults
+    validate: /usr/sbin/visudo -cf %s
   tags:
     - ws
     - sec
@@ -143,15 +122,10 @@
 
 - name: Enable logfile option with appropriate value in /etc/sudoers @sudo_custom_logfile
   ignore_errors: "{{ansible_check_mode}}"
-  block:
-    - name: Enable logfile option with appropriate value in /etc/sudoers Block @sudo_custom_logfile
-      lineinfile:
-        path: /etc/sudoers
-        line: Defaults logfile={{ var_sudo_logfile }}
-        validate: /usr/sbin/visudo -cf %s
-  rescue:
-    - debug:
-        msg: "Failed to set logfile"
+  lineinfile:
+    path: /etc/sudoers
+    line: Defaults logfile={{ var_sudo_logfile }}
+    validate: /usr/sbin/visudo -cf %s
   tags:
     - ws
     - sec

@@ -36,9 +36,6 @@
         state: present
         create: true
       notify: Update grub
-  rescue:
-    - debug:
-        msg: "Failed to set grub2 password"
   when: ansible_os_family in ['Debian']
   tags:
     - ws
@@ -48,17 +45,12 @@
 
 - name: Set grub cmdline @set_grub_cmdline
   ignore_errors: "{{ansible_check_mode}}"
-  block:
-    - name: Set grub cmdline /etc/default/grub @set_grub_cmdline
-      replace:
-        dest: /etc/default/grub
-        regexp: '(GRUB_CMDLINE_LINUX_DEFAULT=.*quiet net.ifnames=0).*$'
-        replace: '\1 audit=1 audit_backlog_limit=8192 splash"'
-      notify: Update grub
+  replace:
+    dest: /etc/default/grub
+    regexp: '(GRUB_CMDLINE_LINUX_DEFAULT=.*quiet net.ifnames=0).*$'
+    replace: '\1 audit=1 audit_backlog_limit=8192 splash"'
+  notify: Update grub
   when: ansible_os_family in ['Debian']
-  rescue:
-    - debug:
-        msg: "Failed to set grub cmdline"
   tags:
     - ws
     - sec
@@ -83,9 +75,6 @@
       notify: Update grub
       when: not var_unrestricted_os
   when: ansible_os_family in ['Debian']
-  rescue:
-    - debug:
-        msg: "Failed to set unrestricted os"
   tags:
     - ws
     - sec
