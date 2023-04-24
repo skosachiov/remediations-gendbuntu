@@ -1,4 +1,5 @@
 - name: Install openscap client dependencies focal @install_openscap_dependencies_focal
+  ignore_errors: "{{ansible_check_mode}}"
   package:
     name:
       - libopenscap8
@@ -11,6 +12,7 @@
     - install_openscap_dependencies_focal
 
 - name: Install openscap client dependencies bullseye @install_openscap_dependencies_bullseye
+  ignore_errors: "{{ansible_check_mode}}"
   package:
     name: openscap
     state: present
@@ -21,6 +23,7 @@
     - install_openscap_dependencies_bullseye
 
 - name: OpenSCAP CVE vulnerability scan ubuntu @oscap_oval_eval_ubuntu
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: OpenSCAP CVE vulnerability scan ubuntu Get_url @oscap_oval_eval_ubuntu
       changed_when: false
@@ -57,6 +60,7 @@
     - oscap_oval_eval_ubuntu
 
 - name: OpenSCAP CVE vulnerability scan debian @oscap_oval_eval_debian
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: OpenSCAP CVE vulnerability scan debian Copy @oscap_oval_eval_debian
       changed_when: false

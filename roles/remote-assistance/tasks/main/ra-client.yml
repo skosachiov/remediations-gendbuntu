@@ -1,4 +1,5 @@
 - name: Install client dependencies @ra_install_client_dependencies
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Install client dependencies x11 @ra_install_client_dependencies
       package:
@@ -32,6 +33,7 @@
     - ra_install_client_dependencies
 
 - name: Wayland disable @wayland_disable
+  ignore_errors: "{{ansible_check_mode}}"
   failed_when: false
   replace:
     dest: /etc/gdm3/custom.conf
@@ -43,6 +45,7 @@
     - wayland_disable
 
 - name: Init known hosts @ra_init_known_hosts
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Init known hosts Shell @ra_init_known_hosts
       shell: sshpass -p '{{var_no_shell_pass}}' ssh -o StrictHostKeyChecking=no no-shell@{{var_fqdn_sshserver}} "/bin/false"
@@ -60,6 +63,7 @@
     - ra_init_known_hosts
 
 - name: Install client desktop files @ra_install_client_desktop_files
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Install client desktop files Full control @ra_install_client_desktop_files
       set_fact:

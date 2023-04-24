@@ -1,9 +1,14 @@
-- name: Enable service autofs Present @set_symlinks_in_home_folder
+- name: Enable service autofs Present @enable_autofs_service
+  ignore_errors: "{{ansible_check_mode}}"
   package:
     name: autofs
     state: present
+  tags:
+    - ws
+    - enable_autofs_service
 
 - name: Set symlinks in home folder @set_symlinks_in_home_folder
+  ignore_errors: "{{ansible_check_mode}}"
   copy:
     dest: /etc/profile.d/set-symlinks.sh
     mode: a+rx
@@ -18,6 +23,7 @@
     - set_symlinks_in_home_folder
 
 - name: Set gtk bookmarks @set_gtk_bookmarks
+  ignore_errors: "{{ansible_check_mode}}"
   copy:
     dest: /etc/profile.d/set-gtk-bookmarks.sh
     mode: a+rx
@@ -47,6 +53,7 @@
     - never
 
 - name: Set autofs volume definitions @set_autofs_volume
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Set autofs volume definitions Create auto.master.d @set_autofs_volume
       file:
@@ -94,6 +101,7 @@
     - set_autofs_volume
 
 - name: Samba client min protocol @samba_client_min_protocol
+  ignore_errors: "{{ansible_check_mode}}"
   lineinfile:
       path: /etc/samba/smb.conf
       create: true
@@ -108,6 +116,7 @@
     - samba_client_min_protocol
 
 - name: Samba client encrypt passwords absent @samba_client_encrypt_passwords_absent
+  ignore_errors: "{{ansible_check_mode}}"
   lineinfile:
       path: /etc/samba/smb.conf
       regexp: ^\s*encrypt\s*passwords
@@ -118,6 +127,7 @@
     - samba_client_encrypt_passwords_absent
 
 - name: Samba client smb encrypt required @samba_client_smb_encrypt_required
+  ignore_errors: "{{ansible_check_mode}}"
   lineinfile:
       path: /etc/samba/smb.conf
       create: true

@@ -1,4 +1,5 @@
 - name: Enable service cupsd deb @service_cups_enabled
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Enable service cupsd facts @service_cups_enabled
       package_facts:
@@ -22,6 +23,7 @@
     - service_cups_enabled
 
 - name: CUPS smb backend set @cups_smb_backend_set
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: CUPS smb backend set Check @cups_smb_backend_set
       stat:
@@ -42,6 +44,7 @@
     - cups_smb_backend_set
 
 - name: CUPS printers @cups_printers
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: CUPS printer Grep @cups_printers
       shell: "cupsctl | grep DefaultAuthType=Negotiate"

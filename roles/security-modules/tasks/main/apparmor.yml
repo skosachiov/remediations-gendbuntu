@@ -1,4 +1,5 @@
 - name: Ensure apparmor is active @apparmor_is_active
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Ensure apparmor is active Installed @apparmor_is_active
       package:
@@ -36,6 +37,7 @@
     - apparmor_is_active
 
 - name: Apparmor complain @apparmor_complain
+  ignore_errors: "{{ansible_check_mode}}"
   command: "aa-complain {{item}}"
   failed_when: false
   with_items:

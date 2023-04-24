@@ -1,4 +1,5 @@
 - name: Xrdp installed @xrdp_installed
+  ignore_errors: "{{ansible_check_mode}}"
   package:
     name: xrdp
     state: present
@@ -7,6 +8,7 @@
     - xrdp_installed
 
 - name: Xrdp tuning @xrdp_tuning
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Xrdp tunung Copy Xrdp logo file Copy @xrdp_tuning
       copy:
@@ -138,11 +140,6 @@
     - xrdp_set_allowgroups
 
 - name: Xrdp crypt level @xrdp_crypt_level
-  tags:
-    - ws
-    - sec
-    - mob
-    - xrdp_crypt_level
   ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Xrdp crypt level Present @xrdp_crypt_level
@@ -158,3 +155,8 @@
           state: present
           insertafter: \[Globals\]
       notify: Xrdp restarted
+  tags:
+    - ws
+    - sec
+    - mob
+    - xrdp_crypt_level

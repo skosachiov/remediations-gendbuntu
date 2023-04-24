@@ -1,4 +1,5 @@
 - name: Create no-shell user @ra_create_no_shell_user
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Create no-shell user Useradd @ra_create_no_shell_user
       user:
@@ -12,6 +13,7 @@
     - ra_create_no_shell_user
 
 - name: Ensure openssh-server is installed @ra_openssh_server_is_started
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Ensure openssh-server is installed Package @ra_openssh_server_is_started
       package:
