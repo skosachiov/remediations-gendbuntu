@@ -13,11 +13,10 @@
     - clamav_onacc_service
 
 - name: Clamav onacc enabled @clamav_onacc_enabled
-  ignore_errors: "{{ansible_check_mode}}"
+  ignore_errors: yes
   service:
     name: clamav-onacc
     enabled: yes
-  ignore_errors: yes
   when: ansible_os_family in ['Debian']
   tags:
     - ws

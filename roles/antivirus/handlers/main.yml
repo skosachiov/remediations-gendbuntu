@@ -12,6 +12,7 @@
   command: systemctl daemon-reload
 
 - name: Clamav onacc restarted
+  ignore_errors: "{{ansible_check_mode}}"
   service:
     name: clamav-onacc
     state: restarted
