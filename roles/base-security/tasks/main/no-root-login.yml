@@ -1,19 +1,29 @@
 - name: Direct root Logins Not Allowed @no_direct_root_logins
-  ignore_errors: "{{ansible_check_mode}}"
-  copy:
-    dest: /etc/securetty
-    content: ''
+  block:
+    - name: Direct root Logins Not Allowed Block @no_direct_root_logins
+      ignore_errors: "{{ansible_check_mode}}"
+      copy:
+        dest: /etc/securetty
+        content: ''
+  rescue:
+    - debug:
+        msg: "Failed to erase securetty"
   tags:
     - ws
     - sec
     - no_direct_root_logins
 
 - name: Restrict Virtual Console Root Logins @securetty_root_login_console_only
-  ignore_errors: "{{ansible_check_mode}}"
-  lineinfile:
-    dest: /etc/securetty
-    regexp: ^vc
-    state: absent
+  block:
+    - name: Restrict Virtual Console Root Logins Block @securetty_root_login_console_only
+      ignore_errors: "{{ansible_check_mode}}"
+      lineinfile:
+        dest: /etc/securetty
+        regexp: ^vc
+        state: absent
+  rescue:
+    - debug:
+        msg: "Failed to remove vc from securetty"
   tags:
     - ws
     - sec
