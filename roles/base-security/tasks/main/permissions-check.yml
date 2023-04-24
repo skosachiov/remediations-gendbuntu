@@ -71,7 +71,7 @@
       find:
         path: /usr/share/zoneinfo
         file_type: file
-        recurse: yes
+        # recurse: yes
       register: result
     - name: Ensure permissions on /usr/share/zoneinfo @usr_share_zoneinfo_perm
       file:

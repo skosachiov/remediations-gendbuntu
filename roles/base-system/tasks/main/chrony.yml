@@ -1,4 +1,5 @@
 - name: Enable service chronyd @service_chronyd_enabled
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Ensure ntp is removed @service_chronyd_enabled
       package:
@@ -20,6 +21,7 @@
     - service_chronyd_enabled
 
 - name: Chronyd set internal pool @chronyd_set_internal_pool
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Chrony remove external pools @chronyd_set_internal_pool
       replace:
@@ -71,6 +73,7 @@
     - service_chronyd_tracking
 
 - name: Ensure permission 0644 on /etc/chrony/chrony.conf @file_0644_chrony_conf
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Ensure permission 0644 on /etc/chrony/chrony.conf Find @file_0644_chrony_conf
       find:
