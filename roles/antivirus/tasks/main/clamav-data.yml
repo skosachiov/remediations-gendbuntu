@@ -1,4 +1,5 @@
 - name: Clamav freshclam workaround # be careful @clamav_freshclam_workaround
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Clamav freshclam workaround Check files @clamav_freshclam_workaround
       stat:

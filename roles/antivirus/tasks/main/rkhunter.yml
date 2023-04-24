@@ -1,4 +1,5 @@
 - name: Rkhunter latest @rkhunter_latest
+  ignore_errors: "{{ansible_check_mode}}"
   package:
     name:
       - rkhunter

@@ -1,4 +1,5 @@
 - name: Clamav onacc service @clamav_onacc_service
+  ignore_errors: "{{ansible_check_mode}}"
   template:
     src: clamav-onacc.service.j2
     dest: /usr/lib/systemd/system/clamav-onacc.service
@@ -12,6 +13,7 @@
     - clamav_onacc_service
 
 - name: Clamav onacc enabled @clamav_onacc_enabled
+  ignore_errors: "{{ansible_check_mode}}"
   service:
     name: clamav-onacc
     enabled: yes

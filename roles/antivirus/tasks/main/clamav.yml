@@ -1,4 +1,5 @@
 - name: Clamav latest @clamav_latest
+  ignore_errors: "{{ansible_check_mode}}"
   package:
     name:
       - clamav
@@ -11,11 +12,11 @@
     - clamav_latest
 
 - name: Clamav Set local mirror @clamav_set_mirror
+  ignore_errors: "{{ansible_check_mode}}"
   replace:
     path: /etc/clamav/freshclam.conf
     regexp: ^(DatabaseMirror).*
     replace: '\1 {{var_clamav_server}}'
-  when: var_installation_type == "workstation" and var_internal_ansible_ip
   notify: Clamav freshclam restarted
   when: ansible_os_family in ['Debian']
   tags:
@@ -23,6 +24,7 @@
     - clamav_set_mirror
 
 - name: Clamd on access scanning @clamad_on_access_scanning
+  ignore_errors: "{{ansible_check_mode}}"
   blockinfile:
     dest: /etc/clamav/clamd.conf
     marker_begin: BEGIN_ONACCESS
@@ -37,4 +39,3 @@
   tags:
     - ws
     - clamad_on_access_scanning
-
