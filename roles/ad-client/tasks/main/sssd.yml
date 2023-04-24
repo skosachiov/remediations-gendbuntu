@@ -17,6 +17,7 @@
     - sssd_packages_are_present
 
 - name: Sssd fine tuning Enabled @sssd_service_enabled
+  ignore_errors: "{{ansible_check_mode}}"
   service:
     name: sssd
     enabled: yes
