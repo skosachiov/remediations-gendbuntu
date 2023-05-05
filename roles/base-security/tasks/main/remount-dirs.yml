@@ -35,6 +35,24 @@
     - mob
     - remount_with_safe_options
 
+- name: Remount for hidepid @hidepid_remount
+  ignore_errors: "{{ansible_check_mode}}"
+  blockinfile:
+    dest: /etc/rc.local
+    create: yes
+    mode: u=rwx,g=x,o=x
+    owner: root
+    marker_begin: BEGIN_HIDEPID
+    marker_end: END_HIDEPID
+    block: |
+      mount -o remount,hidepid=noaccess /proc
+  notify: Rc-local restarted
+  tags:
+    - ws
+    - sec
+    - mob
+    - hidepid_remount
+
 - name: Check mount with options @check_mount_options
   ignore_errors: "{{ansible_check_mode}}"
   vars:
