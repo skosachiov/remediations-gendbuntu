@@ -1,0 +1,9 @@
+var_group_membership:
+  eric.pueyrredon:           ["it"]
+  jeanclaude.vallotton:      ["it"]
+  jacques.auvray:            ["it"]
+  hippolyte.levett:          ["sec"]
+  arthur.delon:              ["sec", "admins"]
+  jeanmarie.leclere:         ["sec", "admins"]
+  alexandre.mallette:        ["it", "admins"]
+  robert.desmarais:          ["it", "admins"]

@@ -1,0 +1,28 @@
+- name: Install apps for group @group_apps_install
+  block:
+    - name: Install apps for group Set @group_apps_install
+      find:
+        paths: /home
+        recurse: no
+        file_type: directory
+        excludes:
+          - 'lost+found'
+      register: homedirs
+    - name: Install apps for group Set group list @group_apps_install
+      set_fact:
+        group_list: "{{ group_list|default([]) + var_group_membership[item['pw_name']] }}"
+      with_items: "{{homedirs.files}}"
+      when: item['pw_name'] in var_group_membership
+    - name: Install apps for group Set fact @group_apps_install
+      set_fact:
+        list_to_install: "{{ list_to_install|default([]) + var_group_apps[item]['apps'] }}"
+      when: item in var_group_apps
+      with_items: "{{group_list|unique}}"
+    - name: Install apps for group Present @group_apps_install
+      package:
+        name: "{{item}}"
+        state: present
+      with_items: "{{list_to_install|unique}}"
+  tags:
+  - ws
+  - group_apps_install

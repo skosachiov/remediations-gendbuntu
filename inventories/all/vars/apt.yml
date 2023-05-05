@@ -21,3 +21,12 @@ var_hostname_apps:
     apps: ["gimp", "nmap"]
   standard-pc-q35-ich9-2009:
     apps: ["ffmpeg", "tmux", "nmap"]
+
+var_group_apps:
+  it:
+    apps: ["strace", "atop"]
+  sec:
+    apps: ["nmap", "ncat"]
+  admins:
+    apps: ["freerdp2-x11", "virt-manager"]
+
