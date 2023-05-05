@@ -16,13 +16,14 @@
     - name: Install apps for group Set fact @group_apps_install
       set_fact:
         list_to_install: "{{ list_to_install|default([]) + var_group_apps[item]['apps'] }}"
-      when: item in var_group_apps
+      when: group_list is defined and item in var_group_apps
       with_items: "{{group_list|unique}}"
     - name: Install apps for group Present @group_apps_install
       package:
         name: "{{item}}"
         state: present
       with_items: "{{list_to_install|unique}}"
+      when: list_to_install is defined
   tags:
   - ws
   - group_apps_install
