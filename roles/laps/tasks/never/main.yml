@@ -1,0 +1,18 @@
+- name: Local admin password solution @local_admin_password_solution
+  ignore_errors: "{{ansible_check_mode}}"
+  block:
+    - name: Set fact
+      set_fact:
+        local_admins: []
+        local_passwd: []
+        admins_with_passwd: []
+    - name: Get sudoers groups
+    - name: Get users from the groups
+    - name: Get sudoers users
+    - name: Local users with passowrds
+    - name: Intersection
+  when: var_installation_type == "admin-workstation"
+  tags:
+    - ws
+    - sec
+    - local_admin_password_solution
