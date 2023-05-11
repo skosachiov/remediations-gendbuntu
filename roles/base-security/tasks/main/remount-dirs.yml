@@ -20,7 +20,11 @@
           fi
           if ! mountpoint -q /home; then
             mount -o bind /home /home
+          {% if var_home_with_exec %}
+            mount -o remount,nodev,nosuid /home
+          {% elseif %}
             mount -o remount,noexec,nodev,nosuid /home
+          {% endif %}
           fi
           if ! mountpoint -q tmpfs; then
             mount -o remount,noexec,nodev,nosuid tmpfs

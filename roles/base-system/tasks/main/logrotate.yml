@@ -1,0 +1,11 @@
+- name: Maxsize for log files @logrotate_maxsize
+  lineinfile:
+    dest: /etc/logrotate.d/rsyslog
+    line: maxsize 1024M
+    state: present
+    create: true
+    insertafter: sharedscripts
+  when: ansible_distribution == "Debian"
+  tags:
+    - ws
+    - logrotate_maxsize

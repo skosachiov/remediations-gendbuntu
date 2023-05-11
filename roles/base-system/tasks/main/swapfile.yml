@@ -1,0 +1,46 @@
+- name: Increase swap size @increase_swap_size
+  block:
+    - name: Increase swap size Check size @increase_swap_size
+      changed_when: false
+      command: swapon --noheadings --bytes --show=SIZE
+      register: swapsize
+    - name: Increase swap size Root free space @increase_swap_size
+      set_fact:
+        increase_swap: "{{ (item.size_available|int) > (var_swapfile_size|int)*2 and
+          (0 if swapsize.stdout_lines[0] is undefined else swapsize.stdout_lines[0])|int < var_swapfile_minsize|int}}"
+      with_items: "{{ansible_mounts}}"
+      when: item.mount == '/'
+    - name: Increase swap size Swapoff @increase_swap_size
+      command: swapoff -a
+      when: increase_swap
+    - name: Increase swap size Allocate @increase_swap_size
+      command: fallocate -l {{var_swapfile_size}} {{var_swapfile_path}}
+      when: increase_swap
+    - name: Increase swap size Chmod @increase_swap_size
+      file:
+        path: "{{var_swapfile_path}}"
+        mode: 0600
+      when: increase_swap
+    - name: Increase swap size Mkswap @increase_swap_size
+      command: "mkswap {{var_swapfile_path}}"
+      when: increase_swap
+    - name: Increase swap size Fstab mount @increase_swap_size
+      mount:
+        name: none
+        src: "{{var_swapfile_path}}"
+        fstype: swap
+        opts: sw
+        passno: 0
+        dump: 0
+        state: present
+      when: increase_swap
+    - name: Increase swap size Swapon @increase_swap_size
+      command: swapon -a
+      when: increase_swap
+  rescue:
+    - name: Increase swap size Failed
+      debug:
+        msg: "Increase swap size failed"
+  tags:
+    - ws
+    - increase_swap_size

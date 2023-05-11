@@ -3,6 +3,8 @@ var_password_max_days: 45
 var_password_max_days_mob: 365
 var_password_min_days: 1
 
+var_home_with_exec: false
+
 var_services_blacklist:
   - vsftpd
   - telnetd

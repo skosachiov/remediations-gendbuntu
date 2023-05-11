@@ -1,2 +1,6 @@
 var_certs_dir: certs
 var_skel_dir: skel/
+
+var_swapfile_path: /swapfile
+var_swapfile_size: 8589934592
+var_swapfile_minsize: 3221225472

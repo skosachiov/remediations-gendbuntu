@@ -1,0 +1,14 @@
+- name: Remove foreign architectures @remove_foreign_architectures
+  ignore_errors: true
+  block:
+    - name: Remove foreign architectures Command @remove_foreign_architectures
+      changed_when: false
+      command: dpkg --print-foreign-architectures
+      register: result
+    - name: Remove foreign architectures Remove @remove_foreign_architectures
+      command: "dpkg --remove-architecture {{result.stdout_lines[0]}}"
+      when: result.stdout_lines|length > 0
+  when: ansible_distribution == "Debian"
+  tags:
+    - ws
+    - remove_foreign_architectures
