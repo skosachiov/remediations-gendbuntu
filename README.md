@@ -48,6 +48,14 @@ Profiling is performed with certain set of roles:
 It's possible to use flags of security in profiles. For example:
 - mandatory-access (apparmor, selinux)
 - administrative-workstation (group access is restricted)
+- network-auditd (send log to the logserver)
+- always-on-display (disable lock and turn off display)
+- devel-workstation (put the host into test workstation mode)
+- unrestricted-os (user can download other operating systems)
+- fs-userspace (file systems are available to the user)
+- thin-client (thin client mode)
+- flash drive (flash-drive thin client mode)
+- dist-upgrade (host will force all packages to be updated)
 
 There are a lot of possibilities for information security officers to agree on changes and control the workflow: code review, merge-requests, pull-requests. For example, only an security officer can commit to master branch, see [Lifecycle](#Lifecycle). Ansible-pull agents take playbooks from master branch. There is space for creativity for subdivision gendarmes. Airforce or airtransport can solve their specific problems in separate repositories git and this doesn't cancel basic security settings. On premise Gitlab will be great for collaboration.
 
