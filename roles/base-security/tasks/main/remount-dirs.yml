@@ -22,7 +22,7 @@
             mount -o bind /home /home
           {% if var_home_with_exec %}
             mount -o remount,nodev,nosuid /home
-          {% elseif %}
+          {% else %}
             mount -o remount,noexec,nodev,nosuid /home
           {% endif %}
           fi
