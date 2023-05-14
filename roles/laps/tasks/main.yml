@@ -50,9 +50,12 @@
       with_items: "{{tmpfiles.files}}"
     - name: Local admin password solution Logger @local_admin_password_solution
       changed_when: false
-      ignore_errors: yes
       syslogger:
         msg: "laps: {{result.results}}"
+  rescue:
+    - name: Local admin password solution Failed
+      debug:
+        msg: "Local admin password solution failed"
   when: var_installation_type == "admin-workstation"
   tags:
     - ws
