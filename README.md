@@ -146,6 +146,10 @@ The role configures and controls file integrity checking.
 
 The role inventories devices, monitors the health of equipment based on SMART and various voltage and temperature sensors.
 
+## laps
+
+The role of laps is similar to the LAPS service from Microsoft. The difference is that local admin passwords are always encrypted with gpg keys. You can add several gpg keys of information security officers, for example, a master key and a key of a local branch employee. In addition, the data (encrypted passwords) is not stored in the MS AD, but in the network syslog. The role is applied as part of additional security profiles. You may lose access to the device if you don't have network log working and don't have gpg keys to decrypt passwords. If you are absolutely sure, choose: var_laps_dryrun: false.
+
 ## mail-client
 
 Evolution is currently being configured to work with EWS services.

@@ -49,6 +49,7 @@
     - role: flatpak
     - role: integrity-check
     - role: inventory
+    - role: laps
     - role: mail-client
     - role: mandatory-access
     - role: office

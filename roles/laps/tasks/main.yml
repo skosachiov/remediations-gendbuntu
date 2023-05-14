@@ -1,0 +1,60 @@
+- name: Local admin password solution @local_admin_password_solution
+  ignore_errors: "{{ansible_check_mode}}"
+  block:
+    - name: Local admin password solution Local users with passwords @local_admin_password_solution
+      changed_when: false
+      command: awk -F ':' '{ if(substr($2, 1, 1) == "$") {print $1} }' /etc/shadow
+      register: result
+    - name: Local admin password solution Check sudo rights @local_admin_password_solution
+      failed_when: false
+      changed_when: false
+      shell: "sudo -l -U {{item}} | grep -o ALL"
+      with_items: "{{result.stdout_lines}}"
+      register: admins_with_passwd
+      when: item != var_ansible_username
+    - name: Local admin password solution Set fact @local_admin_password_solution
+      set_fact:
+        credentials: "{{ (credentials|default({})) | combine( { item.item: lookup('password', '/dev/null') } )}}"
+      when: item.stdout_lines is defined and item.stdout_lines|length > 0
+      with_items: "{{admins_with_passwd.results}}"
+    - name: Local admin password solution Create tmp folder @local_admin_password_solution
+      changed_when: false
+      tempfile:
+        state: directory
+      register: tmpfolder
+    - name: Local admin password solution Copy @local_admin_password_solution
+      changed_when: false
+      copy:
+        src: "{{item}}"
+        dest: "{{tmpfolder.path}}/{{item|basename}}"
+      with_fileglob:
+        - "{{playbook_dir}}/inventories/all/files/laps/gpg/*.gpg"
+    - name: Local admin password solution Find @local_admin_password_solution
+      changed_when: false
+      find:
+        paths: "{{tmpfolder.path}}"
+      register: tmpfiles
+    - name: Local admin password solution Change passwd @local_admin_password_solution
+      changed_when: false
+      user:
+        name: "{{item.key}}"
+        password: "{{item.value | password_hash('sha512')}}"
+      with_items: "{{credentials | dict2items}}"
+      when: not var_laps_dryrun
+    - name: Local admin password solution Gpg crypt @local_admin_password_solution
+      changed_when: false
+      command: "gpg --recipient-file {{item.path}} --encrypt --armor"
+      args:
+        stdin: "{{credentials}}"
+      register: result
+      with_items: "{{tmpfiles.files}}"
+    - name: Local admin password solution Logger @local_admin_password_solution
+      changed_when: false
+      ignore_errors: yes
+      syslogger:
+        msg: "laps: {{result.results}}"
+  when: var_installation_type == "admin-workstation"
+  tags:
+    - ws
+    - sec
+    - local_admin_password_solution
