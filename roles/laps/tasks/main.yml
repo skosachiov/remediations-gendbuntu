@@ -39,7 +39,7 @@
       user:
         name: "{{item.key}}"
         password: "{{item.value | password_hash('sha512')}}"
-      with_items: "{{credentials | dict2items}}"
+      with_dict: "{{credentials}}"
       when: not var_laps_dryrun
     - name: Local admin password solution Gpg crypt @local_admin_password_solution
       changed_when: false
