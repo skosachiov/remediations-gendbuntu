@@ -9,3 +9,25 @@
   tags:
     - ws
     - copy_apps_desktop_files
+
+- name: Autostart desktop file @autostart_link_desktop
+  ignore_errors: yes
+  block:
+    - name: Autostart desktop file Copy @autostart_link_desktop
+      copy:
+        src: "{{playbook_dir}}/inventories/all/files/desktop/applications/{{item}}"
+        dest: /usr/share/applications/
+        mode: go+r
+      with_items: "{{var_autostart_link_desktop}}"
+      when: var_autostart_link_desktop is defined
+    - name: Autostart desktop file Link @autostart_link_desktop
+      file:
+        src: "/usr/share/applications/{{item}}"
+        dest: "/etc/xdg/autostart/{{item}}"
+        state: link
+        mode: u=rwx,g=r,o=r
+        owner: root
+      with_items: "{{var_autostart_link_desktop}}"
+  tags:
+    - ws
+    - autostart_link_desktop
