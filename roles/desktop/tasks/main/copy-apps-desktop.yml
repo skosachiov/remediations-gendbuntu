@@ -28,6 +28,7 @@
         mode: u=rwx,g=r,o=r
         owner: root
       with_items: "{{var_autostart_link_desktop}}"
+      when: var_autostart_link_desktop is defined
   tags:
     - ws
     - autostart_link_desktop
