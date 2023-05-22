@@ -9,7 +9,7 @@
     - name: Monitor applications Append @monitor_applications
       changed_when: false
       failed_when: false
-      shell: LANG=C ps -o user= -p `pgrep {{item}}`
+      shell: LANG=C.UTF-8 ps -o user= -p `pgrep {{item}}`
       register: result
       with_items: "{{var_monitored_apps}}"
     - name: Monitor applications Debug @monitor_applications
@@ -42,7 +42,7 @@
       when: item.mount == '/'
     - name: Print main ansible facts Who @basic_ansible_facts
       check_mode: no
-      shell: 'LANG=C who -q | tr "\n" " "'
+      shell: 'LANG=C.UTF-8 who -q | tr "\n" " "'
       register: sessions
       changed_when: false
       failed_when: false
@@ -76,7 +76,7 @@
 
 - name: Get sensors info @get_sensors_info
   block:
-    - name: Get sensors info Lm-sensors present deb @get_sensors_info
+    - name: Get sensors info Lm-sensors present @get_sensors_info
       package:
         name: lm-sensors
         state: present
@@ -149,7 +149,7 @@
       changed_when: false
       failed_when: false
       check_mode: no
-      shell: LANG=C sestatus
+      shell: LANG=C.UTF-8 sestatus
       register: result_sestatus
     - name: Print mandatory access facts Set @basic_security_facts
       set_fact:
@@ -173,6 +173,7 @@
           {{ 'dw' if var_devel_workstation else '' }}
           {{ 'uo' if var_unrestricted_os else '' }}
           {{ 'tc' if var_thin_client else '' }}
+          {{ 'he' if var_home_with_exec else '' }}
     - name: Print main ansible facts @basic_security_facts
       changed_when: false
       set_fact:

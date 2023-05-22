@@ -61,7 +61,7 @@
           state: restarted
       when: result.stdout_lines|length != 1
     - name: CUPS printer Check @cups_printers
-      shell: "LANG=C lpstat -v | awk '{print $4}'"
+      shell: "LANG=C.UTF-8 lpstat -v | awk '{print $4}'"
       failed_when: false
       check_mode: no
       register: result

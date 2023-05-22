@@ -35,6 +35,7 @@ ansible_play_header = ["timestamp", "ip", "ok", "changed", "unreachable", "faile
 ansible_exec_header = ["timestamp", "ip", "role", "task", "status", "tag"]
 basic_security_facts_header = ["timestamp", "ip", "ma", "mcs", "mls", "ima", "dlp_aux", "av_aux", "host_flags"]
 history_header = ["date", "unique_addresses", "unique_users", "changed_count", "failed_count"]
+ansible_facts_packages = ["timestamp", "ip", "pkg", "version"]
 
 def natural_sort(l):
     convert = lambda text: int(text) if text.isdigit() else text.lower()
@@ -109,9 +110,9 @@ def analize_logs(log_startswith, interval, shift, cache):
     logs = logs[shift:shift+interval]
     logs.reverse()
 
-    a_a, a_f, a_p, a_e, a_s  = [], [], [], [], []
+    a_a, a_f, a_p, a_e, a_s, a_g = [], [], [], [], [], []
 
-    changed_count, failed_count, usernames = {}, {}, {}
+    changed_count, failed_count, usernames, pkgs = {}, {}, {}, {}
 
     for log in logs:
         try:
@@ -123,54 +124,62 @@ def analize_logs(log_startswith, interval, shift, cache):
             continue
         prevline = ""
         for line in f:
-            if 'basic_ansible_facts:' in line:
-                jsonstr = line.split("basic_ansible_facts:", 1)[1] \
-                    .replace("\'", "\"").replace(": True", ": true").replace(": False", ": false")
-                d = json.loads(jsonstr)
-                a = line.split()
-                a[2] = str(dateutil.parser.parse(a[0] + " " + a[1] + " " + a[2]))
-                a = a[2:3] + [d.get(k, "N/A") for k in basic_ansible_facts_header[1:]]
-                a_f.append(a)
+            try:
+                if 'basic_ansible_facts:' in line:
+                    jsonstr = line.split("basic_ansible_facts:", 1)[1] \
+                        .replace("\'", "\"").replace(": True", ": true").replace(": False", ": false")
+                    d = json.loads(jsonstr)
+                    a = line.split()
+                    a[2] = str(dateutil.parser.parse(a[0] + " " + a[1] + " " + a[2]))
+                    a = a[2:3] + [d.get(k, "N/A") for k in basic_ansible_facts_header[1:]]
+                    a_f.append(a)
 
-            if 'basic_security_facts:' in line:
-                jsonstr = line.split("basic_security_facts:", 1)[1] \
-                    .replace("\'", "\"").replace(": True", ": true").replace(": False", ": false")
-                d = json.loads(jsonstr)
-                a = line.split()
-                a[2] = str(dateutil.parser.parse(a[0] + " " + a[1] + " " + a[2]))
-                a = a[2:4] + [d.get(k, "N/A") for k in basic_security_facts_header[2:]]
-                a_s.append(a)
+                if "ansible_facts.packages:" in line:
+                    jsonstr = line.split("ansible_facts.packages:", 1)[1] \
+                        .replace("\'", "\"").replace(": True", ": true").replace(": False", ": false")
+                    d = json.loads(jsonstr)
+                    a = line.split()
+                    a[2] = str(dateutil.parser.parse(a[0] + " " + a[1] + " " + a[2]))
+                    for k in d.keys(): pkgs[(a[3], k)] = [a[2], a[3], d[k]["name"], d[k]["version"]]
 
-            if 'changed=' in line:
-                a = line.split()
-                if (len(a) < 11): continue
-                if 'changed=' not in a[8]: continue
-                changed_count.setdefault(a[3],0)
-                changed_count[a[3]] = 1 if int((a[8].split("=", 1))[1]) > 0 else 0
-                failed_count.setdefault(a[3],0)
-                failed_count[a[3]] = int((a[10].split("=", 1))[1])
-                a[2] = str(dateutil.parser.parse(a[0] + " " + a[1] + " " + a[2]))
-                a = a[2:4] + a[7:]
-                a = list(map(lambda x: x if "=" not in x else (x.split("="))[1], a))
-                a_p.append(a)
+                if 'basic_security_facts:' in line:
+                    jsonstr = line.split("basic_security_facts:", 1)[1] \
+                        .replace("\'", "\"").replace(": True", ": true").replace(": False", ": false")
+                    d = json.loads(jsonstr)
+                    a = line.split()
+                    a[2] = str(dateutil.parser.parse(a[0] + " " + a[1] + " " + a[2]))
+                    a = a[2:4] + [d.get(k, "N/A") for k in basic_security_facts_header[2:]]
+                    a_s.append(a)
 
-            if 'authentication success' in line:
-                a = line.split()
-                if (len(a) < 15): continue
-                a[2] = str(dateutil.parser.parse(a[0] + " " + a[1] + " " + a[2]))
-                try: a.remove("gdm3:")
-                except ValueError: pass
-                if 'authentication' not in a[6]: continue
-                a = a[2:4] + a[14:15] + a[9:10]
-                a = list(map(lambda x: x if "=" not in x else (x.split("="))[1], a))
-                a_a.append(a)
-                if a[3] == "uid=0": a[3] = a[2]
-                elif a[2].lower() not in usernames.values(): usernames[a[3].lower()] = a[2].lower()
+                if 'changed=' in line:
+                    a = line.split()
+                    if (len(a) < 11): continue
+                    if 'changed=' not in a[8]: continue
+                    changed_count.setdefault(a[3],0)
+                    changed_count[a[3]] = 1 if int((a[8].split("=", 1))[1]) > 0 else 0
+                    failed_count.setdefault(a[3],0)
+                    failed_count[a[3]] = int((a[10].split("=", 1))[1])
+                    a[2] = str(dateutil.parser.parse(a[0] + " " + a[1] + " " + a[2]))
+                    a = a[2:4] + a[7:]
+                    a = list(map(lambda x: x if "=" not in x else (x.split("="))[1], a))
+                    a_p.append(a)
 
-            if "TASK [" in prevline:
-                a = line.split()
-                a[2] = str(dateutil.parser.parse(a[0] + " " + a[1] + " " + a[2]))
-                try:
+                if 'authentication success' in line:
+                    a = line.split()
+                    if (len(a) < 15): continue
+                    a[2] = str(dateutil.parser.parse(a[0] + " " + a[1] + " " + a[2]))
+                    try: a.remove("gdm3:")
+                    except ValueError: pass
+                    if 'authentication' not in a[6]: continue
+                    a = a[2:4] + a[14:15] + a[9:10]
+                    a = list(map(lambda x: x if "=" not in x else (x.split("="))[1], a))
+                    a_a.append(a)
+                    if a[3] == "uid=0": a[3] = a[2]
+                    elif a[2].lower() not in usernames.values(): usernames[a[3].lower()] = a[2].lower()
+
+                if "TASK [" in prevline:
+                    a = line.split()
+                    a[2] = str(dateutil.parser.parse(a[0] + " " + a[1] + " " + a[2]))
                     role_and_task = re.search("\[(.*)\]", prevline).group(1).split(":")
                     if len(role_and_task) > 1:
                         task = role_and_task[1].strip()
@@ -181,9 +190,10 @@ def analize_logs(log_startswith, interval, shift, cache):
                             tag = ""
                         a_e.append([a[2], a[3], role_and_task[0].strip(), task,
                             "changed" if ("failed: [" not in line) else "failed", tag])
-                except: pass
+            except: pass
             prevline = line # todo: store with ip
     ts = datetime.datetime.now().isoformat()
+    for x in pkgs.values(): a_g.append(x)
     original_stdout = sys.stdout
     fname = path_history_dir + "/" + tmp_filename
     if os.path.exists(fname): os.remove(fname)
@@ -195,6 +205,7 @@ def analize_logs(log_startswith, interval, shift, cache):
         print_xml(auth_success_header, a_a, "auth_success", ts, "rec_auth")
         print_xml(ansible_exec_header, a_e, "ansible_exec", ts, "rec_exec")
         print_xml(basic_security_facts_header, a_s, "basic_security_facts", ts, "rec_sec")
+        print_xml(ansible_facts_packages, a_g, "ansible_facts_packages", ts, "rec_pkg")
         print("</usage_report>")
         uid = pwd.getpwnam(web_user).pw_uid
         gid = os.stat(fname).st_gid
@@ -403,6 +414,9 @@ def main():
         if report == "sec" or report == "all":
             print_xml(*od_to_list(d['usage_report']['basic_security_facts']['rec_sec']), "basic_security_facts",
                 d['usage_report']['basic_security_facts']["@timestamp"], "rec_sec")
+        if report == "pkgs" or report == "all":
+            print_xml(*od_to_list(d['usage_report']['ansible_facts_packages']['rec_pkg']), "ansible_facts_packages",
+                d['usage_report']['ansible_facts_packages']["@timestamp"], "rec_pkg")
         print("</usage_report>")
     if format == "json":
         if cgienv: print_json_header()
@@ -415,6 +429,7 @@ def main():
         elif report == "auth":    print(json.dumps(d['usage_report']['auth_success']))
         elif report == "exec":    print(json.dumps(d['usage_report']['ansible_exec']))
         elif report == "sec":     print(json.dumps(d['usage_report']['basic_security_facts']))
+        elif report == "pkgs":    print(json.dumps(d['usage_report']['ansible_facts_packages']))
 
 if __name__ == "__main__":
     main()
