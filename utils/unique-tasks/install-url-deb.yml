@@ -1,0 +1,21 @@
+---
+- name: Install url deb
+  hosts: all
+
+  tasks:
+
+  - name: Install url deb
+    block:
+      - name: Install url deb
+        get_url:
+          url: "{{var_url_deb}}"
+          dest: "/tmp/"
+      - name: Install url deb
+        environment:
+          DEBIAN_FRONTEND: noninteractive
+        shell: "dpkg --force-all -i /tmp/{{var_url_deb | basename}}"
+    tags:
+      - ws
+      - sec
+      - mob
+      - install_url_deb

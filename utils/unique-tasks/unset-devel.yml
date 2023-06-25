@@ -1,0 +1,12 @@
+---
+- name: Unet devel flag
+  hosts: all
+
+  tasks:
+  - name: Unet devel flag
+    file:
+      path: /etc/ansible/devel-workstation
+      state: absent
+  tags:
+    - ws
+    - unset_devel_flag

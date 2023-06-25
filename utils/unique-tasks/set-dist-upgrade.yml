@@ -1,0 +1,16 @@
+---
+- name: Set dist upgrade flag
+  hosts: all
+
+  tasks:
+  - name: Set dist upgrade flag
+    copy:
+      content: ""
+      dest: "{{item}}"
+      force: no
+    with_items:
+      - /etc/ansible/dist-upgrade
+      - /etc/ansible/devel-repository
+  tags:
+    - ws
+    - set_dist_upgrade_flag
