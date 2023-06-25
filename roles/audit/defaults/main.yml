@@ -13,3 +13,9 @@ var_logstash_server: logstash.example.test
 var_rsyslog_filter: |
   :msg, contains, "SOME USELESS TEXT" stop
   :msg, contains, "SOME TEXT" @{{ var_dp_rsyslog_server }}
+var_syslog_ng_filter: |
+  destination d_null { file("/dev/null"); };
+  filter f_remote { message('SOME TEXT'); };
+  filter f_trash { message('pcieport') or message('cifs.upcall'); };
+  log { source(s_src); filter(f_remote); destination(remote_syslog); };
+  log { source(s_src); filter(f_trash); destination(d_null); flags(final); };

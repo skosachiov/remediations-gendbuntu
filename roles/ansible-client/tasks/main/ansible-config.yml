@@ -1,0 +1,94 @@
+- name: Epel package is present @epel_package_is_present
+  package:
+    name: "*epel-release*"
+    state: present
+  when: ansible_os_family in ['RedHat', 'Rocky']
+  tags:
+    - ws
+    - epel_package_is_present
+
+- name: Ansible package is present @ansible_package_is_present
+  package:
+    name:
+      - ansible
+    state: present
+  tags:
+    - ws
+    - ansible_package_is_present
+
+- name: Ansible cfg is present @ansible_cfg_is_present
+  ignore_errors: "{{ansible_check_mode}}"
+  block:
+    - name: Ansible cfg is present Folder @ansible_cfg_is_present
+      file:
+        path: /etc/ansible
+        state: directory
+    - name: Ansible cfg is present File @ansible_cfg_is_present
+      file:
+        path: /etc/ansible/ansible.cfg
+        state: touch
+        modification_time: preserve
+        access_time: preserve
+      register: result
+    - name: Ansible cfg is present Defaults @ansible_cfg_is_present
+      lineinfile:
+        dest: /etc/ansible/ansible.cfg
+        line: "[defaults]"
+        insertbefore: BOF
+  tags:
+    - ws
+    - ansible_cfg_is_present
+
+- name: Config ansible environment @config_ansible_environment
+  ignore_errors: "{{ansible_check_mode}}"
+  block:
+    - name: Config ansible environment Timeout @config_ansible_environment
+      lineinfile:
+        dest: /etc/ansible/ansible.cfg
+        state: present
+        regexp: ^\s*gather_timeout
+        line: gather_timeout = 60
+        insertafter: \[defaults\]
+    - name: Config ansible environment Log_path @config_ansible_environment
+      lineinfile:
+        dest: /etc/ansible/ansible.cfg
+        state: present
+        regexp: ^\s*log_path
+        line: log_path = /var/log/ansible.log
+        insertafter: \[defaults\]
+    - name: Config ansible environment Logrotate @config_ansible_environment
+      copy:
+        dest: /etc/logrotate.d/ansible
+        mode: a+r
+        content: |
+          /var/log/ansible.log {
+            weekly
+            missingok
+            rotate 4
+            compress
+            delaycompress
+            copytruncate
+            maxsize 64M
+          }
+  tags:
+    - ws
+    - config_ansible_environment
+
+- name: Config ansible stdout @config_ansible_stdout
+  ignore_errors: "{{ansible_check_mode}}"
+  block:
+    - name: Config ansible stdout @config_ansible_stdout
+      lineinfile:
+        dest: /etc/ansible/ansible.cfg
+        regexp: ^#?\s*display_skipped_hosts.*
+        line: display_skipped_hosts = False
+        insertafter: \[defaults\]
+    - name: Config ansible stdout @config_ansible_stdout
+      lineinfile:
+        dest: /etc/ansible/ansible.cfg
+        regexp: ^#?\s*display_ok_hosts.*
+        line: display_ok_hosts = False
+        insertafter: \[defaults\]
+  tags:
+    - ws
+    - config_ansible_stdout

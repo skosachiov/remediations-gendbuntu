@@ -1,0 +1,24 @@
+- name: Ansible pull systemd service @ansible_pull_systemd_service
+  ignore_errors: "{{ansible_check_mode}}"
+  block:
+    - name: Ansible pull systemd service Copy @ansible_pull_systemd_service
+      template:
+        src: "{{item}}.j2"
+        dest: "/etc/systemd/system/{{item}}"
+      register: result
+      with_items:
+        - ansible-pull.service
+        - ansible-pull.timer
+    - name: Ansible pull systemd service Service @ansible_pull_systemd_service
+      systemd:
+        name: ansible-pull
+        daemon_reload: true
+        enabled: no
+    - name: Ansible pull systemd service Timer @ansible_pull_systemd_service
+      systemd:
+        name: ansible-pull.timer
+        state: started
+        enabled: yes
+  tags:
+    - ws
+    - ansible_pull_systemd_service

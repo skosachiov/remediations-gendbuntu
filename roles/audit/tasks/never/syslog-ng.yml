@@ -1,0 +1,117 @@
+- name: Enable service syslog-ng @service_syslog_ng_enabled
+  ignore_errors: "{{ansible_check_mode}}"
+  block:
+    - name: Ensure syslog-ng is installed @service_syslog_ng_enabled
+      package:
+        name: syslog-ng
+        state: present
+    - name: Gather the package facts @service_syslog_ng_enabled
+      package_facts:
+        manager: auto
+    - name: Enable service syslog-ng @service_syslog_ng_enabled
+      ignore_errors: true
+      service:
+        name: syslog-ng
+        enabled: 'yes'
+        state: started
+        masked: false
+      when:
+        - '"syslog-ng" in ansible_facts.packages'
+  tags:
+    - ws
+    - sec
+    - mob
+    - service_syslog_ng_enabled
+
+- name: Set syslog-ng access to remote loghost @syslog_ng_access_remote_loghost
+  ignore_errors: "{{ansible_check_mode}}"
+  block:
+    - name: Set syslog-ng access to remote loghost Block @syslog_ng_access_remote_loghost
+      blockinfile:
+        dest: /etc/syslog-ng/syslog-ng.conf
+        marker_begin: BEGIN_REMOTE_DEST
+        marker_end: END_REMOTE_DEST
+        insertafter: "# Log paths"
+        block: |
+          destination remote_syslog { network({{var_dp_rsyslog_server}} transport("udp") port(514)); };
+        create: true
+        state: "{{ 'present' if var_installation_type in ['workstation', 'devel-workstation'] else 'absent' }}"
+      notify: Syslog-ng restarted
+    - name: Set syslog-ng access to remote loghost Block @syslog_ng_access_remote_loghost
+      blockinfile:
+        dest: /etc/syslog-ng/syslog-ng.conf
+        marker_begin: BEGIN_FILTER
+        marker_end: END_FILTER
+        insertafter: END_REMOTE_DEST
+        block: "{{var_syslog_ng_filter}}"
+        create: true
+        state: "{{ 'present' if var_installation_type in ['workstation', 'devel-workstation'] else 'absent' }}"
+      notify: Syslog-ng restarted
+    - name: Set syslog-ng access to remote loghost Block @syslog_ng_access_remote_loghost
+      blockinfile:
+        dest: /etc/syslog-ng/syslog-ng.conf
+        marker_begin: BEGIN_REMOTE_LOG
+        marker_end: END_REMOTE_LOG
+        insertafter: END_FILTER
+        block: |
+          log { source(s_src); filter(f_auth); destination(remote_syslog); };
+          log { source(s_src); filter(f_daemon); destination(remote_syslog); };
+        create: true
+        state: "{{ 'present' if var_installation_type in ['workstation', 'devel-workstation'] else 'absent' }}"
+      notify: Syslog-ng restarted
+    - name: Set syslog-ng remote auditd @syslog_ng_access_remote_loghost
+      blockinfile:
+        dest: /etc/syslog-ng/syslog-ng.conf
+        marker_begin: BEGIN_AUDITD
+        marker_end: END_AUDITD
+        insertafter: END_REMOTE_LOG
+        block: |
+          log { source(s_src); filter(f_audit); destination(remote_syslog); };
+        create: true
+        state: "{{ 'present' if var_network_auditd else 'absent' }}"
+      notify: Syslog-ng restarted
+  when: ansible_facts.nodename != var_dp_rsyslog_server
+  tags:
+    - ws
+    - sec
+    - syslog_ng_access_remote_loghost
+
+- name: Set syslog-ng access to remote loghost aux @set_unset_rsyslog_aux
+  ignore_errors: "{{ansible_check_mode}}"
+  block:
+    - name: Set syslog-ng access to remote loghost aux Set @set_unset_rsyslog_aux
+      blockinfile:
+        dest: /etc/syslog-ng/syslog-ng.conf
+        marker_begin: BEGIN_REMOTE_AUX_DEST
+        marker_end: END_REMOTE_AUX_DEST
+        insertafter: END_REMOTE_DEST
+        block: |
+          destination remote_syslog_aux { network("{{var_rsyslog_server_aux}}" transport("udp") port(514)); };
+        create: true
+        state: "{{ 'present' if var_installation_type in ['workstation', 'devel-workstation'] else 'absent' }}"
+      notify: Syslog-ng restarted
+      when: var_devel_workstation
+    - name: Set syslog-ng access to remote loghost aux Set @set_unset_rsyslog_aux
+      blockinfile:
+        dest: /etc/syslog-ng/syslog-ng.conf
+        marker_begin: BEGIN_REMOTE_AUX_LOG
+        marker_end: END_REMOTE_AUX_LOG
+        insertafter: END_REMOTE_AUX_DEST
+        block: |
+          log { source(s_src); filter(f_auth); destination(remote_syslog_aux); };
+          log { source(s_src); filter(f_daemon); destination(remote_syslog_aux); };
+        create: true
+        state: "{{ 'present' if var_installation_type in ['workstation', 'devel-workstation'] else 'absent' }}"
+      notify: Syslog-ng restarted
+      when: var_devel_workstation
+    - name: Set syslog-ng access to remote loghost aux Unset @set_unset_rsyslog_aux
+      blockinfile:
+        dest: /etc/syslog-ng/syslog-ng.conf
+        marker_begin: BEGIN_REMOTE_AUX_LOG
+        marker_end: END_REMOTE_AUX_LOG
+        state: absent
+      when: not var_devel_workstation
+  tags:
+    - ws
+    - sec
+    - set_unset_rsyslog_aux

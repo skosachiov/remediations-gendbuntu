@@ -478,3 +478,25 @@
     - sec
     - mob
     - file_permissions_resolv_conf
+
+
+- name: Set rc.d permissions @set_rc_d_permissions
+  ignore_errors: "{{ansible_check_mode}}"
+  block:
+    - name: Set rc.d permissions @set_rc_d_permissions
+      find:
+        paths: /etc
+        patterns: "(rc[0-6S]|init)\\.d"
+        file_type: directory
+        recurse: no
+      register: find_rc_d
+    - name: Set rc.d permissions @set_rc_d_permissions
+      file:
+        path: "{{item.path}}"
+        mode: o-w
+        recurse: true
+      with_items: "{{find_rc_d.files}}"
+  tags:
+    - ws
+    - sec
+    - set_rc_d_permissions

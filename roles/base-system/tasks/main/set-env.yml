@@ -1,0 +1,39 @@
+- name: Set environment variables @set_environment_variables
+  block:
+    - name: Set environment variables Proxy @set_environment_variables
+      blockinfile:
+        dest: /etc/profile.d/set-env.sh
+        create: yes
+        mode: a+rx
+        marker_begin: BEGIN_PROXY
+        marker_end: END_PROXY
+        block: |
+          export http_proxy="{{var_proxy_server}}"
+          export https_proxy="{{var_proxy_server}}"
+          export no_proxy="{{var_no_proxy}}"
+      when: var_proxy_server|length > 0
+    - name: Set environment variables No proxy @set_environment_variables
+      blockinfile:
+        dest: /etc/profile.d/set-env.sh
+        create: yes
+        mode: a+rx
+        marker_begin: BEGIN_PROXY
+        marker_end: END_PROXY
+        block: |
+          unset http_proxy
+          unset https_proxy
+          unset no_proxy
+      when: var_proxy_server|length == 0 or var_devel_workstation
+    - name: Set environment variables Gvfs @set_environment_variables
+      blockinfile:
+        dest: /etc/profile.d/set-env.sh
+        create: yes
+        mode: a+rx
+        marker_begin: BEGIN_OTHER
+        marker_end: END_OTHER
+        block: |
+          export GVFS_DISABLE_FUSE=1
+  when: var_installation_type == 'workstation'
+  tags:
+    - ws
+    - set_environment_variables

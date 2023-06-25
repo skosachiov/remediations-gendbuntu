@@ -48,6 +48,10 @@
       with_nested:
         - "{{desktop_files.files}}"
         - "{{desktopdirs.files}}"
+  rescue:
+    - name: Failed to copy users desktop files
+      debug:
+        msg: "Failed to copy users desktop files"
   tags:
     - ws
     - users_desktop_files
@@ -70,6 +74,10 @@
       with_nested:
         - "{{var_desktop_files_remove}}"
         - "{{desktopdirs.files}}"
+  rescue:
+    - name: Failed to remove users desktop files
+      debug:
+        msg: "Failed to remove users desktop files"
   tags:
     - ws
     - users_desktop_files_remove

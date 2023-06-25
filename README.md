@@ -232,7 +232,7 @@ Set the kernel option at the time of installation:
 `ANSIBLE_HOST_KEY_CHECKING=False sshpass -p password ansible-playbook -vv --ask-pass -b -i 192.168.122.230, -u ansible workstation.yml`
 Regular cron procedures will be configured automatically by default.
 
-If you have not created an encible user:
+If you have not created an ansible user:
 `ANSIBLE_HOST_KEY_CHECKING=False sshpass -p password ansible-playbook -vv --ask-pass -e "ansible_become_password=password" -b -i 192.168.122.230, -u admin workstation.yml`
 
 ## Deploy workstation in pull mode
