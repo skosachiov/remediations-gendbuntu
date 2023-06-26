@@ -66,6 +66,7 @@
       - p11-kit
       - libp11-kit0
       - p11-kit-modules
+      - vim
     state: latest
   ignore_errors: yes
   tags:
