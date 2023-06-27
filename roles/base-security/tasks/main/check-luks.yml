@@ -1,0 +1,19 @@
+- name: Check LUKS on rootfs @check_luks_on_rootfs
+  block:
+    - name: Check LUKS on rootfs Get @check_luks_on_rootfs
+      changed_when: false
+      failed_when: false
+      set_fact:
+        fs_devices: "{{ fs_devices|default([]) + [item.device|string] }}"
+      with_items: "{{ansible_mounts}}"
+      when: item.mount in ['/', '/home', '/var', '/opt', '/tmp']
+    - name: Check LUKS on rootfs Check @check_luks_on_rootfs
+      failed_when: false
+      shell: "LANG=C.UTF-8 blkid {{item}} | grep LUKS"
+      register: result
+      changed_when: result.rc != 0
+      with_items: "{{fs_devices}}"
+  when: var_admin_workstation
+  tags:
+    - ws
+    - check_luks_on_rootfs
