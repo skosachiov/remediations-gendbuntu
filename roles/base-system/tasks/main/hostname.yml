@@ -6,7 +6,9 @@
       register: result
     - name: Ensure fqdn hostname Set @ensure_fqdn_hostname
       command: "hostnamectl set-hostname {{ansible_hostname}}.{{var_local_domain}}"
-      when: '"." not in result.stdout_lines[0] or "localdomain" in result.stdout_lines[0]'
+      when:
+        - result.stdout_lines[0] is defined
+        - '"." not in result.stdout_lines[0] or "localdomain" in result.stdout_lines[0]'
     - name: Ensure fqdn hostname Hosts @ensure_fqdn_hostname
       lineinfile:
         path: /etc/hosts
