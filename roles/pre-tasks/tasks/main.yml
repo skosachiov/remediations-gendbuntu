@@ -151,6 +151,12 @@
   when: result.stat.exists
   tags: always
 
+- name: Include profile vars @default
+  include_vars:
+    dir: "{{playbook_dir}}/inventories/profiles/admin/vars"
+  when: var_admin_workstation
+  tags: always
+
 # Set network auditd
 
 - name: Check file exists @default
@@ -173,7 +179,7 @@
   register: result
   tags: always
 
-- name: Set network auditd @default
+- name: Set always on display @default
   set_fact:
     var_always_on_display: true
   when: result.stat.exists
@@ -190,8 +196,13 @@
 - name: Set devel workstation @default
   set_fact:
     var_devel_workstation: true
-    var_preferred_dlp: searchinform
   when: result.stat.exists
+  tags: always
+
+- name: Include profile vars @default
+  include_vars:
+    dir: "{{playbook_dir}}/inventories/profiles/devel/vars"
+  when: var_devel_workstation
   tags: always
 
 # Set unrestricted os
@@ -202,9 +213,38 @@
   register: result
   tags: always
 
-- name: Set devel workstation @default
+- name: Set unrestricted os @default
   set_fact:
     var_unrestricted_os: true
+  when: result.stat.exists
+  tags: always
+
+# Set dist upgrade
+
+- name: Check file exists @default
+  stat:
+    path: /etc/ansible/dist-upgrade
+  register: result
+  tags: always
+
+- name: Set devel repository @default
+  set_fact:
+    var_dist_upgrade: true
+  when: result.stat.exists
+  tags: always
+
+# Set manual updates
+
+- name: Check file exists @default
+  stat:
+    path: /etc/ansible/manual-updates
+  register: result
+  tags: always
+
+- name: Set manual updates @default
+  set_fact:
+    var_manual_updates: true
+    var_dist_upgrade: false
   when: result.stat.exists
   tags: always
 

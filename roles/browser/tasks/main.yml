@@ -35,7 +35,7 @@
       #!/bin/bash
       #
       if [ $UID -gt {{var_min_domain_uid}} ]; then
-      FLAG=~/.set-browser-dict.2023022702
+      FLAG=$BDICDIR/en-US-10-1.bdic
       BDICURL=https://{{var_ansible_fqdn}}/files/chromium
       BDICDIR=~/.config/chromium/Dictionaries
       if [ ! -f "$FLAG" ]; then
@@ -85,6 +85,13 @@
         mode: '0755'
       with_fileglob:
         - "{{playbook_dir}}/inventories/all/files/browser/chromium/*.json"
+    - name: Chromium policies Templates inventory @chromium_policies
+      template:
+        src: "{{item}}"
+        dest: '/etc/chromium/policies/managed/{{(item|basename).split(".")[0]}}.json'
+        mode: '0755'
+      with_fileglob:
+        - "{{playbook_dir}}/inventories/all/files/browser/chromium/*.j2"
     - name: Chromium policies Templates @chromium_policies
       template:
         src: "{{item}}"

@@ -1,10 +1,9 @@
 - name: Install openscap client dependencies focal @install_openscap_dependencies_focal
-  ignore_errors: "{{ansible_check_mode}}"
+  ignore_errors: true
   package:
     name:
       - libopenscap8
     state: present
-  ignore_errors: yes
   when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int == 20
   tags:
     - ws
@@ -54,6 +53,10 @@
         msg: "{{item}}"
       with_items: "{{cve.stdout_lines}}"
       when: item not in var_cve_whitelist
+  rescue:
+    - name: Openscap oval eval Failed
+      debug:
+        msg: "Openscap oval eval Failed"
   when: ansible_distribution == "Ubuntu"
   tags:
     - ws

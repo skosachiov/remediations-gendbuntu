@@ -223,23 +223,25 @@ def read_history():
     for fname in sorted(glob.glob(path_history_dir + '/usage-report-[0-9]*.xml')):
         if os.stat(fname).st_size == 0: continue
         with open(fname, 'r') as f:
-            d = xmltodict.parse(f.read())
-            daily = { 'users': set(), 'computers': set(), 'changed': set(), 'failed': set() }
-            if 'auth_success' in d['usage_report']:
-                for e in d['usage_report']['auth_success']['rec_auth']:
-                    u_d[(e['user'])] = e
-                    daily['users'].add(e['user'])
-            if 'basic_ansible_facts' in d['usage_report']:
-                for e in d['usage_report']['basic_ansible_facts']['rec_basic']:
-                    c_d[e['mac']] = e
-                    daily['computers'].add(e['mac'])
-            if 'ansible_play' in d['usage_report']:
-                for e in d['usage_report']['ansible_play']['rec_play']:
-                    if int(e['changed']) > 0: daily['changed'].add(e['ip'])
-                    if int(e['failed']) > 0: daily['failed'].add(e['ip'])
-            h_d[d['usage_report']['@date']] = { 'date': d['usage_report']['@date'],
-                'users': len(daily['users']), 'computers': len(daily['computers']),
-                'changed': len(daily['changed']), 'failed': len(daily['failed']) }
+            try:
+                d = xmltodict.parse(f.read())
+                daily = { 'users': set(), 'computers': set(), 'changed': set(), 'failed': set() }
+                if 'auth_success' in d['usage_report']:
+                    for e in d['usage_report']['auth_success']['rec_auth']:
+                        u_d[(e['user'])] = e
+                        daily['users'].add(e['user'])
+                if 'basic_ansible_facts' in d['usage_report']:
+                    for e in d['usage_report']['basic_ansible_facts']['rec_basic']:
+                        c_d[e['mac']] = e
+                        daily['computers'].add(e['mac'])
+                if 'ansible_play' in d['usage_report']:
+                    for e in d['usage_report']['ansible_play']['rec_play']:
+                        if int(e['changed']) > 0: daily['changed'].add(e['ip'])
+                        if int(e['failed']) > 0: daily['failed'].add(e['ip'])
+                h_d[d['usage_report']['@date']] = { 'date': d['usage_report']['@date'],
+                    'users': len(daily['users']), 'computers': len(daily['computers']),
+                    'changed': len(daily['changed']), 'failed': len(daily['failed']) }
+            except: pass
     u_d = dict(sorted(u_d.items(), key=lambda x: x[1]['timestamp'], reverse=True))
     c_d = dict(sorted(c_d.items(), key=lambda x: x[1]['timestamp'], reverse=True))
     last_by_ip = {}

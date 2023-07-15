@@ -56,7 +56,7 @@
     - name: Local admin password solution Failed
       debug:
         msg: "Local admin password solution failed"
-  when: var_installation_type == "admin-workstation"
+  when: var_admin_workstation
   tags:
     - ws
     - sec

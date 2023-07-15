@@ -13,7 +13,7 @@
           + : @{{var_domain_users_group}} : {{var_domain_users_group_access}}
           - : ALL : ALL
         insertafter: #
-      when: var_admin_workstation|bool == false
+      when: not var_admin_workstation
     - name: Set Access control table Admin @set_access_control_table
       blockinfile:
         dest: /etc/security/access.conf
@@ -24,7 +24,7 @@
           + : @{{var_domain_users_group}} : {{var_domain_users_group_access}}
           - : ALL : ALL
         insertafter: #
-      when: var_admin_workstation|bool == true
+      when: var_admin_workstation
   tags:
     - ws
     - sec

@@ -4,11 +4,11 @@ var_fw_services_whitelist:
 var_fw_ports_whitelist:
   - 22/tcp
 var_fw_default_zone:
-  - work
+  - drop
 var_fw_active_zones:
   - trusted
 var_fw_target:
-  - default
+  - DROP
 var_listening_ports_blacklist:
   - "udp 0.0.0.0:2049"
   - "tcp 0.0.0.0:445"
@@ -22,3 +22,6 @@ var_listening_ports_blacklist:
   - "tcp :::445"
   - "tcp :::80"
   - "tcp :::21"
+var_fw_direct_rules:
+  - "firewall-cmd --permanent --direct --add-rule ipv4 filter OUTPUT 0 -p tcp -m tcp --dport=21 -j DROP"
+  - "firewall-cmd --permanent --direct --add-rule ipv4 filter OUTPUT 0 -p tcp -m tcp --dport=23 -j DROP"

@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <zone>
     <short>work</short>
+{% if var_installation_type == 'distribution-point' %}
+    <source address="10.0.0.0/8"/>
     <port protocol="tcp" port="88"/>
     <port protocol="udp" port="88"/>
-{% if var_installation_type == 'distribution-point' %}
     <port protocol="tcp" port="80"/>
     <port protocol="tcp" port="443"/>
     <port protocol="udp" port="514"/>

@@ -18,6 +18,7 @@ var_external_ansible_fqdn: "{{var_external_ansible_server}}.{{var_external_domai
 var_min_domain_uid: 10000000
 
 var_proxy_server: "http://paris-proxy.si.mi:3128"
+var_export_proxy_vars: false
 var_internet_connectivity: false
 
 var_domain_admins_group: gend_admins

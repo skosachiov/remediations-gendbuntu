@@ -1,0 +1,48 @@
+- name: Xrdp kill disconnected @xrdp_kill_disconnected
+  block:
+    - name: Xrdp kill disconnected KillDisconnected @xrdp_kill_disconnected
+      lineinfile:
+          path: /etc/xrdp/sesman.ini
+          create: true
+          regexp: ^\s*KillDisconnected
+          line: KillDisconnected=true
+          state: present
+          insertafter: \[Sessions\]
+      notify: Xrdp restarted
+    - name: Xrdp kill disconnected DisconnectedTimeLimit @xrdp_kill_disconnected
+      lineinfile:
+          path: /etc/xrdp/sesman.ini
+          create: true
+          regexp: ^\s*DisconnectedTimeLimit
+          line: DisconnectedTimeLimit=7200
+          state: present
+          insertafter: \[Sessions\]
+      notify: Xrdp restarted
+  tags:
+    - ws
+    - sec
+    - mob
+    - xrdp_kill_disconnected
+
+- name: Xrdp kill session on login @xrdp_kill_session_on_login
+  block:
+    - name: Xrdp kill session on login Copy @xrdp_kill_session_on_login
+      copy:
+        dest: /usr/local/bin/xrdp-killall.sh
+        mode: a+rx
+        content: |
+          #!/bin/bash
+          #
+          /usr/bin/killall -u $PAM_USER
+    - name: Xrdp kill session on login Line in pam @xrdp_kill_session_on_login
+      lineinfile:
+        path: /etc/pam.d/xrdp-sesman
+        create: true
+        line: session optional pam_exec.so /usr/local/bin/xrdp-killall.sh
+        state: present
+        insertafter: PAM-1.0
+  tags:
+    - ws
+    - sec
+    - mob
+    - xrdp_kill_session_on_login
