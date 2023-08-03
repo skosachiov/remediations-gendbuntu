@@ -1,0 +1,23 @@
+- name: Set path secure order @path_secure_order
+  ignore_errors: "{{ansible_check_mode}}"
+  block:
+    - name: Set path secure order Profile @path_secure_order
+      replace:
+        dest: /etc/profile
+        regexp: '(\/usr\/local\/sbin:\/usr\/local\/bin):(\/usr\/sbin:\/usr\/bin):(\/sbin:\/bin)'
+        replace: '\2:\3:\1'
+    - name: Set path secure order Profile @path_secure_order
+      replace:
+        dest: /etc/profile
+        regexp: '(\/usr\/local\/bin):(\/usr\/bin):(\/bin)'
+        replace: '\2:\3:\1'
+    - name: Set path secure order Sudoers @path_secure_order
+      replace:
+        dest: /etc/sudoers
+        regexp: '(\/usr\/local\/sbin:\/usr\/local\/bin):(\/usr\/sbin:\/usr\/bin):(\/sbin:\/bin)'
+        replace: '\2:\3:\1'
+  tags:
+    - ws
+    - sec
+    - mob
+    - path_secure_order
