@@ -1,4 +1,4 @@
-- include_tasks: roles/desktop/tasks/main/notify-template.yml
+- include_tasks: roles/desktop/tasks/main/notify-send-all.yml
 
 - include_tasks: "{{ item }}"
   with_fileglob:

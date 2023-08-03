@@ -1,9 +1,0 @@
-- name: Notify all users @notify_all_users
-  ignore_errors: yes
-  changed_when: false
-  command: "/usr/local/bin/notify-send-all.sh -u '{{item.2}}' -t '{{item.3}}' '{{item.4}}' '{{item.5}}'"
-  when: item.0 and item.1 == role_name
-  loop: "{{var_notification_list}}"
-  tags:
-    - ws
-    - notify_all_users

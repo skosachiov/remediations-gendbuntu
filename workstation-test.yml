@@ -34,11 +34,13 @@
       tags: always
 
   roles:
+    - role: audit
+      tags: always
     - role: apt
+      tags: always
     - role: ad-client
     - role: ansible-client
     - role: antivirus
-    - role: audit
     - role: base-security
     - role: base-system
     - role: browser
@@ -50,7 +52,6 @@
     - role: integrity-check
     - role: inventory
     - role: laps
-      tags: always
     - role: mail-client
     - role: mandatory-access
     - role: office
@@ -63,6 +64,7 @@
     - role: ssh
     - role: terminal-server
     - role: utmost-report
+      tags: always
 
   post_tasks:
     - name: Debug
