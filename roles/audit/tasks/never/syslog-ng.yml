@@ -115,3 +115,25 @@
     - ws
     - sec
     - set_unset_rsyslog_aux
+
+- name: Set syslog-ng MemoryMax @syslog_ng_memorymax
+  ignore_errors: "{{ansible_check_mode}}"
+  block:
+    - name: Set syslog-ng MemoryMax Line @syslog_ng_memorymax
+      lineinfile:
+        create: true
+        dest: /usr/lib/systemd/system/syslog-ng.service
+        regexp: ^#?\s*MemoryMax
+        line: MemoryMax=64M
+        insertafter: \[Service\]
+      register: result
+    - name: Set syslog-ng MemoryMax Restart @syslog_ng_memorymax
+      systemd:
+        state: restarted
+        daemon_reload: true
+        name: syslog-ng
+      when: result.changed
+  tags:
+    - ws
+    - sec
+    - syslog_ng_memorymax

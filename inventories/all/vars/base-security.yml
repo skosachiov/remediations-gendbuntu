@@ -50,7 +50,7 @@ var_suid_whitelist:
   - "/bin/umount"
   - "/usr/bin/mount"
   - "/usr/bin/umount"
-  - "/opt/Citrix/ICAClient/ctxusb"
+  - "/usr/sbin/cryptsetup"
 
 var_log_skip_permissions_check:
   - "krb5_trace.log"

@@ -1,3 +1,5 @@
+- include_tasks: roles/desktop/tasks/main/notify-template.yml
+
 - name: Print main ansible facts @basic_security_facts
   changed_when: false
   ignore_errors: yes
