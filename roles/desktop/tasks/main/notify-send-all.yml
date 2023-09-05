@@ -10,6 +10,7 @@
       register: runuserdirs
     - name: Notify all users Send @notify_all_users
       changed_when: false
+      failed_when: false
       command: >
         sudo -u #{{item.0.path|basename}} DBUS_SESSION_BUS_ADDRESS='unix:path={{item.0.path}}/bus'
         notify-send -u '{{item.3}}' -t '{{item.4}}' '{{item.5}}' '{{item.6}}'

@@ -2,12 +2,13 @@
   ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Ensure cdrom group is empty Grep @ensure_cdrom_group_is_empty
-      command: awk -F ':' '($1 == "cdrom") {print $4}' /etc/group
+      shell: awk -F ':' '($1 == "cdrom") {print $4}' /etc/group | tr , "\n"
       check_mode: no
       register: items
       changed_when: items.stdout_lines|length > 0
     - name: Ensure floppy group is empty Remove @ensure_cdrom_group_is_empty
-      shell: gpasswd -d {{items.stdout_lines[0]}} cdrom
+      shell: gpasswd -d {{item}} cdrom
+      with_items: "{{items.stdout_lines}}"
       when: items.stdout_lines|length > 0
   tags:
     - ws
@@ -18,12 +19,13 @@
   ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Ensure floppy group is empty Grep @ensure_floppy_group_is_empty
-      command: awk -F ':' '($1 == "floppy") {print $4}' /etc/group
+      shell: awk -F ':' '($1 == "floppy") {print $4}' /etc/group | tr , "\n"
       check_mode: no
       register: items
       changed_when: items.stdout_lines|length > 0
     - name: Ensure floppy group is empty Remove @ensure_floppy_group_is_empty
-      shell: gpasswd -d {{items.stdout_lines[0]}} floppy
+      shell: gpasswd -d {{item}} floppy
+      with_items: "{{items.stdout_lines}}"
       when: items.stdout_lines|length > 0
   tags:
     - ws
@@ -34,12 +36,13 @@
   ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Ensure dialout group is empty @ensure_dialout_group_is_empty
-      command: awk -F ':' '($1 == "dialout") {print $4}' /etc/group
+      shell: awk -F ':' '($1 == "dialout") {print $4}' /etc/group | tr , "\n"
       check_mode: no
       register: items
       changed_when: items.stdout_lines|length > 0
     - debug:
         msg: "dialout group is not empty"
+      with_items: "{{items.stdout_lines}}"
       when: items.stdout_lines|length > 0
   tags:
     - ws
