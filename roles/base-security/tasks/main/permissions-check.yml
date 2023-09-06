@@ -381,7 +381,6 @@
 - name: Ensure owner 0 and permissions 0600 on /boot/grub/grub.cfg @grub_cfg_owner_and_permissions
   ignore_errors: "{{ansible_check_mode}}"
   file:
-    path:
     path: "{{'/boot/grub/grub.cfg' if ansible_os_family in ['Debian'] else '/boot/grub2/grub.cfg'}}"
     owner: '0'
     mode: '0600'
