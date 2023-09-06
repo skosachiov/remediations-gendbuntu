@@ -430,7 +430,6 @@
       file:
         path: "{{item}}"
         mode: go-w
-        hidden: true
       with_items: "{{result.stdout_lines}}"
       when: result.stdout_lines|length >= 1
   tags:
