@@ -17,5 +17,6 @@ var_cups_printers:
 var_domain_admins_group: gend_admins
 var_clamav_server: paris-clamav.si.mi
 var_site_address: "limoges_84_avenue_emile_labussiere"
+var_company: ordnance
 var_dp_fqdn: "{{var_ansible_fqdn}}"
 var_dp_rsyslog_server: "{{var_ansible_fqdn}}"

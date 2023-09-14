@@ -1,19 +1,72 @@
-- name: Check LUKS on rootfs @check_luks_on_rootfs
+- name: Check LUKS on rootfs @check_luks_ratio
   block:
-    - name: Check LUKS on rootfs Get @check_luks_on_rootfs
+    - name: Check LUKS on rootfs Get disk @check_luks_ratio
       changed_when: false
-      failed_when: false
+      shell: LANG=C.UTF-8 lsblk -rbo TYPE,SIZE | awk '$1=="disk"{sum+=$2} END{print sum}'
+      register: sizedisk
+    - name: Check LUKS on rootfs Get crypto @check_luks_ratio
+      changed_when: false
+      shell: LANG=C.UTF-8 lsblk -rbo TYPE,SIZE | awk '$1=="crypt"{sum+=$2} END{print sum}'
+      register: sizecrypt
+    - name: Check LUKS on rootfs Set fact @check_luks_ratio
       set_fact:
-        fs_devices: "{{ fs_devices|default([]) + [item.device|string] }}"
-      with_items: "{{ansible_mounts}}"
-      when: item.mount in ['/', '/home', '/var', '/opt', '/tmp']
-    - name: Check LUKS on rootfs Check @check_luks_on_rootfs
-      failed_when: false
-      shell: "LANG=C.UTF-8 blkid {{item}} | grep LUKS"
-      register: result
-      changed_when: result.rc != 0
-      with_items: "{{fs_devices}}"
+        sizecrypt:
+          stdout_lines:
+            - '0'
+      when: sizecrypt.stdout_lines|length == 0
+    - name: Check LUKS on rootfs Get crypto @check_luks_ratio
+      debug:
+        msg: "A large percentage of disk space is unencrypted"
+      changed_when: (sizecrypt.stdout_lines[0]|int / sizedisk.stdout_lines[0]|int) < 0.95
   when: var_admin_workstation
   tags:
     - ws
-    - check_luks_on_rootfs
+    - check_luks_ratio
+
+- name: Check LUKS password change date @check_luks_pw_date
+  block:
+    - name: Check LUKS password change date Tmp file @check_luks_pw_date
+      changed_when: false
+      tempfile:
+        state: file
+        suffix: temp
+      register: luksdump
+    - name: Check LUKS password change date Dump all @check_luks_pw_date
+      changed_when: false
+      failed_when: false
+      shell: 'LANG=C.UTF-8 cryptsetup luksDump $(blkid | grep LUKS | cut -f 1 -d ":") > {{luksdump.path}}'
+    - name: Check LUKS password change date Init @check_luks_pw_date
+      stat:
+        path: /etc/ansible/luksdump.txt
+      register: result
+    - name: Check LUKS password change date Init @check_luks_pw_date
+      copy:
+        src: "{{luksdump.path}}"
+        dest: /etc/ansible/luksdump.txt
+        remote_src: true
+        mode: go-rwx
+      when: not result.stat.exists
+    - name: Check LUKS password change date Checksum @check_luks_pw_date
+      stat:
+        path: "{{item}}"
+      register: result
+      with_items:
+        - "{{luksdump.path}}"
+        - /etc/ansible/luksdump.txt
+    - name: Check LUKS password change date Check @check_luks_pw_date
+      debug:
+        msg: "You need to change LUKS password"
+      changed_when:
+        - result.results[0].stat.checksum == result.results[1].stat.checksum
+        - (result.results[0].stat.ctime - result.results[1].stat.ctime) > 90*24*3600
+    - name: Check LUKS password change date Check @check_luks_pw_date
+      copy:
+        src: "{{luksdump.path}}"
+        dest: /etc/ansible/luksdump.txt
+        mode: go-rwx
+      when:
+        - result.results[0].stat.checksum != result.results[1].stat.checksum
+  when: var_admin_workstation
+  tags:
+    - ws
+    - check_luks_pw_date

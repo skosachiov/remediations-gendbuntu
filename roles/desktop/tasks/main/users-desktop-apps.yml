@@ -22,6 +22,13 @@
         dest: "{{desktop_tmp_dir.path}}/{{item|basename}}"
       with_fileglob:
         - "{{playbook_dir}}/inventories/subnets/{{var_subnet}}/files/desktop/applications/*"
+    - name: Users desktop files Copy company to tmp @users_desktop_files
+      changed_when: false
+      copy:
+        src: "{{item}}"
+        dest: "{{desktop_tmp_dir.path}}/{{item|basename}}"
+      with_fileglob:
+        - "{{playbook_dir}}/inventories/branches/{{var_company|lower}}/files/desktop/applications/*"
     - name: Users desktop files Find files @users_desktop_files
       find:
         paths: "{{desktop_tmp_dir.path}}/"

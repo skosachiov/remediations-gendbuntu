@@ -55,6 +55,15 @@ var_local_debian_repo: |
   deb http://{{var_ansible_fqdn}}/debian-security bullseye-security main contrib non-free
   deb [arch=amd64] http://{{var_ansible_fqdn}}/repos/bullseye/third-party/ main
 
+var_companies:
+  air_force: "Gendarmerie de l'Air"
+  air_transport: "Air Transport Gendarmerie"
+  maritime: "Gendarmerie maritime"
+  nuclear: "Gendarmerie de la sécurité des armements nucléaires"
+  ordnance: "Gendarmerie de l'Armement"
+
+
+
 
 
 

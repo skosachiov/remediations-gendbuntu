@@ -57,6 +57,19 @@
     - mob
     - set_grub_cmdline
 
+- name: Set grub timeout @set_grub_timeout
+  ignore_errors: "{{ansible_check_mode}}"
+  replace:
+    dest: /etc/default/grub
+    regexp: '(GRUB_TIMEOUT).*$'
+    replace: '\1=10'
+  notify: Update grub
+  tags:
+    - ws
+    - sec
+    - mob
+    - set_grub_timeout
+
 - name: Set-unset unrestricted os @set_unset_unrestricted_os
   ignore_errors: "{{ansible_check_mode}}"
   block:

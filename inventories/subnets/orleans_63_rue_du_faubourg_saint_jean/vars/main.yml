@@ -16,5 +16,6 @@ var_cups_printers:
 var_domain_admins_group: gend_admins
 var_clamav_server: orleans-clamav.si.mi
 var_site_address: "orleans_63_rue_du_faubourg_saint_jean"
+var_company: ordnance
 var_dp_fqdn: "{{var_ansible_fqdn}}"
 var_dp_rsyslog_server: "{{var_ansible_fqdn}}"
