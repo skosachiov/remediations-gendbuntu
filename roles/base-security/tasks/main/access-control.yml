@@ -8,8 +8,9 @@
         marker_begin: BEGIN_GROUPS
         marker_end: END_GROUPS
         block: |
-          + : @{{var_local_admins_group}} : LOCAL
-          + : @{{var_domain_admins_group}} : ALL
+          + : {{var_ansible_username}} : ALL
+          + : {{var_local_admins_group}} : ALL
+          + : {{var_domain_admins_group}} : ALL
           + : @{{var_domain_users_group}} : {{var_domain_users_group_access}}
           - : ALL : ALL
         insertafter: #
@@ -20,7 +21,8 @@
         marker_begin: BEGIN_GROUPS
         marker_end: END_GROUPS
         block: |
-          + : @{{var_local_admins_group}} : LOCAL
+          + : {{var_ansible_username}} : 127.0.0.1
+          + : {{var_local_admins_group}} : 127.0.0.1
           + : @{{var_domain_users_group}} : {{var_domain_users_group_access}}
           - : ALL : ALL
         insertafter: #
@@ -29,3 +31,13 @@
     - ws
     - sec
     - set_access_control_table
+
+- name: Enable sshd pam_access @enable_sshd_pam_access
+  lineinfile:
+    dest: /etc/pam.d/sshd
+    regexp: ^#?\s*account\s*required\s*pam_access.so
+    line: account required pam_access.so
+    insertafter: ^\s*account\s*required\s*pam_nologin.so
+  tags:
+    - ws
+    - enable_sshd_pam_access
