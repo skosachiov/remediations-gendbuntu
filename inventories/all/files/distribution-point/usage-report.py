@@ -21,7 +21,7 @@ matplotlib.use("Agg")
 path_var_log = "/var/log"
 path_history_dir = "/var/log/usage-report"
 tmp_filename = "usage-report-tmp.xml"
-tmp_history_filename = "usage-report-tmp-hystory.json"
+tmp_history_filename = "usage-report-history.json"
 log_startswith = "network.log"
 web_images_dir = "/var/www/html/files"
 web_images_dir_rel = "/files" # relative
@@ -29,8 +29,8 @@ web_user = "www-data"
 
 # a, f, p, e, s, h
 auth_success_header = ["timestamp", "ip", "user", "uid"]
-basic_ansible_facts_header = ["timestamp", "ip", "host_time", "hostname", "kernel", "root_dev", "free_space", "uptime",
-    "logged_on_users", "site", "mac", "serial", "company", "geo_coord", "ou", "users_apps"]
+basic_ansible_facts_header = ["timestamp", "ip", "host_time", "hostname", "kernel", "root_dev", "free_space", "ntfs_part",
+    "uptime", "logged_on_users", "site", "mac", "serial", "company", "geo_coord", "ou", "users_apps"]
 ansible_play_header = ["timestamp", "ip", "ok", "changed", "unreachable", "failed"]
 ansible_exec_header = ["timestamp", "ip", "role", "task", "status", "tag"]
 basic_security_facts_header = ["timestamp", "ip", "ma", "mcs", "mls", "ima", "dlp_aux", "av_aux", "host_flags"]
@@ -168,7 +168,7 @@ def analize_logs(log_startswith, interval, shift, cache):
                     a = line.split()
                     if (len(a) < 15): continue
                     a[2] = str(dateutil.parser.parse(a[0] + " " + a[1] + " " + a[2]))
-                    try: a.remove("gdm3:")
+                    try: a.remove("fly-dm:")
                     except ValueError: pass
                     if 'authentication' not in a[6]: continue
                     a = a[2:4] + a[14:15] + a[9:10]
@@ -214,10 +214,13 @@ def analize_logs(log_startswith, interval, shift, cache):
 
 def read_history():
     fname_hist = path_history_dir + "/" + tmp_history_filename
-    if os.path.exists(fname_hist) and (time.time() - os.path.getmtime(fname_hist) < 23.9*60*60):
+    if os.path.exists(fname_hist):
         with open(fname_hist) as f:
             d = json.load(f)
         return d['users'], d['computers'], d['history']
+
+def write_history():
+    fname_hist = path_history_dir + "/" + tmp_history_filename
     u_d, c_d, h_d = {}, {}, {}
     users, computers, history = [], [], []
     for fname in sorted(glob.glob(path_history_dir + '/usage-report-[0-9]*.xml')):
@@ -254,12 +257,13 @@ def read_history():
     for i, x in enumerate(c_d.values()):
         x.update({'id': i})
         x.move_to_end('id', last=False)
-        del x['kernel']
-        del x['root_dev']
-        del x['free_space']
-        del x['uptime']
-        del x['logged_on_users']
-        del x['host_time']
+        x.pop('kernel', None)
+        x.pop('root_dev', None)
+        x.pop('free_space', None)
+        x.pop('ntfs_part', None)
+        x.pop('uptime', None)
+        x.pop('logged_on_users', None)
+        x.pop('host_time', None)
         x.update({'user': last_by_ip[x['ip']]['user']})
         x.update({'auth': last_by_ip[x['ip']]['auth']})
         computers.append(x)
@@ -320,6 +324,7 @@ def main():
     shift = 0       # from now
     cache = True
     cgienv = True
+    rehistory = False
     for arg in sys.argv[1:]:
         if "format" in arg:     format = arg.split("=", 1)[1]
         if "report" in arg:     report = arg.split("=", 1)[1]
@@ -327,6 +332,7 @@ def main():
         if "shift" in arg:      shift = int((arg.split("=", 1))[1])
         if "cache" in arg:      cache = True if arg.split("=", 1)[1].lower() == "true" else False
         if "cgienv" in arg:     cgienv = False if arg.split("=", 1)[1].lower() == "false" else True
+        if "rehistory" in arg:  rehistory = False if arg.split("=", 1)[1].lower() == "false" else True
     args = cgi.FieldStorage()
     if "format" in args:    format = args["format"].value
     if "report" in args:    report = args["report"].value
@@ -334,6 +340,7 @@ def main():
     if "shift" in args:     shift = int(args["shift"].value)
     if "cache" in args:     cache = True if args["cache"].value.lower() == "true" else False
     if "cgienv" in args:    cgienv = False if args["cgienv"].value.lower() == "false" else True
+    if "rehistory" in args: rehistory = False if args["rehistory"].value.lower() == "false" else True
 
     if "secure" not in os.path.abspath(__file__):
         report = "last"
@@ -343,7 +350,7 @@ def main():
     analize_logs(log_startswith, interval, shift, cache)
     d = read_daily_xml(shift)
 
-    users, computers, history = read_history()
+    users, computers, history = read_history() if not rehistory else write_history()
     plot_history(history)
 
     if format == "html":
@@ -386,8 +393,9 @@ def main():
                 print_html_table(*od_to_list(d['usage_report']['auth_success']['rec_auth']), "a_a")
             print("<br />")
             print("<h1 id='h_a_e'>Ansible exec</h1>")
-            if 'ansible_exec' in d['usage_report']:
-                print_html_table(*od_to_list(d['usage_report']['ansible_exec']['rec_exec']), "a_e")
+            print("<p>Only in json and xml formats</p>")
+            # if 'ansible_exec' in d['usage_report']:
+            #     print_html_table(*od_to_list(d['usage_report']['ansible_exec']['rec_exec']), "a_e")
             print("<br />")
             print("<h1 id='h_a_s'>Basic security facts</h1>")
             if 'basic_security_facts' in d['usage_report']:

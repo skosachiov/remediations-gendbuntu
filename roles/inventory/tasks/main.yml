@@ -40,6 +40,12 @@
         var_size_available: "{{(item.size_available/1073741824)|int}}"
       with_items: "{{ansible_mounts}}"
       when: item.mount == '/'
+    - name: Print main ansible facts Ntfs @basic_ansible_facts
+      check_mode: no
+      shell: LANG=C.UTF-8 lsblk -b -o fstype,size -x size | grep ntfs | tail -n 1 | awk '{print $2/1073741824}'
+      register: ntfspart
+      changed_when: false
+      failed_when: false
     - name: Print main ansible facts Who @basic_ansible_facts
       check_mode: no
       shell: 'LANG=C.UTF-8 who -q | tr "\n" " "'
@@ -56,6 +62,7 @@
           kernel: "{{ansible_kernel}}"
           root_dev: "{{var_device}}"
           free_space: "{{var_size_available}}"
+          ntfs_part: "{{ntfspart.stdout_lines[0]|int if ntfspart.stdout_lines[0] is defined else 0}}"
           uptime: "{{ansible_uptime_seconds}}"
           logged_on_users: "{{sessions.stdout_lines[0]}}"
           site: "{{var_subnet}}"
