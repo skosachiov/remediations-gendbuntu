@@ -1,0 +1,19 @@
+---
+- name: Install url tar
+  hosts: all
+
+  tasks:
+
+  - name: Install url tar
+    block:
+      - name: Install url tar
+        get_url:
+          url: "{{var_url_tar}}"
+          dest: "/tmp/"
+      - name: Install url tar
+        shell: "tar -zxf /tmp/{{var_url_tar | basename}} --directory {{var_target_dir}}"
+    tags:
+      - ws
+      - sec
+      - mob
+      - install_url_tar

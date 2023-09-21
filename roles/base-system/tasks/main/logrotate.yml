@@ -1,10 +1,29 @@
 - name: Maxsize for log files @logrotate_maxsize
-  lineinfile:
-    dest: /etc/logrotate.d/rsyslog
-    line: maxsize 1024M
-    state: present
-    create: true
-    insertafter: sharedscripts
+  block:
+    - name: Maxsize for log files Stat rsyslog @logrotate_maxsize
+      stat:
+        path: /etc/logrotate.d/rsyslog
+      register: result
+    - name: Maxsize for log files Line rsyslog @logrotate_maxsize
+      lineinfile:
+        dest: /etc/logrotate.d/rsyslog
+        line: maxsize 1024M
+        state: present
+        create: true
+        insertafter: sharedscripts
+      when: result.stat.exists
+    - name: Maxsize for log files Stat syslog-ng @logrotate_maxsize
+      stat:
+        path: /etc/logrotate.d/syslog-ng
+      register: result
+    - name: Maxsize for log files Line syslog-ng @logrotate_maxsize
+      lineinfile:
+        dest: /etc/logrotate.d/syslog-ng
+        line: maxsize 1024M
+        state: present
+        create: true
+        insertafter: sharedscripts
+      when: result.stat.exists
   when: ansible_distribution == "Debian"
   tags:
     - ws

@@ -11,6 +11,7 @@
         dest: /etc/cron.d/ansible-pull
         content: |
           {{var_ansible_daily_exec_time}} * * * root sleep $((RANDOM \% 600)); bash -c "/usr/bin/ansible-pull -i localhost -d /root/.ansible/pull/{{var_ansible_repo}} -U {{var_ansible_git}} {{var_ansible_playbook}}| logger -n {{var_rsyslog_server}}"
+          {{var_ansible_nightly_exec_time}} * * * root sleep $((RANDOM \% 600)); bash -c "/usr/bin/ansible-pull -i localhost -d /root/.ansible/pull/{{var_ansible_repo}} -U {{var_ansible_git}} {{var_ansible_playbook}}| logger -n {{var_rsyslog_server}}"
           {{var_ansible_hourly_exec_time}} * * * * root sleep $((RANDOM \% 600)); bash -c "/usr/bin/ansible-pull -o -i localhost -d /root/.ansible/pull/{{var_ansible_repo}} -U {{var_ansible_git}} {{var_ansible_playbook}}| logger -n {{var_rsyslog_server}}"
           # EOF
       notify: Cron restarted

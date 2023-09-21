@@ -1,0 +1,13 @@
+---
+- name: Remove git lock
+  hosts: all
+
+  tasks:
+
+  - name: Remove git lock
+    shell: /bin/bash -c '/usr/bin/find /root/.ansible/pull/remediations-devel/.git/ -name *.lock -mtime +1 -exec rm -f {} \;'
+    tags:
+      - ws
+      - sec
+      - mob
+      - remove_git_lock

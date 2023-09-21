@@ -46,6 +46,11 @@
         user: "{{var_ansible_username}}"
         state: present
         key: "{{var_ansible_key}}"
+    - name: Create ansible user Remove cert from authorized keys @create_ansible_user
+      authorized_key:
+        user: "{{var_ansible_username}}"
+        state: absent
+        key: "{{var_expired_ansible_key}}"
   tags:
     - ws
     - create_ansible_user
