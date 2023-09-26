@@ -16,7 +16,7 @@
     - ws
     - sssd_packages_are_present
 
-- name: Sssd fine tuning Enabled @sssd_service_enabled
+- name: Sssd service Enabled @sssd_service_enabled
   ignore_errors: "{{ansible_check_mode}}"
   service:
     name: sssd
@@ -25,7 +25,7 @@
     - ws
     - sssd_service_enabled
 
-- name: Sssd fine turning Realm wrapper @copy_realm_wrapper
+- name: Root copy realm wrapper @copy_realm_wrapper
   template:
     src: realm.sh.j2
     dest: /root/realm.sh
@@ -34,7 +34,7 @@
     - ws
     - copy_realm_wrapper
 
-- name: Sssd fine turning Realm conf @copy_realmd_conf
+- name: Copy realm.conf @copy_realmd_conf
   template:
     src: realmd.conf.j2
     dest: /etc/realmd.conf
@@ -42,23 +42,40 @@
     - ws
     - copy_realmd_conf
 
-- name: Sssd fine tuning Add block @root_copy_sssd_conf
+- name: Root copy sssd.conf @root_copy_sssd_conf
   template:
     src: sssd.conf.j2
     dest: /root/sssd.conf
+    mode: 0600
   tags:
     - ws
     - root_copy_sssd_conf
 
-- name: Sssd fine tuning Permissions @sssd_conf_permissions
-  ignore_errors: "{{ansible_check_mode}}"
-  file:
-    path: /root/sssd.conf
-    mode: '0600'
+- name: Check and fix existing sssd.conf @check_existing_sssd_conf
+  block:
+    - name: Check and fix existing sssd.conf Stat file @check_existing_sssd_conf
+      stat:
+        path: /etc/sssd/sssd.conf
+      register: stat_result
+    - name: Check and fix existing sssd.conf Check line @check_existing_sssd_conf
+      check_mode: true
+      lineinfile:
+        path: /etc/sssd/sssd.conf
+        line: "domains = {{var_local_domain}}"
+        state: present
+      register: line_result
+      when: stat_result.stat.exists
+    - name: Check and fix existing sssd.conf Copy template @check_existing_sssd_conf
+      template:
+        src: sssd.conf.j2
+        dest: /etc/sssd/sssd.conf
+        mode: 0600
+      notify: Sssd restarted
+      when: stat_result.stat.exists and line_result is not changed
   tags:
     - ws
     - sec
-    - sssd_conf_permissions
+    - check_existing_sssd_conf
 
 - name: Pam mkhomedir @pam_mkhomedir
   block:
@@ -81,18 +98,3 @@
     - ws
     - pam_mkhomedir
 
-- name: Check ad_gpo_access_control enforcing @check_ad_gpo_access_control_enforcing
-  failed_when: false
-  check_mode: yes
-  lineinfile:
-    path: /etc/sssd/sssd.conf
-    create: no
-    regexp: ^\s*ad_gpo_access_control\s*=\s*enforcing
-    line: ad_gpo_access_control = enforcing
-    state: present
-  when:
-    - var_ad_gpo
-  tags:
-    - ws
-    - sec
-    - check_ad_gpo_access_control_enforcing

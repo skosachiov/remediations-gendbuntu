@@ -24,9 +24,12 @@ fallback_homedir = /home/%u@%d
 access_provider = ad
 use_fully_qualified_names = False
 override_homedir = /home/%u
+{% if var_ad_gpo %}
+ad_gpo_access_control = enforcing
+ad_gpo_map_interactive = +unity, +cron, +gdm3, +gdm, +login
+ad_gpo_map_remote_interactive = +unity, +cron, +gdm3, +gdm, +login
+{% else %}
 ad_gpo_access_control = disabled
-# ad_gpo_access_control = enforcing
-# ad_gpo_map_interactive = +unity, +cron, +gdm3, +gdm, +login
-# ad_gpo_map_remote_interactive = +unity, +cron, +gdm3, +gdm, +login
+{% endif %}
 ignore_group_members = True
 entry_cache_timeout = 5400

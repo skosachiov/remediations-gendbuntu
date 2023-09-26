@@ -24,7 +24,7 @@
   block:
     - name: Get ou Sssd status @default
       changed_when: false
-      shell: LANG=C.UTF8 /usr/sbin/sssctl domain-status {{var_local_domain}} -o
+      shell: yes no | LANG=C.UTF8 /usr/sbin/sssctl domain-status {{var_local_domain}}
       register: sssctl_status
     - name: Get ou Kinit @default
       changed_when: false
