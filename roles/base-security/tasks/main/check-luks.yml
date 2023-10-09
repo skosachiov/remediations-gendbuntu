@@ -17,7 +17,7 @@
     - name: Check LUKS on rootfs Get crypto @check_luks_ratio
       debug:
         msg: "A large percentage of disk space is unencrypted"
-      changed_when: (sizecrypt.stdout_lines[0]|int / sizedisk.stdout_lines[0]|int) < 0.95
+      changed_when: (sizecrypt.stdout_lines[0]|int / sizedisk.stdout_lines[0]|int) < 0.90
   when: var_admin_workstation
   tags:
     - ws

@@ -1,0 +1,11 @@
+- name: Enable fstrim timer @enable_fstrim_timer
+  systemd:
+    name: fstrim.timer
+    state: started
+    enabled: true
+  when:
+    - var_installation_type == 'workstation'
+  tags:
+    - ws
+    - sec
+    - enable_fstrim_timer

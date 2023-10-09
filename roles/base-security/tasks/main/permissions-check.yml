@@ -265,14 +265,20 @@
       file:
         state: absent
         path: /etc/cron.deny
-    - name: Ensure cron and at permissions Absent /etc/at.allow @cron_and_at_permissions
-      file:
-        state: absent
-        path: /etc/at.allow
-    - name: Ensure cron and at permissions Absent /etc/cron.allow @cron_and_at_permissions
-      file:
-        state: absent
-        path: /etc/cron.allow
+    - name: Ensure cron and at permissions Empty /etc/at.allow @cron_and_at_permissions
+      copy:
+        content: ""
+        dest: /etc/at.allow
+        force: false
+        owner: root
+        mode: 0600
+    - name: Ensure cron and at permissions Empty /etc/cron.allow @cron_and_at_permissions
+      copy:
+        content: ""
+        dest: /etc/cron.allow
+        force: false
+        owner: root
+        mode: 0600
   tags:
     - ws
     - sec

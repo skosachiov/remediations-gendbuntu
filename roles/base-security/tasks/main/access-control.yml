@@ -23,7 +23,7 @@
         block: |
           + : {{var_ansible_username}} : 127.0.0.1
           + : {{var_local_admins_group}} : 127.0.0.1
-          + : @{{var_domain_users_group}} : {{var_domain_users_group_access}}
+          + : @{{var_domain_users_group}} : LOCAL
           - : ALL : ALL
         insertafter: #
       when: var_admin_workstation
