@@ -1,5 +1,5 @@
 - name: Xrdp restarted
   ignore_errors: "{{ansible_check_mode}}"
   service:
-    name: "{{'cron' if ansible_os_family in ['Debian'] else 'crond'}}"
+    name: "{{'cron' if ansible_os_family in var_debian_based_os else 'crond'}}"
     state: restarted

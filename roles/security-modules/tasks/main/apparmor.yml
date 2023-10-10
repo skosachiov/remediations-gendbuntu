@@ -30,7 +30,7 @@
       register: result
       failed_when: false
       changed_when: result.stdout|int != var_aa_complaining
-  when: ansible_os_family in ['Debian']
+  when: ansible_os_family in var_debian_based_os
   tags:
     - ws
     - sec
@@ -42,7 +42,7 @@
   failed_when: false
   with_items:
     - cupsd
-  when: ansible_os_family in ['Debian']
+  when: ansible_os_family in var_debian_based_os
   tags:
     - ws
     - sec

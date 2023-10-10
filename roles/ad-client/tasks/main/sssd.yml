@@ -10,7 +10,7 @@
         state: present
     - name: Sssd packages are present Specific @sssd_packages_are_present
       package:
-        name: "{{['libnss-sss', 'libpam-sss'] if ansible_os_family in ['Debian'] else 'sssd-client'}}"
+        name: "{{['libnss-sss', 'libpam-sss'] if ansible_os_family in var_debian_based_os else 'sssd-client'}}"
         state: present
   tags:
     - ws
@@ -85,15 +85,15 @@
         regexp: ^\s*session\s*optional\s*pam_mkhomedir.so
         line: session optional pam_mkhomedir.so skel=/etc/skel umask=0077
         insertbefore: ^\s*session\s*required\s*pam_unix.so
-      when: ansible_os_family in ['Debian']
+      when: ansible_os_family in var_debian_based_os
     - name: Pam mkhomedir rpm @pam_mkhomedir
       package:
         name: authselect-compat
         state: present
-      when: ansible_os_family in ['RedHat', 'Rocky', 'RED'] and ansible_distribution_major_version|int > 8
+      when: ansible_os_family in var_redhat_based_os and ansible_distribution_major_version|int > 8
     - name: Pam mkhomedir rpm @pam_mkhomedir
       shell: authconfig --enablemkhomedir --update
-      when: ansible_os_family in ['RedHat', 'Rocky', 'RED']
+      when: ansible_os_family in var_redhat_based_os
   tags:
     - ws
     - pam_mkhomedir

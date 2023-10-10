@@ -1,7 +1,7 @@
 - name: Auditd Present deb @auditd_present
   ignore_errors: "{{ansible_check_mode}}"
   package:
-    name: "{{'auditd' if ansible_os_family in ['Debian'] else 'audit'}}"
+    name: "{{'auditd' if ansible_os_family in var_debian_based_os else 'audit'}}"
     state: present
   tags:
     - ws

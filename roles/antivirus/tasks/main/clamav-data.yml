@@ -31,7 +31,7 @@
       file:
         path: "/var/lib/clamav/{{var_clamav_data_rpm_url | basename}}"
         state: absent
-  when: ansible_os_family in ['Debian']
+  when: ansible_os_family in var_debian_based_os
   tags:
     - ws
     - clamav_freshclam_workaround

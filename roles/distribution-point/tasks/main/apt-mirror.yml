@@ -21,7 +21,7 @@
         dest: /etc/cron.d/apt-mirror
         block: |
           0 4 * * * root /usr/bin/apt-mirror > /var/spool/apt-mirror/var/cron.log
-  when: ansible_os_family in ['Debian']
+  when: ansible_os_family in var_debian_based_os
   tags:
     - dp
     - apt_mirror_config

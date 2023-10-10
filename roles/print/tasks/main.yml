@@ -8,7 +8,7 @@
       package:
         name: >-
           {{ ['cups', 'printer-driver-gutenprint', 'smbclient']
-          if ansible_os_family in ['Debian']
+          if ansible_os_family in var_debian_based_os
           else ['cups', 'gutenprint', 'samba-client', 'samba-krb5-printing'] }}
         state: present
     - name: Enable service cupsd Started @service_cups_enabled
@@ -35,7 +35,7 @@
     - name: CUPS smb backend Link @cups_smb_backend_set
       file:
         src: >-
-          {{'/usr/lib/x86_64-linux-gnu/samba/smbspool_krb5_wrapper' if ansible_os_family in ['Debian']
+          {{'/usr/lib/x86_64-linux-gnu/samba/smbspool_krb5_wrapper' if ansible_os_family in var_debian_based_os
           else '/usr/libexec/samba/smbspool_krb5_wrapper'}}
         dest: /usr/lib/cups/backend/smb
         state: link
@@ -74,7 +74,7 @@
     - name: CUPS printer Group @cups_printers
       user:
         name: "{{var_ansible_username}}"
-        groups: "{{'lpadmin' if ansible_os_family in ['Debian'] else 'lp'}}"
+        groups: "{{'lpadmin' if ansible_os_family in var_debian_based_os else 'lp'}}"
     - name: CUPS printer Generic printer @cups_printers
       failed_when: false
       become: true

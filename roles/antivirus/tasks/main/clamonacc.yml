@@ -7,7 +7,7 @@
   notify:
     - Systemctl daemon reload
     - Clamav onacc restarted
-  when: ansible_os_family in ['Debian']
+  when: ansible_os_family in var_debian_based_os
   tags:
     - ws
     - clamav_onacc_service
@@ -17,7 +17,7 @@
   service:
     name: clamav-onacc
     enabled: yes
-  when: ansible_os_family in ['Debian']
+  when: ansible_os_family in var_debian_based_os
   tags:
     - ws
     - clamav_onacc_enabled

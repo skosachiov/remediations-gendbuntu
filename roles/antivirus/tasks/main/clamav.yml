@@ -6,7 +6,7 @@
       - clamav-daemon
       - clamdscan
     state: latest
-  when: ansible_os_family in ['Debian']
+  when: ansible_os_family in var_debian_based_os
   tags:
     - ws
     - clamav_latest
@@ -18,7 +18,7 @@
     regexp: ^(DatabaseMirror).*
     replace: '\1 {{var_clamav_server}}'
   notify: Clamav freshclam restarted
-  when: ansible_os_family in ['Debian']
+  when: ansible_os_family in var_debian_based_os
   tags:
     - ws
     - clamav_set_mirror
@@ -35,7 +35,7 @@
       OnAccessPrevention yes
       OnAccessExcludeUname clamd
   notify: Clamav daemon started
-  when: ansible_os_family in ['Debian']
+  when: ansible_os_family in var_debian_based_os
   tags:
     - ws
     - clamad_on_access_scanning

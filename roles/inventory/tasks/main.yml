@@ -87,12 +87,12 @@
       package:
         name: lm-sensors
         state: present
-      when: ansible_os_family in ['Debian']
+      when: ansible_os_family in var_debian_based_os
     - name: Get sensors info Lm-sensors present rpm @get_sensors_info
       package:
         name: lm_sensors
         state: present
-      when: ansible_os_family in ['RedHat', 'Rocky', 'RED']
+      when: ansible_os_family in var_redhat_based_os
     - name: Get sensors info Smartmontools present @get_sensors_info
       package:
         name: smartmontools
@@ -132,7 +132,7 @@
         regexp: ^#?\s*ENABLED
         line: ENABLED="true"
       notify: Sysstat restarted
-      when: ansible_os_family in ['Debian']
+      when: ansible_os_family in var_debian_based_os
     - name: Get sysstat info @get_load_average
       shell: "sar -q"
       register: items

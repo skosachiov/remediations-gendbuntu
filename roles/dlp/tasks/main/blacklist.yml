@@ -5,7 +5,7 @@
       template:
         src: 50-blacklist.conf.j2
         dest: /etc/modprobe.d/50-blacklist.conf
-      when: ansible_os_family in ['Debian']
+      when: ansible_os_family in var_debian_based_os
       notify:
         - Depmod
         - Update initramfs
@@ -13,7 +13,7 @@
       template:
         src: 50-blacklist.conf.j2
         dest: /etc/modprobe.d/50-blacklist.conf
-      when: ansible_os_family in ['RedHat', 'Rocky', 'RED']
+      when: ansible_os_family in var_redhat_based_os
       notify:
         - Dracut update
   tags:

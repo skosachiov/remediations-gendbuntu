@@ -15,7 +15,7 @@
         url: https://{{var_ansible_fqdn}}/security/oval/oval-definitions-buster.xml
         dest: /var/www/html/security/oval/
         owner: www-data
-  when: ansible_os_family in ['Debian']
+  when: ansible_os_family in var_debian_based_os
   tags:
     - ws
     - sync_some_files

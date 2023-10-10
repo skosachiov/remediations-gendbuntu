@@ -33,11 +33,11 @@
     - name: Copy ca certs and script Update @copy_ca_certs_and_script
       command: update-ca-certificates
       changed_when: false
-      when: ansible_os_family in ['Debian']
+      when: ansible_os_family in var_debian_based_os
     - name: Copy ca certs and script Update @copy_ca_certs_and_script
       command: update-ca-trust
       changed_when: false
-      when: ansible_os_family in ['RedHat', 'Rocky', 'RED']
+      when: ansible_os_family in var_redhat_based_os
   tags:
     - ws
     - copy_ca_certs_and_script
