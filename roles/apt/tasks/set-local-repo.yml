@@ -10,6 +10,7 @@
         insertafter: #
       when: var_internal_ansible_ip
       notify: Apt update cache
+  when: ansible_os_family in var_debian_based_os
   tags:
     - ws
     - sec
@@ -28,7 +29,7 @@
           {{var_local_repo}}
       when: var_branch_local_repo is defined and var_internal_ansible_ip
       notify: Apt update cache
-  when:
+  when: ansible_os_family in var_debian_based_os
   tags:
     - ws
     - sec
