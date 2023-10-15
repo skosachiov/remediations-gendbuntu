@@ -63,6 +63,7 @@
     - role: smb-client
     - role: ssh
     - role: terminal-server
+    - role: unique-tasks
     - role: utmost-report
       tags: always
 

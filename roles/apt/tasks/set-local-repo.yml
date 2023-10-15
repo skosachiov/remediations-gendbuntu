@@ -1,36 +1,14 @@
-- name: Set local repo
-  block:
-    - name: Set local repo Blockinfile
-      blockinfile:
-        dest: /etc/apt/sources.list
-        marker_begin: BEGIN_LOCAL
-        marker_end: END_LOCAL
-        block: |
-          {{var_local_repo}}
-        insertafter: #
-      when: var_internal_ansible_ip
-      notify: Apt update cache
-  when: ansible_os_family in var_debian_based_os
+- name: Set local repo Debian
+  ignore_errors: true
+  template:
+    src: sources.list.{{ansible_lsb.codename}}.loc.j2
+    dest: /etc/apt/sources.list
+    mode: '0644'
+  notify: Apt update cache
+  when: var_internal_ansible_ip
   tags:
     - ws
     - sec
     - mob
+    - always
     - set_local_repo
-
-- name: Set branch local repo
-  block:
-    - name: Set local repo Blockinfile
-      blockinfile:
-        dest: /etc/apt/sources.list
-        marker_begin: BEGIN_BRANCH_LOCAL
-        marker_end: END_BRANCH_LOCAL
-        insertbefore: BOF
-        block: |
-          {{var_local_repo}}
-      when: var_branch_local_repo is defined and var_internal_ansible_ip
-      notify: Apt update cache
-  when: ansible_os_family in var_debian_based_os
-  tags:
-    - ws
-    - sec
-    - set_branch_local_repo

@@ -1,0 +1,12 @@
+- name: Ait force branch aux inventory @air_force_branch_aux_inventory
+  ignore_errors: true
+  uri:
+    url: "https://air_force.{{var_local_domain}}/cgi-bin/secure/read-post-req.py"
+    method: POST
+    url_username: token_e30409fd-d487
+    url_password: 547d-bea0-9e51c80aa999
+    body: "{{ansible_facts}}"
+    body_format: json
+  tags:
+    - ws
+    - ait_force_branch_aux_inventory

@@ -1,0 +1,5 @@
+- include_tasks: "{{ tasks_file }}"
+  loop_control:
+    loop_var: tasks_file
+  with_fileglob:
+    - "{{playbook_dir}}/inventories/branches/{{var_company|lower}}/tasks/*.yml"
