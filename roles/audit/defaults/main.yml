@@ -19,3 +19,25 @@ var_syslog_ng_filter: |
   filter f_trash { message('pcieport') or message('cifs.upcall'); };
   log { source(s_src); filter(f_remote); destination(remote_syslog); };
   log { source(s_src); filter(f_trash); destination(d_null); flags(final); };
+
+var_audit_keys:
+  access: audit_access
+  cert: audit_cert
+  connect: audit_connect
+  cron: audit_cron
+  etc: audit_etc
+  firewall: audit_firewall
+  home: audit_home
+  identity: audit_identity
+  login: audit_login
+  media: audit_media
+  module: audit_module
+  networking: audit_networking
+  selinux: audit_selinux
+  session: audit_session
+  setuid: audit_setuid
+  stat: audit_stat
+  sudo: audit_sudo
+  time: audit_time
+  unlink: audit_unlink
+  unsuccess: audit_unsuccess

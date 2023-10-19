@@ -1,0 +1,7 @@
+# -a always,exit -F arch=b32 -S adjtimex,settimeofday,stime -F key={{var_audit_keys.time}}
+# -a always,exit -F arch=b64 -S adjtimex,settimeofday,stime -F key={{var_audit_keys.time}}
+-a always,exit -F arch=b32 -S adjtimex,settimeofday -F key={{var_audit_keys.time}}
+-a always,exit -F arch=b64 -S adjtimex,settimeofday -F key={{var_audit_keys.time}}
+-a always,exit -F arch=b32 -S clock_settime -F a0=0x0 -F key={{var_audit_keys.time}}
+-a always,exit -F arch=b64 -S clock_settime -F a0=0x0 -F key={{var_audit_keys.time}}
+-w /etc/localtime -p wa -k {{var_audit_keys.time}}

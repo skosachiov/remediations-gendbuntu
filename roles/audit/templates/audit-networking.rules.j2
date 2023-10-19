@@ -1,0 +1,8 @@
+-a always,exit -F arch=b32 -S sethostname,setdomainname -F key={{var_audit_keys.networking}}
+-a always,exit -F arch=b64 -S sethostname,setdomainname -F key={{var_audit_keys.networking}}
+-w /etc/issue -p wa -k {{var_audit_keys.networking}}
+-w /etc/issue.net -p wa -k {{var_audit_keys.networking}}
+-w /etc/hosts -p wa -k {{var_audit_keys.networking}}
+-w /etc/hostname -p wa -k {{var_audit_keys.networking}}
+-w /etc/network/interfaces -p wa -k {{var_audit_keys.networking}}
+# -w /etc/sysconfig/network -p wa -k {{var_audit_keys.networking}}

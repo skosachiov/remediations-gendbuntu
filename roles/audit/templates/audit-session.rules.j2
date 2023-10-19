@@ -1,0 +1,3 @@
+-w /var/run/utmp -p wa -k {{var_audit_keys.session}}
+-w /var/log/btmp -p wa -k {{var_audit_keys.session}}
+-w /var/log/wtmp -p wa -k {{var_audit_keys.session}}

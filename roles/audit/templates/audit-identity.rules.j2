@@ -1,0 +1,4 @@
+-w /etc/group -p wa -k {{var_audit_keys.identity}}
+-w /etc/passwd -p wa -k {{var_audit_keys.identity}}
+-w /etc/gshadow -p wa -k {{var_audit_keys.identity}}
+-w /etc/shadow -p wa -k {{var_audit_keys.identity}}

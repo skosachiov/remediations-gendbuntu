@@ -1,0 +1,6 @@
+-w /etc/login.defs -p wa -k {{var_audit_keys.login}}
+-w /etc/securetty -p wa -k {{var_audit_keys.login}}
+-w /var/log/faillog -p wa -k {{var_audit_keys.login}}
+-w /var/log/tallylog -p wa -k {{var_audit_keys.login}}
+-w /var/run/faillock/ -p wa -k {{var_audit_keys.login}}
+-w /var/log/lastlog -p wa -k {{var_audit_keys.login}}
