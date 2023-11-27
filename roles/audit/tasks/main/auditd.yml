@@ -50,6 +50,21 @@
     - mob
     - auditd_max_log_file
 
+- name: Configure auditd space_left Action on Low Disk Space @auditd_data_retention_space_left_action
+  ignore_errors: "{{ansible_check_mode}}"
+  lineinfile:
+    dest: /etc/audit/auditd.conf
+    # line: space_left_action = halt
+    line: space_left_action = syslog
+    regexp: ^\s*space_left_action\s*=\s*.*$
+    state: present
+    create: true
+  tags:
+    - ws
+    - sec
+    - mob
+    - auditd_data_retention_space_left_action
+
 - name: Configure audspd q_depth @audispd_conf_q_depth
   ignore_errors: "{{ansible_check_mode}}"
   block:
@@ -66,21 +81,47 @@
     - sec
     - audispd_conf_q_depth
 
-- name: Set common auditd rules @common_auditd_exceptions
+- name: Disable auditd syslog plugin @disable_auditd_audispd_syslog_plugin
   ignore_errors: "{{ansible_check_mode}}"
-  blockinfile:
-    dest: /etc/audit/rules.d/audit.rules
-    marker_begin: BEGIN_EXCEPTIONS
-    marker_end: END_EXCEPTIONS
-    insertafter: "^-f 1"
-    block: |
-      {{var_auditd_exceptions}}
-  notify: Auditd restarted
+  lineinfile:
+    dest: /etc/audisp/plugins.d/syslog.conf
+    regexp: ^active
+    line: active = no
   tags:
     - ws
     - sec
-    - mob
-    - common_auditd_exceptions
+    - disable_auditd_audispd_syslog_plugin
+
+- name: Auditd remove outdated files @auditd_remove_outdated_files
+  ignore_errors: true
+  block:
+    - name: Auditd remove outdated files Set default @auditd_remove_outdated_files
+      set_fact:
+        local_files:
+          - 10-example.rules
+    - name: Auditd remove outdated files Set local @auditd_remove_outdated_files
+      set_fact:
+        local_files: "{{ local_files + [item | basename | replace('.j2', '') ] }}"
+      with_fileglob:
+        - "{{playbook_dir}}/roles/audit/templates/*"
+    - name: Auditd remove outdated files Find @auditd_remove_outdated_files
+      find:
+        path: /etc/audit/rules.d/
+        recurse: no
+        file_type: file
+      register: remote_files_path
+    - name: Auditd remove outdated files Set remote @auditd_remove_outdated_files
+      set_fact:
+        remote_files: "{{ remote_files | default([]) + [item.path | basename] }}"
+      with_items: "{{remote_files_path.files}}"
+    - name: Auditd remove outdated files Remove @auditd_remove_outdated_files
+      file:
+        path: /etc/audit/rules.d/{{item}}
+        state: absent
+      with_items: "{{ remote_files | difference(local_files) }}"
+  tags:
+    - ws
+    - auditd_remove_outdated_files
 
 - name: Set common auditd rules @common_auditd_rules
   ignore_errors: "{{ansible_check_mode}}"
@@ -97,54 +138,20 @@
     - mob
     - common_auditd_rules
 
-- name: Audit rules increase buffer @audit_rules_increase_buffer
+- name: Set common auditd rules @common_auditd_rules
   ignore_errors: "{{ansible_check_mode}}"
-  block:
-    - name: Audit rules increase buffer @audit_rules_increase_buffer
-      lineinfile:
-        path: /etc/audit/rules.d/audit.rules
-        regexp: ^\s*-b\s*
-        line: -b 32768
-        state: present
-      notify: Auditd restarted
+  template:
+    src: "{{item}}"
+    dest: '/etc/audit/rules.d/{{(item|basename).split(".")[0]}}.rules'
+    mode: '0640'
+  with_fileglob:
+    - "{{playbook_dir}}/roles/audit/templates/*"
+  notify: Auditd restarted
   tags:
     - ws
     - sec
-    - audit_rules_increase_buffer
-
-- name: Audit rules immutable @audit_rules_immutable
-  ignore_errors: "{{ansible_check_mode}}"
-  block:
-    - name: Collect all files from /etc/audit/rules.d with .rules extension @audit_rules_immutable
-      find:
-        paths: /etc/audit/rules.d/
-        patterns: '*.rules'
-      register: find_rules_d
-    - name: Remove the -e option from all Audit config files @audit_rules_immutable
-      lineinfile:
-        path: '{{ item }}'
-        regexp: ^\s*(?:-e)\s+.*$
-        state: absent
-      loop: '{{ find_rules_d.files | map(attribute=''path'') | list + [''/etc/audit/audit.rules''] }}'
-      when:
-        - item != '/etc/audit/audit.rules'
-        - item != '/etc/audit/rules.d/audit.rules'
-        - item != '/etc/audit/rules.d/immutable.rules'
-    - name: Add Audit -e option into /etc/audit/rules.d/immutable.rules and /etc/audit/audit.rules @audit_rules_immutable
-      lineinfile:
-        path: '{{ item }}'
-        create: true
-        regexp: ^\s*-e\s*[0-9]
-        line: -e 2
-        insertafter: EOF
-      loop:
-        - /etc/audit/rules.d/audit.rules
-        - /etc/audit/rules.d/immutable.rules
-      notify: Auditd restarted
-  tags:
-    - ws
-    - sec
-    - audit_rules_immutable
+    - mob
+    - common_auditd_rules
 
 - name: Configure auditd space_left Action on Low Disk Space @auditd_data_retention_space_left_action
   ignore_errors: "{{ansible_check_mode}}"
@@ -160,18 +167,6 @@
     - sec
     - mob
     - auditd_data_retention_space_left_action
-
-- name: Enable auditd syslog plugin @auditd_audispd_syslog_plugin_activated
-  ignore_errors: "{{ansible_check_mode}}"
-  lineinfile:
-    dest: /etc/audisp/plugins.d/syslog.conf
-    regexp: ^active
-    line: active = yes
-    create: true
-  tags:
-    - ws
-    - sec
-    - auditd_audispd_syslog_plugin_activated
 
 - name: Auditd rules count @auditd_rules_count
   ignore_errors: "{{ansible_check_mode}}"

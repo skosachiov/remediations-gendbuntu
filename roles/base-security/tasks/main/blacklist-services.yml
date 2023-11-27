@@ -4,6 +4,7 @@
     name: "{{item}}"
     state: absent
   with_items: "{{var_services_blacklist}}"
+  when: var_installation_type not in ["server", "distribution-point"]
   tags:
     - ws
     - sec

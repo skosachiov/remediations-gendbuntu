@@ -1,0 +1,13 @@
+-a always,exit -F arch=b64 -S delete_module -k {{var_audit_keys.module}}
+-a always,exit -F arch=b32 -S delete_module -k {{var_audit_keys.module}}
+-a always,exit -F arch=b64 -S init_module -k {{var_audit_keys.module}}
+-a always,exit -F arch=b32 -S init_module -k {{var_audit_keys.module}}
+-a always,exit -F arch=b64 -S finit_module -k {{var_audit_keys.module}}
+-a always,exit -F arch=b32 -S finit_module -k {{var_audit_keys.module}}
+-a always,exit -F arch=b32 -S create_module -k {{var_audit_keys.module}}
+-a always,exit -F arch=b64 -S create_module -k {{var_audit_keys.module}}
+-a always,exit -F path=/usr/bin/kmod -F perm=x -F auid>=1000 -F auid!=unset -k {{var_audit_keys.module}}
+-w /sbin/insmod -p x -k {{var_audit_keys.module}}
+-w /sbin/rmmod -p x -k {{var_audit_keys.module}}
+-w /sbin/modprobe -p x -k {{var_audit_keys.module}}
+-w /usr/bin/kmod -p x -F auid!=4294967295 -k {{var_audit_keys.module}}

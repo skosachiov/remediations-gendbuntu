@@ -1,0 +1,8 @@
+-w /bin/su -p x -k {{var_audit_keys.sudo}}
+-w /usr/bin/sudo -p x -k {{var_audit_keys.sudo}}
+-w /usr/bin/visudo -p x -k {{var_audit_keys.sudo}}
+-w /etc/sudoers -p rw -k {{var_audit_keys.sudo}}
+-w /etc/sudoers.d/ -p wa -k {{var_audit_keys.sudo}}
+-a always,exit -F arch=b64 -F dir=/home -F uid=0 -F auid>=1000 -F auid!=4294967295 -C auid!=obj_uid -k {{var_audit_keys.sudo}}
+-a always,exit -F arch=b32 -F dir=/home -F uid=0 -F auid>=1000 -F auid!=4294967295 -C auid!=obj_uid -k {{var_audit_keys.sudo}}
+-w {{var_sudo_logfile}} -p wa -k {{var_audit_keys.sudo}}

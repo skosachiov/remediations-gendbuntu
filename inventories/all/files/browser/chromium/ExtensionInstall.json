@@ -1,0 +1,14 @@
+{
+"ExtensionInstallAllowlist":
+[
+  "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "cccccccccccccccccccccccccccccccc"
+],
+"ExtensionInstallBlocklist": [ "*" ],
+"ExtensionInstallForcelist":
+[
+  "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+]
+}

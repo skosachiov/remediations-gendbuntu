@@ -157,6 +157,26 @@
   when: var_admin_workstation
   tags: always
 
+# Set superadmin workstations
+
+- name: Check file exists @default
+  stat:
+    path: /etc/ansible/superadmin-workstation
+  register: result
+  tags: always
+
+- name: Set superadmin workstation @default
+  set_fact:
+    var_superadmin_workstation: true
+  when: result.stat.exists
+  tags: always
+
+- name: Include profile vars @default
+  include_vars:
+    dir: "{{playbook_dir}}/inventories/profiles/superadmin/vars"
+  when: var_superadmin_workstation
+  tags: always
+
 # Set network auditd
 
 - name: Check file exists @default
