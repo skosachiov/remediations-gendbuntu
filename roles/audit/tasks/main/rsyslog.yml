@@ -28,7 +28,7 @@
     regexp: ^\*\.\*
     line: '*.* @{{ var_dp_rsyslog_server }}'
     state: absent
-  when: (ansible_facts.nodename != var_dp_rsyslog_server) and (not var_devel_workstation)
+  when: (ansible_facts.nodename != var_dp_rsyslog_server) and (not var_flags.devel_workstation.state)
   tags:
     - ws
     - sec
@@ -43,7 +43,7 @@
         regexp: ^\*\.\*
         state: absent
       notify: Rsyslog restarted
-      when: not var_devel_workstation
+      when: not var_flags.devel_workstation.state
     - name: Set rsyslog access to remote loghost Replace @rsyslog_access_remote_loghost
       replace:
         path: /etc/rsyslog.conf
@@ -85,7 +85,7 @@
         block: |
           *.info @{{ var_dp_rsyslog_server }}
         create: true
-        state: "{{'present' if var_network_auditd else 'absent' }}"
+        state: "{{'present' if var_flags.network_auditd.state else 'absent' }}"
       notify: Rsyslog restarted
   when: ansible_facts.nodename != var_dp_rsyslog_server
   tags:

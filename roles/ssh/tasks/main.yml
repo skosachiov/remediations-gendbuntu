@@ -341,7 +341,7 @@
         insertbefore: ^[#\s]*Match
         validate: /usr/sbin/sshd -t -f %s
       register: service_conf
-      when: not var_admin_workstation
+      when: not var_flags.admin_workstation.state
     - name: SSHD set AllowGroups Admin @sshd_set_allowgroups
       lineinfile:
         path: /etc/ssh/sshd_config
@@ -352,7 +352,7 @@
         insertbefore: ^[#\s]*Match
         validate: /usr/sbin/sshd -t -f %s
       notify: Sshd restarted
-      when: var_admin_workstation
+      when: var_flags.admin_workstation.state
   tags:
     - ws
     - sec

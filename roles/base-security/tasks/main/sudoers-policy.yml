@@ -24,7 +24,7 @@
           %{{var_local_admins_group}} ALL=(ALL) EXEC:ALL, PASSWD:ALL
           %{{var_domain_admins_group}} ALL=(ALL) EXEC:ALL, PASSWD:ALL
         insertafter: EOF
-      when: not var_admin_workstation
+      when: not var_flags.admin_workstation.state
     - name: Set sudoers groups Admin @set_sudoers_groups
       blockinfile:
         dest: /etc/sudoers
@@ -33,7 +33,7 @@
         block: |
           %{{var_local_admins_group}} ALL=(ALL) EXEC:ALL, PASSWD:ALL
         insertafter: EOF
-      when: var_admin_workstation
+      when: var_flags.admin_workstation.state
   tags:
     - ws
     - sec

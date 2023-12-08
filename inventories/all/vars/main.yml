@@ -40,73 +40,59 @@ var_company: gendarmerie
 
 var_flags:
   admin_workstation:
-    val: false
+    state: false
     file: '/etc/ansible/administrative-workstation'
   superadmin_workstation:
-    val: false
+    state: false
     file: '/etc/ansible/superadmin-workstation'
   programmer_workstation:
-    val: false
+    state: false
     file: '/etc/ansible/programmer-workstation'
   network_auditd:
-    val: false
+    state: false
     file: '/etc/ansible/network-auditd'
   always_on_display:
-    val: false
+    state: false
     file: '/etc/ansible/always-on-display'
   home_with_exec:
-    val: false
+    state: false
     file: '/etc/ansible/home-with-exec'
   devel_workstation:
-    val: false
+    state: false
     file: '/etc/ansible/devel-workstation'
   unrestricted_os:
-    val: false
+    state: false
     file: '/etc/ansible/unrestricted-os'
   restricted_os:
-    val: false
+    state: false
     file: '/etc/ansible/restricted-os'
   thin_client:
-    val: false
+    state: false
     file: '/etc/ansible/thin-client'
   ad_server:
-    val: false
+    state: false
     file: '/etc/ansible/ad-server'
   fs_userspace:
-    val: false
+    state: false
     file: '/etc/ansible/fs-userspace'
   devel_repository:
-    val: false
+    state: false
     file: '/etc/ansible/devel-repository'
   dist_upgrade:
-    val: false
+    state: false
     file: '/etc/ansible/dist-upgrade'
   manual_updates:
-    val: false
+    state: false
     file: '/etc/ansible/manual-updates'
   overlay_root_fs:
-    val: false
+    state: false
     file: '/etc/ansible/overlay-root-fs'
-
-var_admin_workstation: false
-var_superadmin_workstation: false
-var_programmer_workstation: false
-var_network_auditd: false
-var_always_on_display: false
-var_devel_workstation: false
-var_unrestricted_os: false
-var_thin_client: false
-var_ad_server: false
-var_fs_userspace: false
-var_dist_upgrade: false
-var_manual_updates: false
-var_overlay_root_fs: false
 
 var_no_proxy: "127.0.0.1,10.0.0.0/8,localhost,*.si.mi"
 
 var_ansible_repo: "remediations-gendbuntu"
 var_ansible_git: "https://{{var_ansible_fqdn}}/git/{{var_ansible_repo}}"
-#var_ansible_git_sec: "https://{{var_ansible_fqdn}}/git/{{var_ansible_repo_sec}}"
+# var_ansible_git_sec: "https://{{var_ansible_fqdn}}/git/{{var_ansible_repo_sec}}"
 var_ansible_tags: ws
 var_ansible_tags_sec: sec
 var_inotify_printer: false

@@ -48,6 +48,12 @@
       register: ntfspart
       changed_when: false
       failed_when: false
+    - name: Print main ansible facts Os version @basic_ansible_facts
+      check_mode: no
+      shell: LANG=C.UTF-8 grep VERSION_ID /etc/os-release
+      register: os_version_decoded
+      changed_when: false
+      failed_when: false
     - name: Print main ansible facts Who @basic_ansible_facts
       check_mode: no
       shell: 'LANG=C.UTF-8 who -q | tr "\n" " "'
@@ -183,15 +189,15 @@
       set_fact:
         result_flags: >
           {{ 'ma' if var_mandatory_access else '' }}
-          {{ 'aw' if var_admin_workstation else '' }}
-          {{ 'na' if var_network_auditd else '' }}
-          {{ 'ao' if var_always_on_display else '' }}
-          {{ 'dw' if var_devel_workstation else '' }}
-          {{ 'uo' if var_unrestricted_os else '' }}
-          {{ 'tc' if var_thin_client else '' }}
+          {{ 'aw' if var_flags.admin_workstation.state else '' }}
+          {{ 'na' if var_flags.network_auditd.state else '' }}
+          {{ 'ao' if var_flags.always_on_display.state else '' }}
+          {{ 'dw' if var_flags.devel_workstation.state else '' }}
+          {{ 'uo' if var_flags.unrestricted_os.state else '' }}
+          {{ 'tc' if var_flags.thin_client.state else '' }}
           {{ 'he' if var_home_with_exec else '' }}
-          {{ 'du' if var_dist_upgrade else '' }}
-          {{ 'mu' if var_manual_updates else '' }}
+          {{ 'du' if var_flags.dist_upgrade.state else '' }}
+          {{ 'mu' if var_flags.manual_updates.state else '' }}
     - name: Print main ansible facts @basic_security_facts
       changed_when: false
       set_fact:

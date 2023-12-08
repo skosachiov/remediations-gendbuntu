@@ -84,7 +84,7 @@
         regexp: '(\-\-class os) \\'
         replace: '\1 --unrestricted \\'
       notify: Update grub
-      when: var_unrestricted_os
+      when: var_flags.unrestricted_os.state
       with_items: "{{result.files}}"
     - name: Set-unset unrestricted os Unset @set_unset_unrestricted_os
       replace:
@@ -92,7 +92,7 @@
         regexp: '\-\-unrestricted '
         replace: ''
       notify: Update grub
-      when: not var_unrestricted_os
+      when: not var_flags.unrestricted_os.state
       with_items: "{{result.files}}"
   when: ansible_os_family in var_debian_based_os
   tags:
