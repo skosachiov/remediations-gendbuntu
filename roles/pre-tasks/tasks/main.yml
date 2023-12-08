@@ -82,6 +82,7 @@
   tags: always
 
 - name: Include distribution vars @default
+  ignore_errors: true
   include_vars:
     file: "{{playbook_dir}}/inventories/distribution/{{ansible_distribution}}/{{ansible_distribution_major_version}}/vars/main.yml"
   tags: always
@@ -101,7 +102,7 @@
         host: "{{var_ansible_fqdn}}"
         timeout: 5
       register: result
-      ignore_errors: yes
+      ignore_errors: true
       changed_when: false
     - name: Get ansible server IP @default
       set_fact:
@@ -116,11 +117,29 @@
         host: "{{var_external_ansible_fqdn}}"
         timeout: 5
       register: result
-      ignore_errors: yes
+      ignore_errors: true
       changed_when: false
     - name: Get external ansible server IP @default
       set_fact:
         var_external_ansible_ip: "{{not result.failed}}"
+  tags: always
+
+# Flags dict
+
+- name: Flags dict Slurp @flags_dict
+  ignore_errors: true
+  slurp:
+    path: "{{var_flags[item.key]['file']}}"
+  register: slurpfiles
+  with_dict: "{{var_flags}}"
+  tags: always
+
+- name: Flags dict Set @flags_dict
+  changed_when: true
+  set_fact:
+    var_flags: "{{ var_flags | combine({item.item.key: {'val': not item.failed,
+      'file': var_flags[item.item.key]['file']}}) }}"
+  loop: "{{slurpfiles.results}}"
   tags: always
 
 # Set admin mandatory control
