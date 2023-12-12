@@ -83,6 +83,7 @@
 
 - name: Disable auditd syslog plugin @disable_auditd_audispd_syslog_plugin
   ignore_errors: "{{ansible_check_mode}}"
+  failed_when: false
   lineinfile:
     dest: /etc/audisp/plugins.d/syslog.conf
     regexp: ^active

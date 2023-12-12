@@ -177,7 +177,7 @@
     state: present
     reload: true
     ignoreerrors: yes
-  when: var_devel_workstation
+  when: var_flags.devel_workstation.state
   loop:
     - ['kernel.kptr_restrict', '2']
     - ['net.core.bpf_jit_harden', '2']

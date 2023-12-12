@@ -18,7 +18,7 @@
       debug:
         msg: "A large percentage of disk space is unencrypted"
       changed_when: (sizecrypt.stdout_lines[0]|int / sizedisk.stdout_lines[0]|int) < 0.90
-  when: var_admin_workstation
+  when: var_flags.admin_workstation.state
   tags:
     - ws
     - check_luks_ratio
@@ -66,7 +66,7 @@
         mode: go-rwx
       when:
         - result.results[0].stat.checksum != result.results[1].stat.checksum
-  when: var_admin_workstation
+  when: var_flags.admin_workstation.state
   tags:
     - ws
     - check_luks_pw_date

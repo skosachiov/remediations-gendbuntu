@@ -82,6 +82,7 @@
   tags: always
 
 - name: Include distribution vars @default
+  ignore_errors: true
   include_vars:
     file: "{{playbook_dir}}/inventories/distribution/{{ansible_distribution}}/{{ansible_distribution_major_version}}/vars/main.yml"
   tags: always
@@ -101,7 +102,7 @@
         host: "{{var_ansible_fqdn}}"
         timeout: 5
       register: result
-      ignore_errors: yes
+      ignore_errors: true
       changed_when: false
     - name: Get ansible server IP @default
       set_fact:
@@ -116,184 +117,66 @@
         host: "{{var_external_ansible_fqdn}}"
         timeout: 5
       register: result
-      ignore_errors: yes
+      ignore_errors: true
       changed_when: false
     - name: Get external ansible server IP @default
       set_fact:
         var_external_ansible_ip: "{{not result.failed}}"
   tags: always
 
-# Set admin mandatory control
+# Flags dict
 
-- name: Check file exists @default
-  stat:
-    path: /etc/ansible/mandatory-access
-  register: result
+- name: Flags dict Slurp @flags_dict
+  failed_when: false
+  changed_when: false
+  slurp:
+    path: "{{var_flags[item.key]['file']}}"
+  register: slurpfiles
+  with_dict: "{{var_flags}}"
   tags: always
 
-- name: Set mandatory-access @default
+- name: Flags dict Set @flags_dict
+  changed_when: false
   set_fact:
-    var_mandatory_access: true
-  when: result.stat.exists
+    var_flags: "{{ var_flags | combine({item.item.key: {'state': not item.failed,
+      'file': var_flags[item.item.key]['file']}}) }}"
+  loop: "{{slurpfiles.results}}"
   tags: always
 
-# Set admin workstations
-
-- name: Check file exists @default
-  stat:
-    path: /etc/ansible/administrative-workstation
-  register: result
-  tags: always
-
-- name: Set admin workstation @default
-  set_fact:
-    var_admin_workstation: true
-  when: result.stat.exists
-  tags: always
+# Load profiles vars
 
 - name: Include profile vars @default
   include_vars:
     dir: "{{playbook_dir}}/inventories/profiles/admin/vars"
-  when: var_admin_workstation
-  tags: always
-
-# Set superadmin workstations
-
-- name: Check file exists @default
-  stat:
-    path: /etc/ansible/superadmin-workstation
-  register: result
-  tags: always
-
-- name: Set superadmin workstation @default
-  set_fact:
-    var_superadmin_workstation: true
-  when: result.stat.exists
+  when: var_flags.admin_workstation.state
   tags: always
 
 - name: Include profile vars @default
   include_vars:
     dir: "{{playbook_dir}}/inventories/profiles/superadmin/vars"
-  when: var_superadmin_workstation
-  tags: always
-
-# Set network auditd
-
-- name: Check file exists @default
-  stat:
-    path: /etc/ansible/network-auditd
-  register: result
-  tags: always
-
-- name: Set admin workstation @default
-  set_fact:
-    var_network_auditd: true
-  when: result.stat.exists
-  tags: always
-
-# Set always on display
-
-- name: Check file exists @default
-  stat:
-    path: /etc/ansible/always-on-display
-  register: result
-  tags: always
-
-- name: Set always on display @default
-  set_fact:
-    var_always_on_display: true
-  when: result.stat.exists
-  tags: always
-
-# Set devel workstation
-
-- name: Check file exists @default
-  stat:
-    path: /etc/ansible/devel-workstation
-  register: result
-  tags: always
-
-- name: Set devel workstation @default
-  set_fact:
-    var_devel_workstation: true
-  when: result.stat.exists
+  when: var_flags.superadmin_workstation.state
   tags: always
 
 - name: Include profile vars @default
   include_vars:
     dir: "{{playbook_dir}}/inventories/profiles/devel/vars"
-  when: var_devel_workstation
+  when: var_flags.devel_workstation.state
   tags: always
 
-# Set unrestricted os
+# Flags deps
 
-- name: Check file exists @default
-  stat:
-    path: /etc/ansible/unrestricted-os
-  register: result
-  tags: always
-
-- name: Set unrestricted os @default
+- name: Set no upgrade on manual updates @default
+  changed_when: false
   set_fact:
-    var_unrestricted_os: true
-  when: result.stat.exists
+    var_flags: "{{ var_flags | combine({'dict_upgrade': {'state': false, 'file': var_flags.dict_upgrade.file}}) }"
+  when: var_flags.manual_updates.state
   tags: always
 
-# Set dist upgrade
-
-- name: Check file exists @default
-  stat:
-    path: /etc/ansible/dist-upgrade
-  register: result
-  tags: always
-
-- name: Set devel repository @default
+- name: Set admin on superadmin @default
+  changed_when: false
   set_fact:
-    var_dist_upgrade: true
-  when: result.stat.exists
-  tags: always
-
-# Set manual updates
-
-- name: Check file exists @default
-  stat:
-    path: /etc/ansible/manual-updates
-  register: result
-  tags: always
-
-- name: Set manual updates @default
-  set_fact:
-    var_manual_updates: true
-    var_dist_upgrade: false
-  when: result.stat.exists
-  tags: always
-
-# Set fs usersapce
-
-- name: Check file exists @default
-  stat:
-    path: /etc/ansible/fs-userspace
-  register: result
-  tags: always
-
-- name: Set fs userspace @default
-  set_fact:
-    var_fs_userspace: true
-  when: result.stat.exists
-  tags: always
-
-# Set thin client
-
-- name: Check file exists @default
-  stat:
-    path: /etc/ansible/thin-client
-  register: result
-  tags: always
-
-- name: Set thin client @default
-  set_fact:
-    var_thin_client: true
-  when: result.stat.exists
+    var_flags: "{{ var_flags | combine({'admin_workstation': {'state': false, 'file': var_flags.admin_workstation.file}}) }"
+  when: var_flags.superadmin_workstation.state
   tags: always
 
 # Copy server cert
@@ -318,5 +201,3 @@
     dest: /etc/apt/apt.conf.d/nocheckcert.conf
   when: ansible_os_family in var_debian_based_os
   tags: always
-
-
