@@ -57,7 +57,7 @@
     - name: Local admin password solution Failed
       debug:
         msg: "Local admin password solution failed"
-  when: var_flags.admin_workstation.state
+  when: var_admin_workstation
   tags:
     - ws
     - sec

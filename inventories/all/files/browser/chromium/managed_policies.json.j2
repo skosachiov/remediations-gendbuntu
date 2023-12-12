@@ -24,7 +24,7 @@
 "CommandLineFlagSecurityWarningsEnabled": true,
 "ComponentUpdatesEnabled": true,
 "DefaultBrowserSettingEnabled": false,
-{% if not var_flags.programmer_workstation.state %}
+{% if not var_programmer_workstation %}
 "DefaultCookiesSetting": 4,
 {% endif %}
 "DefaultFileSystemReadGuardSetting": 3,
@@ -39,7 +39,7 @@
 "DefaultSerialGuardSetting": 2,
 "DefaultWebBluetoothGuardSetting": 2,
 "DefaultWebHidGuardSetting": 3,
-{% if var_flags.programmer_workstation.state %}
+{% if var_programmer_workstation %}
 "DeveloperToolsAvailability": 0,
 {% else %}
 "DeveloperToolsAvailability": 2,

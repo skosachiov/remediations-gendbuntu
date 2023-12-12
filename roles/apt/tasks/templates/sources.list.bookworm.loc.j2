@@ -1,4 +1,4 @@
-{% if (var_devel_repository or var_flags.devel_workstation.state) %}
+{% if (var_devel_repository or var_devel_workstation) %}
 {{var_local_repo_devel}}
 {% else %}
 {{var_local_repo}}

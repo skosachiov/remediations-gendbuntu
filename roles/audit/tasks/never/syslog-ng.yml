@@ -68,7 +68,7 @@
         block: |
           log { source(s_src); filter(f_audit); destination(remote_syslog); };
         create: true
-        state: "{{ 'present' if var_flags.network_auditd.state else 'absent' }}"
+        state: "{{ 'present' if var_network_auditd else 'absent' }}"
       notify: Syslog-ng restarted
   when: ansible_facts.nodename != var_dp_rsyslog_server
   tags:
@@ -90,7 +90,7 @@
         create: true
         state: "{{ 'present' if var_installation_type in ['workstation', 'devel-workstation'] else 'absent' }}"
       notify: Syslog-ng restarted
-      when: var_flags.devel_workstation.state
+      when: var_devel_workstation
     - name: Set syslog-ng access to remote loghost aux Set @set_unset_rsyslog_aux
       blockinfile:
         dest: /etc/syslog-ng/syslog-ng.conf
@@ -103,14 +103,14 @@
         create: true
         state: "{{ 'present' if var_installation_type in ['workstation', 'devel-workstation'] else 'absent' }}"
       notify: Syslog-ng restarted
-      when: var_flags.devel_workstation.state
+      when: var_devel_workstation
     - name: Set syslog-ng access to remote loghost aux Unset @set_unset_rsyslog_aux
       blockinfile:
         dest: /etc/syslog-ng/syslog-ng.conf
         marker_begin: BEGIN_REMOTE_AUX_LOG
         marker_end: END_REMOTE_AUX_LOG
         state: absent
-      when: not var_flags.devel_workstation.state
+      when: not var_devel_workstation
   tags:
     - ws
     - sec

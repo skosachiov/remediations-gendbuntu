@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <zone>
     <short>trusted</short>
-{% if var_flags.devel_workstation.state %}
+{% if var_devel_workstation %}
     <source address="192.168.122.1"/>
 {% endif %}
     <source address="10.10.11.11"/>

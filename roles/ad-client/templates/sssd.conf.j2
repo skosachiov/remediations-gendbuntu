@@ -5,7 +5,7 @@ services = nss, pam
 [domain/{{var_local_domain}}]
 ad_domain = {{var_local_domain}}
 ad_site = {{var_ad_site}}
-{% if var_flags.ad_server.state %}
+{% if var_ad_server %}
 ad_server = {{var_kdc}}
 {% if var_kdc_backup is defined %}
 ad_server_backup = {{var_kdc_backup}}

@@ -37,6 +37,7 @@
     - role: audit
       tags: always
     - role: apt
+      tags: always
     - role: ad-client
     - role: ansible-client
     - role: antivirus

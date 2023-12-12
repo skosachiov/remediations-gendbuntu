@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <zone>
     <short>dmz</short>
-{% if not var_flags.admin_workstation.state %}
+{% if not var_admin_workstation %}
     <source address="10.50.99.0/24"/>
     <source address="10.50.100.0/24"/>
     <port protocol="tcp" port="3389"/>
