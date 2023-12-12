@@ -141,7 +141,7 @@
     - samba_client_smb_encrypt_required
 
 - name: Cifs upcall trust dns option @cifs_upcall_trust_dns
-  ignore_errors: true
+  ignore_errors: yes
   block:
     - name: Cifs upcall trust dns option Set @cifs_upcall_trust_dns
       replace:

@@ -5,10 +5,10 @@ domain="si.mi"
 fqdn="${host}.${domain}"
 ip="10.150.1.1"
 
-# if ! grep -q "${ip} ${fqdn}" "/etc/hosts"; then
-# 	echo "${ip} ${host}" >> /etc/hosts
-# 	echo "${ip} ${fqdn}" >> /etc/hosts
-# fi
+if ! grep -q "${ip} ${fqdn}" "/etc/hosts"; then
+	echo "${ip} ${host}" >> /etc/hosts
+	echo "${ip} ${fqdn}" >> /etc/hosts
+fi
 
 wget -O - "http://${fqdn}/repos/gpg.key" | apt-key add -
 

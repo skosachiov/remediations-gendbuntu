@@ -13,31 +13,3 @@ var_auditd_rules_count: 125
 var_logstash_server: dummy
 var_rsyslog_filter: |
   :msg, contains, "dummystring" @{{ var_dp_rsyslog_server }}
-
-var_audit_keys:
-  access: access
-  audit: audit
-  cert: cert
-  connect: connect
-  cron: cron
-  etc: etc
-  exec: exec
-  firewall: firewall
-  home: home
-  identity: identity
-  login: login
-  media: media
-  module: module
-  mount: mount
-  networking: networking
-  pam: pam
-  profile: profile
-  selinux: selinux
-  session: session
-  setuid: setuid
-  stat: stat
-  sudo: sudo
-  system: system
-  time: time
-  unlink: unlink
-  unsuccess: unsuccess

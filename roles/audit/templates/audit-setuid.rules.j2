@@ -1,0 +1,4 @@
+-a always,exit -F arch=b32 -S all -F euid=0 -F perm=awx -k {{var_audit_keys.setuid}}
+-a always,exit -F arch=b64 -S all -F euid=0 -F perm=awx -k {{var_audit_keys.setuid}}
+-a always,exit -F arch=b32 -S all -F egid=0 -F perm=awx -k {{var_audit_keys.setuid}}
+-a always,exit -F arch=b64 -S all -F egid=0 -F perm=awx -k {{var_audit_keys.setuid}}

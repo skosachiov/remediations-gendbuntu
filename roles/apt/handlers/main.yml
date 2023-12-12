@@ -7,11 +7,3 @@
 - name: Apt update cache
   apt:
     update_cache: yes
-
-- name: Cron restarted
-  service:
-    name: cron
-    state: restarted
-  tags:
-    - ws
-    - cron_restarted

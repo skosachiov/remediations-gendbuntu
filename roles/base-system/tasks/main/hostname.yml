@@ -13,7 +13,7 @@
       lineinfile:
         path: /etc/hosts
         regexp: "^127.0.1.1"
-        line: "127.0.1.1\t{{ansible_hostname}}.{{var_local_domain}} {{ansible_hostname}}"
+        line: "127.0.1.1\t{{ansible_hostname}} {{ansible_hostname}}.{{var_local_domain}}"
   tags:
     - ws
     - ensure_fqdn_hostname

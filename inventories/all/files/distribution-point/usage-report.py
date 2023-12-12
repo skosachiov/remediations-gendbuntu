@@ -30,8 +30,7 @@ web_user = "www-data"
 # a, f, p, e, s, h
 auth_success_header = ["timestamp", "ip", "user", "uid"]
 basic_ansible_facts_header = ["timestamp", "ip", "host_time", "hostname", "kernel", "root_dev", "free_space", "ntfs_part",
-    "uptime", "logged_on_users", "site", "mac", "serial", "system_vendor", "product_version", "os_version",
-    "company", "geo_coord", "ou", "users_apps"]
+    "uptime", "logged_on_users", "site", "mac", "serial", "company", "geo_coord", "ou", "users_apps"]
 ansible_play_header = ["timestamp", "ip", "ok", "changed", "unreachable", "failed"]
 ansible_exec_header = ["timestamp", "ip", "role", "task", "status", "tag"]
 basic_security_facts_header = ["timestamp", "ip", "ma", "mcs", "mls", "ima", "dlp_aux", "av_aux", "host_flags"]

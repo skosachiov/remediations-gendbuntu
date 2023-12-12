@@ -2,4 +2,3 @@ var_ad_site: paris-site
 var_kdc: paris-dc.si.mi
 var_admin_server: paris-dc.si.mi
 var_ad_gpo: false
-var_simple_deny_groups: "Backup\ Operators, Print\ Operators, Server\ Operators"

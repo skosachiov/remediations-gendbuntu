@@ -76,35 +76,6 @@
     - ws
     - set_chromium_variables
 
-- name: Chromium remove outdated files @chromium_remove_outdated_files
-  ignore_errors: true
-  block:
-    - name: Chromium remove outdated files List local @chromium_remove_outdated_files
-      set_fact:
-        local_files: "{{ local_files | default([]) + [item | basename | replace('.j2', '') ] }}"
-      with_fileglob:
-        - "{{playbook_dir}}/inventories/subnets/{{var_subnet}}/files/browser/chromium/*"
-        - "{{playbook_dir}}/inventories/all/files/browser/chromium/*"
-        - "{{playbook_dir}}/roles/browser/templates/*"
-    - name: Chromium remove outdated files List remote @chromium_remove_outdated_files
-      find:
-        path: /etc/chromium/policies/managed/
-        recurse: no
-        file_type: file
-      register: remote_files_path
-    - name: Chromium remove outdated files List remote @chromium_remove_outdated_files
-      set_fact:
-        remote_files: "{{ remote_files | default([]) + [item.path | basename] }}"
-      with_items: "{{remote_files_path.files}}"
-    - name: Chromium remove outdated files Remove @chromium_remove_outdated_files
-      file:
-        path: /etc/chromium/policies/managed/{{item}}
-        state: absent
-      with_items: "{{ remote_files | difference(local_files) }}"
-  tags:
-    - ws
-    - chromium_remove_outdated_files
-
 - name: Chromium policies @chromium_policies
   block:
     - name: Chromium policies Copy @chromium_policies
@@ -114,13 +85,6 @@
         mode: '0755'
       with_fileglob:
         - "{{playbook_dir}}/inventories/all/files/browser/chromium/*.json"
-    - name: Chromium policies Templates role @chromium_policies
-      template:
-        src: "{{item}}"
-        dest: '/etc/chromium/policies/managed/{{(item|basename).split(".")[0]}}.json'
-        mode: '0755'
-      with_fileglob:
-        - "{{playbook_dir}}/roles/browser/templates/*"
     - name: Chromium policies Templates inventory @chromium_policies
       template:
         src: "{{item}}"
@@ -128,6 +92,13 @@
         mode: '0755'
       with_fileglob:
         - "{{playbook_dir}}/inventories/all/files/browser/chromium/*.j2"
+    - name: Chromium policies Templates @chromium_policies
+      template:
+        src: "{{item}}"
+        dest: '/etc/chromium/policies/managed/{{(item|basename).split(".")[0]}}.json'
+        mode: '0755'
+      with_fileglob:
+        - "{{playbook_dir}}/roles/browser/templates/*"
     - name: Chromium policies Mode @chromium_policies
       file:
         path: /etc/chromium/policies/managed
