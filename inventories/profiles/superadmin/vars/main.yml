@@ -1,0 +1,8 @@
+var_remove_exec_bit:
+  - /usr/bin/x86_64-linux-gnu-cpp-8
+  - /usr/bin/x86_64-linux-gnu-gcc-8
+  - /usr/bin/x86_64-linux-gnu-g++-8
+  - /usr/lib/firefox/firefox
+  - /usr/bin/nmap
+  - /usr/bin/at
+  - /usr/lib/chromium/chromium

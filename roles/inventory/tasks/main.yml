@@ -5,6 +5,7 @@
     - all_available_facts
 
 - name: Monitor applications @monitor_applications
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Monitor applications Append @monitor_applications
       changed_when: false
@@ -12,17 +13,17 @@
       shell: LANG=C.UTF-8 ps -o user= -p `pgrep {{item}}`
       register: result
       with_items: "{{var_monitored_apps}}"
-    - name: Monitor applications Debug @monitor_applications
+    - name: Monitor applications Set default @monitor_applications
       changed_when: false
       set_fact:
         users_apps: {}
-    - name: Monitor applications Debug @monitor_applications
+    - name: Monitor applications Set @monitor_applications
       changed_when: false
       set_fact:
         users_apps: "{{ users_apps | combine( { item.item: item.stdout_lines[0] } ) }}"
       when: item.stdout_lines[0] is defined
       with_items: "{{result.results}}"
-    - name: Monitor applications Debug @monitor_applications
+    - name: Monitor applications Set to json @monitor_applications
       changed_when: false
       set_fact:
         users_apps_json: "{{users_apps|to_json}}"
@@ -31,6 +32,7 @@
     - monitor_applications
 
 - name: Print basic ansible facts @basic_ansible_facts
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name:  Print main ansible facts Mounts @basic_ansible_facts
       changed_when: false
@@ -63,6 +65,7 @@
       set_fact:
         basic_ansible_facts:
           ip: "{{ansible_default_ipv4.address}}"
+          netmask: "{{ansible_default_ipv4.netmask}}"
           host_time: "{{ansible_date_time.iso8601}}{{ansible_date_time.tz_offset}}"
           hostname: "{{ansible_fqdn}}"
           kernel: "{{ansible_kernel}}"
@@ -74,6 +77,9 @@
           site: "{{var_subnet}}"
           mac: "{{ansible_default_ipv4.macaddress}}"
           serial: "{{ansible_product_serial}}"
+          system_vendor: "{{ansible_system_vendor}}"
+          product_version: "{{ansible_product_version}}"
+          os_version: "{{os_version_decoded}}"
           geo_coord: "{{var_geo_coord | replace(' ', '')}}"
           company: "{{var_company}}"
           ou: "{{var_ou_guid if var_ou_guid is defined else 'none'}}"
@@ -88,6 +94,7 @@
     - basic_ansible_facts
 
 - name: Get sensors info @get_sensors_info
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Get sensors info Lm-sensors present @get_sensors_info
       package:
@@ -126,6 +133,7 @@
     - get_sensors_info
 
 - name: Get system load average @get_load_average
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Get system load average Sysstat present @get_load_average
       package:
@@ -151,6 +159,7 @@
     - get_load_average
 
 - name: Print basic security facts @basic_security_facts
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Print mandatory access facts Get @basic_security_facts
       changed_when: false
@@ -214,6 +223,7 @@
     - basic_security_facts
 
 - name: Packages full inventory @monitored_packages
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Packages full inventory Facts @monitored_packages
       package_facts:

@@ -51,7 +51,8 @@
     - name: Local admin password solution Logger @local_admin_password_solution
       changed_when: false
       syslogger:
-        msg: "laps: {{result.results}}"
+        msg: "laps: {{item.stdout}}"
+      with_items: "{{result.results}}"
   rescue:
     - name: Local admin password solution Failed
       debug:

@@ -38,7 +38,6 @@ var_site_address: "default"
 var_geo_coord: [0.0, 0.0]
 var_company: gendarmerie
 
-<<<<<<< HEAD
 var_flags:
   admin_workstation:
     state: false
@@ -88,16 +87,6 @@ var_flags:
   overlay_root_fs:
     state: false
     file: '/etc/ansible/overlay-root-fs'
-=======
-var_admin_workstation: false
-var_network_auditd: false
-var_always_on_display: false
-var_devel_workstation: false
-var_unrestricted_os: false
-var_thin_client: false
-var_ad_server: false
-var_fs_userspace: false
->>>>>>> parent of 08a4af3 (multiple changes)
 
 var_no_proxy: "127.0.0.1,10.0.0.0/8,localhost,*.si.mi"
 

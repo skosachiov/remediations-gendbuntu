@@ -148,7 +148,6 @@
 - name: Include profile vars @default
   include_vars:
     dir: "{{playbook_dir}}/inventories/profiles/admin/vars"
-<<<<<<< HEAD
   when: var_flags.admin_workstation.state
   tags: always
 
@@ -156,51 +155,6 @@
   include_vars:
     dir: "{{playbook_dir}}/inventories/profiles/superadmin/vars"
   when: var_flags.superadmin_workstation.state
-=======
-  when: var_admin_workstation
-  tags: always
-
-# Set network auditd
-
-- name: Check file exists @default
-  stat:
-    path: /etc/ansible/network-auditd
-  register: result
-  tags: always
-
-- name: Set admin workstation @default
-  set_fact:
-    var_network_auditd: true
-  when: result.stat.exists
-  tags: always
-
-# Set always on display
-
-- name: Check file exists @default
-  stat:
-    path: /etc/ansible/always-on-display
-  register: result
-  tags: always
-
-- name: Set always on display @default
-  set_fact:
-    var_always_on_display: true
-  when: result.stat.exists
-  tags: always
-
-# Set devel workstation
-
-- name: Check file exists @default
-  stat:
-    path: /etc/ansible/devel-workstation
-  register: result
-  tags: always
-
-- name: Set devel workstation @default
-  set_fact:
-    var_devel_workstation: true
-  when: result.stat.exists
->>>>>>> parent of 08a4af3 (multiple changes)
   tags: always
 
 - name: Include profile vars @default

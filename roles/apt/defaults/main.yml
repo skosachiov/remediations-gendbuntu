@@ -1,3 +1,7 @@
+var_ansible_daily_exec_time: "00 13"
+var_ansible_nightly_exec_time: "00 01"
+var_ansible_hourly_exec_time: "30"
+
 var_local_repo_fpr_whitelist:
   - "7A7A24A559D1F7A9C9FA1F9A7DB1E284F89C2969"
   - "8009D2A37D32FF606ADCC67A8066572A509D4DB9"
@@ -37,3 +41,7 @@ var_group_apps:
     apps: ["nmap", "ncat"]
   admins:
     apps: ["freerdp2-x11", "virt-manager"]
+
+var_post_req_apps:
+  - codium
+  - draw.io

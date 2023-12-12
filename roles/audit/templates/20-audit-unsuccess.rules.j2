@@ -1,0 +1,8 @@
+-a always,exit -F arch=b32 -S creat,link,mknod,mkdir,symlink,mknodat,linkat,symlinkat -F exit=-EACCES -k {{var_audit_keys.unsuccess}}
+-a always,exit -F arch=b64 -S mkdir,creat,link,symlink,mknod,mknodat,linkat,symlinkat -F exit=-EACCES -k {{var_audit_keys.unsuccess}}
+-a always,exit -F arch=b32 -S link,mkdir,symlink,mkdirat -F exit=-EPERM -k {{var_audit_keys.unsuccess}}
+-a always,exit -F arch=b64 -S mkdir,link,symlink,mkdirat -F exit=-EPERM -k {{var_audit_keys.unsuccess}}
+-a always,exit -F arch=b32 -S rename -S renameat -S truncate -S chmod -S setxattr -S lsetxattr -S removexattr -S lremovexattr -F exit=-EACCES -k {{var_audit_keys.unsuccess}}
+-a always,exit -F arch=b64 -S rename -S renameat -S truncate -S chmod -S setxattr -S lsetxattr -S removexattr -S lremovexattr -F exit=-EACCES -k {{var_audit_keys.unsuccess}}
+-a always,exit -F arch=b32 -S rename -S renameat -S truncate -S chmod -S setxattr -S lsetxattr -S removexattr -S lremovexattr -F exit=-EPERM -k {{var_audit_keys.unsuccess}}
+-a always,exit -F arch=b64 -S rename -S renameat -S truncate -S chmod -S setxattr -S lsetxattr -S removexattr -S lremovexattr -F exit=-EPERM -k {{var_audit_keys.unsuccess}}

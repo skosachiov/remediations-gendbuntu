@@ -30,3 +30,9 @@ var_group_apps:
   admins:
     apps: ["freerdp2-x11", "virt-manager"]
 
+var_post_req_apps:
+  - codium
+  - draw.io
+  - krita
+  - inkscape
+  - meld
