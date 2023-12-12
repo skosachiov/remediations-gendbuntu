@@ -127,7 +127,8 @@
 # Flags dict
 
 - name: Flags dict Slurp @flags_dict
-  ignore_errors: true
+  failed_when: false
+  changed_when: false
   slurp:
     path: "{{var_flags[item.key]['file']}}"
   register: slurpfiles
@@ -135,7 +136,7 @@
   tags: always
 
 - name: Flags dict Set @flags_dict
-  changed_when: true
+  changed_when: false
   set_fact:
     var_flags: "{{ var_flags | combine({item.item.key: {'state': not item.failed,
       'file': var_flags[item.item.key]['file']}}) }}"
@@ -162,12 +163,20 @@
   when: var_flags.devel_workstation.state
   tags: always
 
-# Manual updates hook
+# Flags deps
 
 - name: Set manual updates @default
+  changed_when: false
   set_fact:
-    var_flags: "{{ var_flags | combine({'dict_upgrade': {'state': false, 'file': var_flags['dict_upgrade']['file']}}) }}"
+    var_flags: "{{ var_flags | combine({'dict_upgrade': {'state': false, 'file': var_flags.dict_upgrade.file}}) }"
   when: var_flags.manual_updates.state
+  tags: always
+
+- name: Set manual updates @default
+  changed_when: false
+  set_fact:
+    var_flags: "{{ var_flags | combine({'admin_workstation': {'state': false, 'file': var_flags.admin_workstation.file}}) }"
+  when: var_flags.superadmin_workstation.state
   tags: always
 
 # Copy server cert
