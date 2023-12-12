@@ -165,14 +165,14 @@
 
 # Flags deps
 
-- name: Set manual updates @default
+- name: Set no upgrade on manual updates @default
   changed_when: false
   set_fact:
     var_flags: "{{ var_flags | combine({'dict_upgrade': {'state': false, 'file': var_flags.dict_upgrade.file}}) }"
   when: var_flags.manual_updates.state
   tags: always
 
-- name: Set manual updates @default
+- name: Set admin on superadmin @default
   changed_when: false
   set_fact:
     var_flags: "{{ var_flags | combine({'admin_workstation': {'state': false, 'file': var_flags.admin_workstation.file}}) }"
