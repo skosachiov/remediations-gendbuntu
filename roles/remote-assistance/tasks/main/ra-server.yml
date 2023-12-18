@@ -27,3 +27,20 @@
   tags:
     - dp
     - ra_openssh_server_is_started
+
+- name: Ensure openssh-server permit open local @ra_openssh_server_permitopen
+  ignore_errors: "{{ansible_check_mode}}"
+  blockinfile:
+    dest: /etc/ssh/sshd_config
+    marker_begin: BEGIN_NO_SHELL
+    marker_end: END_NO_SHELL
+    block: |
+      Match User no-shell
+        X11Forwarding no
+        PermitOpen localhost:* 127.0.0.1:*
+        PermitTTY no
+    insertafter: EOF
+  when: var_installation_type == "distribution-point"
+  tags:
+    - dp
+    - ra_openssh_server_permitopen
