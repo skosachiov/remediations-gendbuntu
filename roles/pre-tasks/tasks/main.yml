@@ -221,7 +221,7 @@
 
 - name: Include profile vars @default
   include_vars:
-    dir: "{{playbook_dir}}/inventories/profiles/devel/vars"
+    dir: "{{playbook_dir}}/inventories/env/devel/vars"
   when: var_devel_workstation
   tags: always
 
