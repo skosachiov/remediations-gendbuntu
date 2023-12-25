@@ -10,7 +10,7 @@ var_remote_assistance_exec: >-
   pass=$((32767+$RANDOM));
   port=$((32767+$RANDOM));
   disp=$(echo $DISPLAY|grep -o ":[0-9]*");
-  (x11vnc -bg {{var_view_only}} -nomodtweak -passwd $pass -rfbport $port -display $disp > /dev/null 2>&1 & echo $! > ~/.x11vncpid-$port);
+  (x11vnc -notruecolor -bg {{var_view_only}} -nomodtweak -passwd $pass -rfbport $port -display $disp > /dev/null 2>&1 & echo $! > ~/.x11vncpid-$port);
   (sshpass -p {{no_shell_pass}} ssh -o StrictHostKeyChecking=no -N -R $port:localhost:$port no-shell@{{fqdn_sshserver}} & echo $! > ~/.sshpid-$port);
   sleep {{var_sleep_timeout}};
   if [[ -z $(cat ~/.sshpid-$port) ]];
