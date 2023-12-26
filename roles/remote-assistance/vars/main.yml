@@ -14,8 +14,8 @@ var_remote_assistance_exec: >-
   (sshpass -p {{no_shell_pass}} ssh -o StrictHostKeyChecking=no -N -R $port:localhost:$port no-shell@{{fqdn_sshserver}} & echo $! > ~/.sshpid-$port);
   sleep {{var_sleep_timeout}};
   if [[ -z $(cat ~/.sshpid-$port) ]];
-  then zenity --info --text="<span font=\"16\">No connection</span>" --ok-label="Exit";
-  else zenity --info --text="<span font=\"16\">Connection has been established\nID=$port, PIN=$pass</span>" --ok-label="Disconnect";
+  then zenity --info --text="No connection" --ok-label="Exit";
+  else zenity --info --text="Connection has been established\nID=$port, PIN=$pass" --ok-label="Disconnect";
   fi;
   kill $(cat ~/.x11vncpid-$port); kill $(cat ~/.sshpid-$port);
   rm -f ~/.x11vncpid-$port; rm -f ~/.sshpid-$port
@@ -26,7 +26,7 @@ var_helpdesk_exec: >-
   (sshpass -p {{no_shell_pass}} ssh -o StrictHostKeyChecking=no -N -L $port:localhost:$port no-shell@{{fqdn_sshserver}} & echo $! > ~/.sshpid-$port);
   sleep {{var_sleep_timeout}};
   if [[ -z $(cat ~/.sshpid-$port) ]];
-  then zenity --info --text="<span font=\"16\">No connection</span>" --ok-label="Exit";
+  then zenity --info --text="No connection" --ok-label="Exit";
   fi;
   (echo $pass | vncpasswd -f > ~/.vncpasswd);
   vncviewer -passwd ~/.vncpasswd ::$port; rm -f ~/.vncpasswd;
