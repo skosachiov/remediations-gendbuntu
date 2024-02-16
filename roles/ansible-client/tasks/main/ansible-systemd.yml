@@ -1,3 +1,12 @@
+- name: Ansible devel workstation @ansible_devel_workstation
+  set_fact:
+    var_ansible_repo: "{{var_ansible_devel_repo}}"
+    var_ansible_git: "https://{{var_ansible_fqdn}}/git/{{var_ansible_devel_repo}}"
+  when: var_devel_workstation
+  tags:
+    - ws
+    - ansible_devel_workstation
+
 - name: Ansible pull systemd service @ansible_pull_systemd_service
   ignore_errors: "{{ansible_check_mode}}"
   block:
