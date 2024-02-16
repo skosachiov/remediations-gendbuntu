@@ -116,6 +116,41 @@
     - sec
     - set_unset_rsyslog_aux
 
+- name: Set syslog-ng access to remote loghost aux @set_unset_rsyslog_aux_conf_d
+  ignore_errors: "{{ansible_check_mode}}"
+  block:
+    - name: Set syslog-ng access to remote loghost aux Set @set_unset_rsyslog_aux_conf_d
+      blockinfile:
+        dest: /etc/syslog-ng/conf.d/remote-syslog.conf
+        marker_begin: BEGIN_REMOTE_AUX_LOG
+        marker_end: END_REMOTE_AUX_LOG
+        block: |
+          filter f_remote_conf_d { message('TEXT A') or message('TEXT B') or message('TEXT C'); };
+          destination remote_syslog_aux { network("{{var_rsyslog_server_aux['name']}}" transport("{{var_rsyslog_server_aux['transport']}}") port({{var_rsyslog_server_aux['port']}})); };
+          log { source(s_src); filter(f_remote_conf_d); destination(remote_syslog_aux); };
+          source s_audit { file("/var/log/audit/audit.log" persist-name("audit")); };
+          log { source(s_audit); destination(remote_syslog_aux); };
+        create: true
+        state: "{{ 'present' if var_installation_type in ['workstation', 'devel-workstation'] else 'absent' }}"
+      notify: Syslog-ng restarted
+      # when: var_devel_workstation
+    - name: Set syslog-ng access to remote loghost aux Stat @set_unset_rsyslog_aux_conf_d
+      stat:
+        path: /etc/syslog-ng/conf.d/remote-syslog.conf
+      register: stat_result
+    - name: Set syslog-ng access to remote loghost aux Unset @set_unset_rsyslog_aux_conf_d
+      blockinfile:
+        dest: /etc/syslog-ng/conf.d/remote-syslog.conf
+        marker_begin: BEGIN_REMOTE_AUX_LOG
+        marker_end: END_REMOTE_AUX_LOG
+        state: absent
+      # when: not var_devel_workstation and stat_result.stat.exists
+      when: false
+  tags:
+    - ws
+    - sec
+    - set_unset_rsyslog_aux_conf_d
+
 - name: Set syslog-ng MemoryMax @syslog_ng_memorymax
   ignore_errors: "{{ansible_check_mode}}"
   block:
