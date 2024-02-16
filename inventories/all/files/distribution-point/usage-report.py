@@ -28,15 +28,15 @@ web_images_dir_rel = "/files" # relative
 web_user = "www-data"
 
 # a, f, p, e, s, h
-auth_success_header = ["timestamp", "ip", "user", "uid"]
-basic_ansible_facts_header = ["timestamp", "ip", "host_time", "hostname", "kernel", "root_dev", "free_space", "ntfs_part",
+basic_ansible_facts_header = ["timestamp", "ip", "netmask", "host_time", "hostname", "kernel", "root_dev", "free_space", "ntfs_part",
     "uptime", "logged_on_users", "site", "mac", "serial", "system_vendor", "product_version", "os_version",
-    "company", "geo_coord", "ou", "users_apps"]
-ansible_play_header = ["timestamp", "ip", "ok", "changed", "unreachable", "failed"]
-ansible_exec_header = ["timestamp", "ip", "role", "task", "status", "tag"]
-basic_security_facts_header = ["timestamp", "ip", "ma", "mcs", "mls", "ima", "dlp_aux", "av_aux", "host_flags"]
+    "company", "geo_coord", "ou", "users_apps", "boot_parameters", "machine_id", "product_uuid"]
+auth_success_header = ["timestamp", "ip", "user", "uid", "hostname", "mac"]    
+ansible_play_header = ["timestamp", "ip", "ok", "changed", "unreachable", "failed", "hostname", "mac"]
+ansible_exec_header = ["timestamp", "ip", "role", "task", "status", "tag", "hostname", "mac"]
+basic_security_facts_header = ["timestamp", "ip", "ma", "mcs", "mls", "ima", "dlp_aux", "av_aux", "host_flags", "hostname", "mac"]
+ansible_facts_packages = ["timestamp", "ip", "pkg", "version", "hostname", "mac"]
 history_header = ["date", "unique_addresses", "unique_users", "changed_count", "failed_count"]
-ansible_facts_packages = ["timestamp", "ip", "pkg", "version"]
 
 def natural_sort(l):
     convert = lambda text: int(text) if text.isdigit() else text.lower()
@@ -44,7 +44,7 @@ def natural_sort(l):
     return sorted(l, key=alphanum_key)
 
 def print_xml(header, t, name, ts, rec_name):
-    if len(t) == 0: return
+    if len(t) == 0: return False
     print(f"<{name} timestamp='{ts}'>")
     for r in t:
         print(f"<{rec_name}>", end = "")
@@ -52,6 +52,7 @@ def print_xml(header, t, name, ts, rec_name):
             print(f"<{h}>{c}</{h}>", end = "")
         print(f"</{rec_name}>")
     print(f"</{name}>")
+    return True
 
 def print_html_header():
     print("Content-type: text/html; charset=utf-8")
@@ -84,17 +85,20 @@ def print_json_header():
     print("Cache-control: max-age=900")
     print()
 
-def print_html_table(header, t, id):
+def print_html_table(header, t, id, limit = 10000):
     if len(t) == 0: return
     print(f"<table id='{id}' class='tablesorter'><thead><tr>")
     for (c, h)  in zip(t[0], header):
         print(f"<th>{h}</th>")
     print("</tr></thead><tbody>")
+    counter = 0
     for r in t:
         print("<tr>")
         for c in r:
             print(f"<td>{str(c)}</td>", end = "")
         print("</tr>")
+        if counter > limit: break
+        else: counter += 1
     print("</tbody></table>")
 
 def analize_logs(log_startswith, interval, shift, cache):
@@ -113,7 +117,7 @@ def analize_logs(log_startswith, interval, shift, cache):
 
     a_a, a_f, a_p, a_e, a_s, a_g = [], [], [], [], [], []
 
-    changed_count, failed_count, usernames, pkgs = {}, {}, {}, {}
+    changed_count, failed_count, usernames, pkgs, hostnames, macs = {}, {}, {}, {}, {}, {}
 
     for log in logs:
         try:
@@ -133,10 +137,12 @@ def analize_logs(log_startswith, interval, shift, cache):
                     a = line.split()
                     a[2] = str(dateutil.parser.parse(a[0] + " " + a[1] + " " + a[2]))
                     a = a[2:3] + [d.get(k, "N/A") for k in basic_ansible_facts_header[1:]]
+                    hostnames[a[1]] = a[4]
+                    macs[a[1]] = d.get("mac", "")
                     a_f.append(a)
 
-                if "ansible_facts.packages:" in line:
-                    jsonstr = line.split("ansible_facts.packages:", 1)[1] \
+                if "ansible_facts_packages:" in line:
+                    jsonstr = line.split("ansible_facts_packages:", 1)[1] \
                         .replace("\'", "\"").replace(": True", ": true").replace(": False", ": false")
                     d = json.loads(jsonstr)
                     a = line.split()
@@ -195,22 +201,31 @@ def analize_logs(log_startswith, interval, shift, cache):
             prevline = line # todo: store with ip
     ts = datetime.datetime.now().isoformat()
     for x in pkgs.values(): a_g.append(x)
+
+    for x in [a_p, a_a, a_e, a_s, a_g]:
+        for y in x:
+            y.append(hostnames.get(y[1], ""))
+            y.append(macs.get(y[1], ""))
+    
     original_stdout = sys.stdout
     fname = path_history_dir + "/" + tmp_filename
     if os.path.exists(fname): os.remove(fname)
     with open(fname, "a") as f:
         sys.stdout = f
         print(f"<usage_report date='{ts}'>")
-        print_xml(basic_ansible_facts_header, a_f, "basic_ansible_facts", ts, "rec_basic")
-        print_xml(ansible_play_header, a_p, "ansible_play", ts, "rec_play")
-        print_xml(auth_success_header, a_a, "auth_success", ts, "rec_auth")
-        print_xml(ansible_exec_header, a_e, "ansible_exec", ts, "rec_exec")
-        print_xml(basic_security_facts_header, a_s, "basic_security_facts", ts, "rec_sec")
-        print_xml(ansible_facts_packages, a_g, "ansible_facts_packages", ts, "rec_pkg")
+        print_xml_status = [
+            print_xml(basic_ansible_facts_header, a_f, "basic_ansible_facts", ts, "rec_basic"),
+            print_xml(ansible_play_header, a_p, "ansible_play", ts, "rec_play"),
+            print_xml(auth_success_header, a_a, "auth_success", ts, "rec_auth"),
+            print_xml(ansible_exec_header, a_e, "ansible_exec", ts, "rec_exec"),
+            print_xml(basic_security_facts_header, a_s, "basic_security_facts", ts, "rec_sec"),
+            print_xml(ansible_facts_packages, a_g, "ansible_facts_packages", ts, "rec_pkg")
+        ]
         print("</usage_report>")
         uid = pwd.getpwnam(web_user).pw_uid
         gid = os.stat(fname).st_gid
         os.chown(fname, uid, gid)
+        if print_xml_status.count(False) > 0: os.remove(fname)
         sys.stdout = original_stdout
 
 def read_history():
