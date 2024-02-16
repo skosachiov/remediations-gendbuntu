@@ -68,7 +68,7 @@
     - name: OpenSCAP CVE vulnerability scan debian Copy @oscap_oval_eval_debian
       changed_when: false
       get_url:
-        url: https://www.debian.org/security/oval/oval-definitions-{{ansible_lsb.codename}}.xml
+        url: "{{var_oval_definitions_url}}"
         dest: "/home/{{var_ansible_username}}/"
         mode: go+r
     - name: OpenSCAP CVE vulnerability scan debian Scan @oscap_oval_eval_debian
