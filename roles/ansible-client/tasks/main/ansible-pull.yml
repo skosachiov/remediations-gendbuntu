@@ -1,3 +1,11 @@
+- name: Ansible devel workstation @ansible_devel_workstation
+  set_fact:
+    var_ansible_repo: "{{var_ansible_devel_repo}}"
+    var_ansible_git: "https://{{var_ansible_fqdn}}/git/{{var_ansible_devel_repo}}"
+  when: var_devel_workstation
+  tags:
+    - ws
+    - ansible_devel_workstation
 
 - name: Cron ansible pull @cron_ansible_pull
   ignore_errors: "{{ansible_check_mode}}"
@@ -10,9 +18,9 @@
       copy:
         dest: /etc/cron.d/ansible-pull
         content: |
-          {{var_ansible_daily_exec_time}} * * * root sleep $((RANDOM \% 600)); bash -c "/usr/bin/ansible-pull -i localhost -d /root/.ansible/pull/{{var_ansible_repo}} -U {{var_ansible_git}} {{var_ansible_playbook}}| logger -n {{var_rsyslog_server}}"
-          {{var_ansible_nightly_exec_time}} * * * root sleep $((RANDOM \% 600)); bash -c "/usr/bin/ansible-pull -i localhost -d /root/.ansible/pull/{{var_ansible_repo}} -U {{var_ansible_git}} {{var_ansible_playbook}}| logger -n {{var_rsyslog_server}}"
-          {{var_ansible_hourly_exec_time}} * * * * root sleep $((RANDOM \% 600)); bash -c "/usr/bin/ansible-pull -o -i localhost -d /root/.ansible/pull/{{var_ansible_repo}} -U {{var_ansible_git}} {{var_ansible_playbook}}| logger -n {{var_rsyslog_server}}"
+          {{var_ansible_daily_exec_time}} * * * root sleep $((RANDOM \% 1200)); bash -c "/usr/bin/ansible-pull -i localhost -d /root/.ansible/pull/{{var_ansible_repo}} -U {{var_ansible_git}} {{var_ansible_playbook}}| logger -n {{var_rsyslog_server}}"
+          {{var_ansible_nightly_exec_time}} * * * root sleep $((RANDOM \% 1200)); bash -c "/usr/bin/ansible-pull -i localhost -d /root/.ansible/pull/{{var_ansible_repo}} -U {{var_ansible_git}} {{var_ansible_playbook}}| logger -n {{var_rsyslog_server}}"
+          {{var_ansible_hourly_exec_time}} * * * * root sleep $((RANDOM \% 1200)); bash -c "/usr/bin/ansible-pull -o -i localhost -d /root/.ansible/pull/{{var_ansible_repo}} -U {{var_ansible_git}} {{var_ansible_playbook}}| logger -n {{var_rsyslog_server}}"
           # EOF
       notify: Cron restarted
   tags:
