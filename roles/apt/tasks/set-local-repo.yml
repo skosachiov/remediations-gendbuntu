@@ -12,3 +12,19 @@
     - mob
     - always
     - set_local_repo
+
+- name: Set local d backup repo Debian
+  template:
+    src: sources.list.{{ansible_lsb.codename}}.loc.j2
+    dest: /etc/apt/sources.list.d/sources.list
+    mode: '0644'
+  notify: Apt update cache
+  when:
+    - var_internal_ansible_ip
+    - var_dp_fqdn != var_ansible_fqdn
+  tags:
+    - ws
+    - sec
+    - mob
+    - always
+    - set_local_d_repo

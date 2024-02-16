@@ -1,3 +1,11 @@
+- name: Get running kernel version @running_kernel_version
+  changed_when: false
+  shell: uname -r | cut -d '-' -f1-2
+  register: running_kernel_version
+  tags:
+    - ws
+    - running_kernel_version
+
 - name: Ensure third-party repos are disabled @rm_third_party_repo
   ignore_errors: "{{ansible_check_mode}}"
   block:
@@ -9,6 +17,7 @@
         excludes:
           - "libreoffice-ubuntu-libreoffice-still-focal.list"
           - "dummy.list"
+          - "sources.list"
       register: result
     - name: Ensure third-party repos are disabled Comment @rm_third_party_repo
       replace:

@@ -2,6 +2,7 @@
   ignore_errors: true
   block:
     - name: Post req install Who @post_req_install
+      changed_when: false
       shell: who | awk '{print $1}'
       register: logged_in_users
     - name: Post req install Uri @post_req_install
