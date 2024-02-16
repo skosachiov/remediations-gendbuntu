@@ -65,7 +65,7 @@
   ignore_errors: "{{ansible_check_mode}}"
   lineinfile:
     path: /etc/usbguard/rules.conf
-    regexp: '^(?!(allow id|block serial))'
+    regexp: '^(?!(allow id|block serial).*(\"|:[0-9]{2}|})$)'
     state: absent
   notify: Usbguard restarted
   tags:

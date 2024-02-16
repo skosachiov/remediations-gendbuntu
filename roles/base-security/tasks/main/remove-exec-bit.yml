@@ -2,7 +2,7 @@
   ignore_errors: "{{ansible_check_mode}}"
   file:
     path: "{{item}}"
-    mode: o-rwx
+    mode: go-rwx
   failed_when: false
   with_items: "{{var_remove_exec_bit}}"
   tags:

@@ -31,6 +31,29 @@
     - ws
     - monitor_applications
 
+- name: Get_boot_parameters @get_boot_parameters
+  ignore_errors: "{{ansible_check_mode}}"
+  block:
+    - name: Get_boot_parameters Efibootmgr @get_boot_parameters
+      failed_when: false
+      changed_when: false
+      command: efibootmgr
+      register: boot_efi
+    - name: Get_boot_parameters Grub @get_boot_parameters
+      failed_when: false
+      changed_when: false
+      command: grep ^GRUB_DEFAULT /etc/default/grub
+      register: boot_grub
+    - name: Get_boot_parameters Set @get_boot_parameters
+      changed_when: false
+      set_fact:
+        boot_parameters:
+          efi: "{{boot_efi.stdout_lines if boot_efi.stdout_lines is defined else []}}"
+          grub: "{{boot_grub.stdout_lines if boot_grub.stdout_lines is defined else []}}"
+  tags:
+    - ws
+    - get_boot_parameters
+
 - name: Print basic ansible facts @basic_ansible_facts
   ignore_errors: "{{ansible_check_mode}}"
   block:
@@ -78,6 +101,9 @@
           company: "{{var_company}}"
           ou: "{{var_ou_guid if var_ou_guid is defined else 'none'}}"
           users_apps: "{{users_apps_json}}"
+          boot_parameters: "{{boot_parameters}}"
+          machine_id: "{{ansible_machine_id}}"
+          product_uuid: "{{ansible_product_uuid}}"
     - name: Print main ansible facts @basic_ansible_facts
       changed_when: false
       failed_when: false
@@ -234,9 +260,9 @@
       with_items: "{{var_monitored_pkgs}}"
     - name: Packages full inventory Syslogger @monitored_packages
       changed_when: false
-      ignore_errors: yes
+      ignore_errors: true
       syslogger:
-        msg: "ansible_facts.packages: {{monitored_pkgs}}"
+        msg: "ansible_facts_packages: {{monitored_pkgs}}"
   tags:
     - ws
     - monitored_packages
