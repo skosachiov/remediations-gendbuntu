@@ -7,6 +7,9 @@
 - name: Apt update cache
   apt:
     update_cache: yes
+  until: status is success
+  delay: 60
+  retries: 10
 
 - name: Cron restarted
   service:

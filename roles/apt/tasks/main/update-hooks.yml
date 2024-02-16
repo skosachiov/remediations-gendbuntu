@@ -1,3 +1,31 @@
+- name: Remove outdate dist-upgrade flag file @remove_outdate_dist_upgrade_flag_file
+  block:
+    - name: Remove outdate dist-upgrade flag file Stat @remove_outdate_dist_upgrade_flag_file
+      find:
+        paths: /etc/ansible/
+        patterns: dist-upgrade
+        age: 30d
+      register: result
+    - name: Remove outdate dist-upgrade flag file File @remove_outdate_dist_upgrade_flag_file
+      file:
+        path: "{{item.path}}"
+        state: absent
+      with_items: "{{result.files}}"
+  tags:
+    - ws
+    - remove_outdate_dist_upgrade_flag_file
+
+- name: Kill dpkg lock applications @kill_dpkg_lock_apps
+  ignore_errors: true
+  changed_when: false
+  failed_when: false
+  command: "pkill {{item}}"
+  with_items:
+    - synaptic
+  tags:
+    - ws
+    - kill_dpkg_lock_apps
+
 - name: Ensure package facts auto @package_facts_auto
   ignore_errors: "{{ansible_check_mode}}"
   package_facts:
