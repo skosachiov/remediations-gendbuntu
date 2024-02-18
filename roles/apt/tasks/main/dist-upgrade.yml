@@ -1,15 +1,61 @@
+- name: Remove outdate dist-upgrade flag file @remove_outdate_dist_upgrade_flag_file
+  block:
+    - name: Remove outdate dist-upgrade flag file Stat @remove_outdate_dist_upgrade_flag_file
+      find:
+        paths: /etc/ansible/
+        patterns: dist-upgrade
+        age: "{{var_upgrade_period}}"
+      register: result
+    - name: Remove outdate dist-upgrade flag file File @remove_outdate_dist_upgrade_flag_file
+      file:
+        path: "{{item.path}}"
+        state: absent
+      with_items: "{{result.files}}"
+  tags:
+    - ws
+    - remove_outdate_dist_upgrade_flag_file
+
+# - name: Consistent OS upgrade @consistent_os_upgrade
+#   block:
+#     - name: Consistent OS upgrade Pkg facts @consistent_os_upgrade
+#       package_facts:
+#         manager: auto
+#     - name: Consistent OS upgrade Check force max ver @consistent_os_upgrade
+#       set_facts:
+#         var_dist_upgrade: "{{ var_dist_upgrade or ansible_facts.packages[item[0]] is version(item[1], '<') }}"
+#       loop: "{{var_upgrade_force_max_version}}"
+#     - name: Consistent OS upgrade Check noupgrade ver @consistent_os_upgrade
+#       set_facts:
+#         var_consistent_upgrade: "{{ var_consistent_upgrade or ansible_facts.packages[item[0]] is version(item[1], '<') }}"
+#       loop: "{{var_upgrade_noupgrade_min_version}}"
+#       when: not var_dist_upgrade
+#     - name: Consistent OS upgrade Touch @consistent_os_upgrade
+#       file:
+#         path: /etc/ansible/dist-upgrade
+#         state: touch
+#       when: var_consistent_upgrade
+#     - name: Consistent OS upgrade Mac comp @consistent_os_upgrade
+#       set_facts:
+#         var_consistent_upgrade: (('0x' + ansible_default_ipv4.macaddress.split(':')[-1]) | int) >
+#       when: var_consistent_upgrade
+#     - name: Get timestamp File mtime @get_timestamp
+#       file:
+#         path: /etc/ansible/dist-upgrade
+#         state: file
+#         modification_time: "{{ '%Y%m%d%H%M.%S' | strftime(ansible_date_time.epoch|int - 60*60*24) }}"
+#       when: result.changed
+#   tags:
+#     - ws
+#     - consistent_os_upgrade
+
 - name: Apt dist-upgrade @apt_dist_upgrade
   ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Apt dist-upgrade Check flag @apt_dist_upgrade
-      stat:
-        path: /etc/ansible/dist-upgrade
-      register: result
     - name: Apt dist-upgrade Upgrade @apt_dist_upgrade
       apt:
         update_cache: yes
         upgrade: dist
-      when: result.stat.exists
+      when: var_dist_upgrade
     - name: Apt dist-upgrade Remove flag @apt_dist_upgrade
       file:
         path: /etc/ansible/dist-upgrade

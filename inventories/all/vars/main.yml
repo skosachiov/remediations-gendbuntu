@@ -49,6 +49,7 @@ var_thin_client: false
 var_ad_server: false
 var_fs_userspace: false
 var_dist_upgrade: false
+var_consistent_upgrade: false
 var_manual_updates: false
 var_overlay_root_fs: false
 
