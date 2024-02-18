@@ -1,5 +1,20 @@
-var_usb_allowed_devices: |
-  allow id 03f0:9024 name "HP Basic USB Keyboard"
-  allow id 03f0:914a name "HP Elite USB Keyboard"
-  allow id 03f0:924a name "HP USB Optical Mouse"
-  allow id 03f0:934a name "HP USB Slim Keyboard"
+var_usb_rules:
+  block id 04f2:1130
+  block id 413c:2501
+  block id 17ef:6032
+  block id 046d:c52b
+  block id 04f2:0976
+  block id 046d:c52b
+  block id 413c:2501
+  block id 04b4:0060
+  block id 17ef:6071
+  block id 046d:c52b
+  block id 046d:c52b
+  block id 046d:c539
+  block id 045e:0745
+  block id 045e:07b2
+  block id 045e:07a5
+  allow with-interface one-of { 09:*:* }
+  allow with-interface one-of { 01:*:* } if !allowed-matches(with-interface one-of { 01:*:* })
+  allow with-interface one-of { 03:*:* } if !allowed-matches(with-interface one-of { 03:*:* })
+  allow with-interface one-of { 0e:*:* } if !allowed-matches(with-interface one-of { 0e:*:* })
