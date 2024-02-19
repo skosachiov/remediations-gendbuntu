@@ -3,11 +3,12 @@
   hosts: all
 
   tasks:
+
   - name: Set devel flag
     copy:
       content: ""
       dest: /etc/ansible/devel-workstation
       force: no
-  tags:
-    - ws
-    - set_devel_flag
+    tags:
+      - ws
+      - set_devel_flag

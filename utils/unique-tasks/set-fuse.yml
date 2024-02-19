@@ -3,11 +3,12 @@
   hosts: all
 
   tasks:
+
   - name: Set fuse flag
     copy:
       content: ""
       dest: /etc/ansible/fs-userspace
       force: no
-  tags:
-    - ws
-    - set_fuse_flag
+    tags:
+      - ws
+      - set_fuse_flag

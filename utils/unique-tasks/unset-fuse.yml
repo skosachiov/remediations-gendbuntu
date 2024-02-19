@@ -3,10 +3,11 @@
   hosts: all
 
   tasks:
+
   - name: Unet fuse flag
     file:
       path: /etc/ansible/fs-userspace
       state: absent
-  tags:
-    - ws
-    - unset_fuse_flag
+    tags:
+      - ws
+      - unset_fuse_flag

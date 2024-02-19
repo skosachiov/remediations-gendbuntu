@@ -3,10 +3,11 @@
   hosts: all
 
   tasks:
+
   - name: Unet dist upgrade flag
     file:
       path: /etc/ansible/dist-upgrade
       state: absent
-  tags:
-    - ws
-    - unset_dist_upgrade_flag
+    tags:
+      - ws
+      - unset_dist_upgrade_flag

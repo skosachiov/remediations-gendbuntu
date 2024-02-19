@@ -3,9 +3,10 @@
   hosts: all
 
   tasks:
+
   - name: Reboot in push mode
     reboot:
       reboot_timeout: 180
-  tags:
-    - ws
-    - reboot_in_push_mode
+    tags:
+      - ws
+      - reboot_in_push_mode

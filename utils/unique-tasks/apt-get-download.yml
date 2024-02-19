@@ -1,0 +1,14 @@
+---
+- name: Set dist upgrade flag
+  hosts: all
+
+  tasks:
+
+  - name: Apt get dist upgrade download only
+    at:
+      command: apt-get dist-upgrade --download-only -y
+      count: 12 | random
+      units: hours
+    tags:
+      - ws
+      - apt_get_upgrade_download_only

@@ -3,6 +3,7 @@
   hosts: all
 
   tasks:
+
   - name: Set dist upgrade flag
     copy:
       content: ""
@@ -10,7 +11,16 @@
       force: no
     with_items:
       - /etc/ansible/dist-upgrade
-      - /etc/ansible/devel-repository
-  tags:
-    - ws
-    - set_dist_upgrade_flag
+      # - /etc/ansible/devel-repository
+    tags:
+      - ws
+      - set_dist_upgrade_flag
+
+  - name: Apt get dist upgrade download only
+    at:
+      command: apt-get dist-upgrade --download-only -y
+      count: 12 | random
+      units: hours
+    tags:
+      - ws
+      - apt_get_upgrade_download_only
