@@ -128,7 +128,7 @@ This role is designed to configure and manage regional content distribution poin
 
 ## dlp
 
-Obviously, the resources of a large enterprise must be protected from leaks. The dlp role disables wireless communication modules and restricts USB usage to a whitelist of keyboards and mice.
+Obviously, the resources of a large enterprise must be protected from leaks. The default dlp setting allows you to connect a keyboard, mouse, headphones, cameras, but blocks any flash drives. The dlp role disables wireless communication modules and some keyjacks radio keyboards. You can always add the necessary devices to the white list.
 
 ## firewall
 
