@@ -35,9 +35,7 @@
 
   roles:
     - role: audit
-      tags: always
     - role: apt
-      tags: always
     - role: ad-client
     - role: ansible-client
     - role: antivirus
@@ -51,6 +49,7 @@
     - role: flatpak
     - role: integrity-check
     - role: inventory
+      tags: always
     - role: laps
     - role: mail-client
     - role: mandatory-access

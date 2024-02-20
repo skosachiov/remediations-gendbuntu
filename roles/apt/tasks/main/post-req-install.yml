@@ -18,11 +18,13 @@
     - name: Post req install Set @post_req_install
       set_fact:
         pkgs_present: "{{(users_pkgs.results[0].content | from_json)['pkgs_present'] | intersect(var_post_req_apps)}}"
+      when: users_pkgs is succeeded
     - name: Post req install Package @post_req_install
       package:
         name: "{{item}}"
         state: present
       with_items: "{{pkgs_present}}"
+      when: users_pkgs is succeeded
   tags:
     - ws
     - post_req_install
