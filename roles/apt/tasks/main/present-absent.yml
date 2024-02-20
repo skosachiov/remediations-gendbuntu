@@ -25,7 +25,7 @@
       - xrdp
       - openssh-server
       - unattended-upgrades
-      - python-lxml
+      - python3-lxml
       - network-manager
       - seahorse
       - printer-driver-cups-pdf
@@ -52,7 +52,7 @@
       - x11vnc
       - libxml2
       - libxml2-utils
-      - python-libxml2
+      - python3-libxml2
       - packagekit
       - packagekit-tools
       - ghostscript

@@ -12,12 +12,12 @@
       changed_when: false
       failed_when: false
       command: >
-        sudo -u #{{item.0.path|basename}} DBUS_SESSION_BUS_ADDRESS='unix:path={{item.0.path}}/bus'
-        notify-send -u '{{item.3}}' -t '{{item.4}}' '{{item.5}}' '{{item.6}}'
-      when: item.1 and item.2 == role_name
-      with_nested:
+        sudo -u #{{item.path|basename}} DBUS_SESSION_BUS_ADDRESS='unix:path={{item.path}}/bus'
+        notify-send -u '{{var_notification_list[role_name][1]}}' -t '{{var_notification_list[role_name][2]}}'
+        '{{var_notification_list[role_name][3]}}' '{{var_notification_list[role_name][4]}}'
+      when: (var_notification_list[role_name] is defined) and var_notification_list[role_name][0]
+      with_items:
         - "{{runuserdirs.files}}"
-        - "{{var_notification_list}}"
   tags:
     - ws
     - notify_all_users

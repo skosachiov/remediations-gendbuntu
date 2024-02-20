@@ -17,12 +17,10 @@ var_remove_share_apps_desktop:
   - org.gnome.Mahjongg.desktop
   - sol.desktop
 
-# active, role, urgency, expire-time ms, summary, body
+# active, urgency, expire-time ms, summary, body
 var_notification_list:
-  - [true, "audit", "normal", 5000, "Warning", "The computer is regularly checked and tuned"]
-  - [false, "apt", "normal", 5000, "Warning", "Serching for updates"]
-  - [false, "apt", "critical", 3600000, "Warning", "Do not turn off the computer until the update operation is completed"]
-  - [false, "scap", "low", 5000, "Warning", "Security scanning"]
-  - [true, "utmost-report", "low", 0, "Informational message", "Update operation completed"]
-  - [false, "utmost-report", "low", 5000, "Informational message", "Regular computer scan completed"]
-  - [false, "utmost-report", "critical", 0, "Warning", "Please restart your computer"]
+  audit:         [true, "normal", 5000, "Warning", "The computer is regularly checked and tuned"]
+  apt:           [false, "normal", 5000, "Warning", "Serching for updates"]
+  scap:          [false, "low", 5000, "Warning", "Security scanning"]
+  utmost-report: [true, "low", 5000, "Informational message", "Regular computer scan completed"]
+  reboot:        [false, "critical", 0, "Warning", "Please restart your computer"]
