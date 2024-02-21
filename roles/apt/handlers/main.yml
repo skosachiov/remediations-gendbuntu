@@ -5,16 +5,11 @@
     state: restarted
 
 - name: Apt update cache
+  failed_when: false
   apt:
     update_cache: yes
-  until: status is success
-  delay: 60
-  retries: 10
 
 - name: Cron restarted
   service:
     name: cron
     state: restarted
-  tags:
-    - ws
-    - cron_restarted
