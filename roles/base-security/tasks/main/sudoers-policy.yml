@@ -1,17 +1,3 @@
-- name: Set sudoers default noexec @set_sudoers_default_noexec
-  ignore_errors: "{{ansible_check_mode}}"
-  lineinfile:
-    path: /etc/sudoers
-    create: true
-    regexp: '^\s*Defaults\s*noexec'
-    line: "Defaults noexec"
-    state: present
-    insertafter: ^\s*Defaults
-  tags:
-    - ws
-    - sec
-    - set_sudoers_default_noexec
-
 - name: Set sudoers groups @set_sudoers_groups
   ignore_errors: "{{ansible_check_mode}}"
   block:
@@ -38,6 +24,20 @@
     - ws
     - sec
     - set_sudoers_groups
+
+- name: Set sudoers default noexec @set_sudoers_default_noexec
+  ignore_errors: "{{ansible_check_mode}}"
+  lineinfile:
+    path: /etc/sudoers
+    create: true
+    regexp: '^\s*Defaults\s*noexec'
+    line: "Defaults noexec"
+    state: present
+    insertafter: ^\s*Defaults
+  tags:
+    - ws
+    - sec
+    - set_sudoers_default_noexec
 
 - name: Check sudoers users @check_sudoers_users
   ignore_errors: "{{ansible_check_mode}}"

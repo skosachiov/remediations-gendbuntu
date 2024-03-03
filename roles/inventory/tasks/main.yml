@@ -42,7 +42,7 @@
     - name: Get_boot_parameters Grub @get_boot_parameters
       failed_when: false
       changed_when: false
-      command: grep ^GRUB_DEFAULT /etc/default/grub
+      shell: grep ^GRUB_DEFAULT /etc/default/grub | tr -d \'\"
       register: boot_grub
     - name: Get_boot_parameters Set @get_boot_parameters
       changed_when: false
@@ -120,12 +120,12 @@
       package:
         name: lm-sensors
         state: present
-      when: ansible_os_family in var_debian_based_os
+      when: ansible_pkg_mgr == 'apt'
     - name: Get sensors info Lm-sensors present rpm @get_sensors_info
       package:
         name: lm_sensors
         state: present
-      when: ansible_os_family in var_redhat_based_os
+      when: ansible_pkg_mgr == 'dnf'
     - name: Get sensors info Smartmontools present @get_sensors_info
       package:
         name: smartmontools
@@ -166,7 +166,7 @@
         regexp: ^#?\s*ENABLED
         line: ENABLED="true"
       notify: Sysstat restarted
-      when: ansible_os_family in var_debian_based_os
+      when: ansible_pkg_mgr == 'apt'
     - name: Get sysstat info @get_load_average
       shell: "sar -q"
       register: items

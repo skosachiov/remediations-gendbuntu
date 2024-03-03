@@ -21,7 +21,7 @@
         state: present
         create: true
         insertafter: Unattended-Upgrade::Origins-Pattern
-  when: ansible_os_family in var_debian_based_os
+  when: ansible_pkg_mgr == 'apt'
   tags:
     - ws
     - sec
@@ -39,39 +39,42 @@
         name: unattended-upgrades
         enabled: 'yes'
         state: started
-  when: ansible_os_family in var_debian_based_os
+  when: ansible_pkg_mgr == 'apt'
   tags:
     - ws
     - sec
     - daily_unattended_upgrades_deb
 
-- name: Yum cron @unattended_security_upgrades_yum
+- name: Dnf automatic @unattended_security_upgrades_dnf
   ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Yum cron Present @unattended_security_upgrades_yum
+    - name:  Dnf automatic Present @unattended_security_upgrades_dnf
       package:
-        name: yum-cron
+        name: dnf-automatic
         state: present
-    - name: Yum cron Replace update cmd @unattended_security_upgrades_yum
+    - name: Dnf automatic Replace update cmd @unattended_security_upgrades_dnf
       replace:
-        dest: /etc/yum/yum-cron.conf
-        regexp: ^#?\s*(update_cmd).*
+        dest: /etc/dnf/automatic.conf
+        regexp: ^#?\s*(upgrade_type).*
         replace: '\1 = security'
-    - name: Yum cron Replace download updates @unattended_security_upgrades_yum
+    - name: Dnf automatic Replace download updates @unattended_security_upgrades_dnf
       replace:
-        dest: /etc/yum/yum-cron.conf
+        dest: /etc/dnf/automatic.conf
         regexp: ^#?\s*(download_updates).*
         replace: '\1 = yes'
-    - name: Yum cron Replace apply updates @unattended_security_upgrades_yum
+    - name: Dnf automatic Replace apply updates @unattended_security_upgrades_dnf
       replace:
-        dest: /etc/yum/yum-cron.conf
+        dest: /etc/dnf/automatic.conf
         regexp: ^#?\s*(apply_updates).*
         replace: '\1 = yes'
-  when: ansible_os_family in var_redhat_based_os and ansible_distribution_major_version|int < 9
+    - name: Dnf automatic Replace apply updates @unattended_security_upgrades_dnf
+      systemd_service:
+        name: dnf-automatic.timer
+        state: started
+        enabled: true
+  when: ansible_pkg_mgr == 'dnf'
   tags:
     - ws
     - sec
     - mob
-    - unattended_security_upgrades_yum
-
-
+    - unattended_security_upgrades_dnf

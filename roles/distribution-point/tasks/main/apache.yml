@@ -2,11 +2,11 @@
   block:
     - name: Apache server is started Present @apache_server_is_started
       package:
-        name: "{{['apache2'] if ansible_os_family in var_debian_based_os else ['httpd', 'mod_ssl']}}"
+        name: "{{['apache2'] if ansible_pkg_mgr == 'apt' else ['httpd', 'mod_ssl']}}"
         state: present
     - name: Apache server is started Started @apache_server_is_started
       service:
-        name: "{{'apache2' if ansible_os_family in var_debian_based_os else 'httpd'}}"
+        name: "{{'apache2' if ansible_pkg_mgr == 'apt' else 'httpd'}}"
         state: started
     - name: Apache server is started Ssl @apache_server_is_started
       command: a2enmod ssl
@@ -19,7 +19,7 @@
   block:
     - name: Apache Only Approved Ciphers SSLProtocol @apache_only_approved_ciphers
       lineinfile:
-        path: "{{'/etc/apache2/mods-available/ssl.conf' if ansible_os_family in var_debian_based_os else '/etc/httpd/conf.d/ssl.conf'}}"
+        path: "{{'/etc/apache2/mods-available/ssl.conf' if ansible_pkg_mgr == 'apt' else '/etc/httpd/conf.d/ssl.conf'}}"
         create: true
         regexp: ^\s*SSLProtocol\s*.*$
         line: SSLProtocol all -TLSv1.1 -SSLv2 -SSLv3
@@ -28,7 +28,7 @@
       notify: Apache restarted
     - name: Apache Only Approved Ciphers SSLCipherSuite @apache_only_approved_ciphers
       lineinfile:
-        path: "{{'/etc/apache2/mods-available/ssl.conf' if ansible_os_family in var_debian_based_os else '/etc/httpd/conf.d/ssl.conf'}}"
+        path: "{{'/etc/apache2/mods-available/ssl.conf' if ansible_pkg_mgr == 'apt' else '/etc/httpd/conf.d/ssl.conf'}}"
         create: true
         regexp: ^\s*SSLCipherSuite\s*.*$
         line: SSLCipherSuite ALL:+HIGH:!ADH:!EXP:!SSLv2:!SSLv3:!MEDIUM:!LOW:!NULL:!aNULL

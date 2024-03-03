@@ -49,20 +49,32 @@
     - role: flatpak
     - role: integrity-check
     - role: inventory
-      tags: always
     - role: laps
+      tags: always
     - role: mail-client
+      tags: always
     - role: mandatory-access
+      tags: always
     - role: office
+      tags: always
     - role: polkit-restrictions
+      tags: always
     - role: print
+      tags: always
     - role: remote-assistance
+      tags: always
     - role: scap
+      tags: always
     - role: security-modules
+      tags: always
     - role: smb-client
+      tags: always
     - role: ssh
+      tags: always
     - role: terminal-server
+      tags: always
     - role: unique-tasks
+      tags: always
     - role: utmost-report
       tags: always
 

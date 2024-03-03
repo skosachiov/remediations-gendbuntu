@@ -36,7 +36,7 @@
         state: present
         create: true
       notify: Update grub
-  when: ansible_os_family in var_debian_based_os
+  when: ansible_pkg_mgr == 'apt'
   tags:
     - ws
     - sec
@@ -50,7 +50,7 @@
     regexp: '(GRUB_CMDLINE_LINUX_DEFAULT=.*quiet net.ifnames=0).*$'
     replace: '\1 audit=1 audit_backlog_limit=8192 splash"'
   notify: Update grub
-  when: ansible_os_family in var_debian_based_os
+  when: ansible_pkg_mgr == 'apt'
   tags:
     - ws
     - sec
@@ -94,7 +94,7 @@
       notify: Update grub
       when: not var_unrestricted_os
       with_items: "{{result.files}}"
-  when: ansible_os_family in var_debian_based_os
+  when: ansible_pkg_mgr == 'apt'
   tags:
     - ws
     - sec

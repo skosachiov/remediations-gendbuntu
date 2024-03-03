@@ -1,12 +1,3 @@
-var_debian_based_os:
-  - Debian
-  - Ubuntu
-  - Astra Linux
-var_redhat_based_os:
-  - RedHat
-  - Rocky
-  - RED
-
 var_installation_type: workstation
 
 var_subnet: paris_36_rue_du_bastion

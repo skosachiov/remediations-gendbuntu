@@ -1,7 +1,7 @@
 - name: Auditd Present deb @auditd_present
   ignore_errors: "{{ansible_check_mode}}"
   package:
-    name: "{{'auditd' if ansible_os_family in var_debian_based_os else 'audit'}}"
+    name: "{{'auditd' if ansible_pkg_mgr == 'apt' else 'audit'}}"
     state: present
   tags:
     - ws
@@ -97,10 +97,17 @@
 
 - name: Disable auditd syslog plugin @disable_auditd_audispd_syslog_plugin
   ignore_errors: "{{ansible_check_mode}}"
-  lineinfile:
-    dest: /etc/audit/plugins.d/syslog.conf
-    regexp: ^active
-    line: active = no
+  block:
+    - name: Disable auditd syslog plugin State @disable_auditd_audispd_syslog_plugin
+      stat:
+        path: /etc/audit/plugins.d/syslog.conf
+      register: result
+    - name: Disable auditd syslog plugin Line @disable_auditd_audispd_syslog_plugin
+      lineinfile:
+        dest: /etc/audit/plugins.d/syslog.conf
+        regexp: ^active
+        line: active = no
+      when: result.stat.exists
   tags:
     - ws
     - sec

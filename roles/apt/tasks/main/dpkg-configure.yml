@@ -3,7 +3,7 @@
   changed_when: false
   shell: 'dpkg --configure -a'
   ignore_errors: yes
-  when: ansible_os_family in var_debian_based_os
+  when: ansible_pkg_mgr == 'apt'
   tags:
     - ws
     - dpkg_configure_all
@@ -12,7 +12,7 @@
   ignore_errors: "{{ansible_check_mode}}"
   command: apt update
   changed_when: false
-  when: ansible_os_family in var_debian_based_os
+  when: ansible_pkg_mgr == 'apt'
   tags:
     - ws
     - apt_update
@@ -22,7 +22,7 @@
   check_mode: no
   changed_when: false
   shell: 'rpm --rebuilddb'
-  when: ansible_os_family in var_redhat_based_os
+  when: ansible_pkg_mgr == 'dnf'
   tags:
     - ws
     - rpm_rebuilddb

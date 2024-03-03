@@ -4,7 +4,7 @@
   changed_when: false # workaround
   replace:
     dest: /etc/group
-    regexp: "^({{'lpadmin' if ansible_os_family in var_debian_based_os else 'lp'}}:x:[0-9]*:[^,]*),.*"
+    regexp: "^({{'lpadmin' if ansible_pkg_mgr == 'apt' else 'lp'}}:x:[0-9]*:[^,]*),.*"
     replace: \1
   tags:
     - ws
@@ -17,7 +17,7 @@
   lineinfile:
     path: /etc/cups/cups-files.conf
     regexp: ^\s*SystemGroup\s
-    line: "SystemGroup {{'lpadmin' if ansible_os_family in var_debian_based_os else 'sys root wheel printadmin'}}"
+    line: "SystemGroup {{'lpadmin' if ansible_pkg_mgr == 'apt' else 'sys root wheel printadmin'}}"
     state: present
   tags:
     - ws

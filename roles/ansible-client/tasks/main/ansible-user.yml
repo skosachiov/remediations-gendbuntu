@@ -21,7 +21,7 @@
         name: "{{var_ansible_username}}"
         uid: "{{var_ansible_uid}}"
         group: "{{var_ansible_group}}"
-        groups: "{{'sudo,shadow' if ansible_os_family in var_debian_based_os else 'wheel'}}"
+        groups: "{{'sudo,shadow' if ansible_pkg_mgr == 'apt' else 'wheel'}}"
         shell: /bin/bash
         append: yes
         generate_ssh_key: yes
@@ -32,7 +32,7 @@
       ignore_errors: true
       user:
         name: "{{var_ansible_username}}"
-        groups: "{{'lpadmin' if ansible_os_family in var_debian_based_os else 'lp'}}"
+        groups: "{{'lpadmin' if ansible_pkg_mgr == 'apt' else 'lp'}}"
       when: result.stdout_lines[0] == '0'
     - name: Create ansible user Sudoers @create_ansible_user
       lineinfile:

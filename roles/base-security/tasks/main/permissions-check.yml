@@ -58,7 +58,7 @@
     mode: go-w,a-x
     owner: root
     group: root
-  when: ansible_os_family in var_debian_based_os
+  when: ansible_pkg_mgr == 'apt'
   tags:
     - ws
     - sec
@@ -80,7 +80,7 @@
         owner: root
         group: root
       with_items: "{{result.files}}"
-  when: ansible_os_family in var_debian_based_os
+  when: ansible_pkg_mgr == 'apt'
   tags:
     - ws
     - sec
@@ -200,7 +200,7 @@
     mode: '0640'
     owner: root
     group: shadow
-  when: ansible_os_family in var_debian_based_os
+  when: ansible_pkg_mgr == 'apt'
   tags:
     - ws
     - sec
@@ -214,7 +214,7 @@
     mode: '0640'
     owner: root
     group: shadow
-  when: ansible_os_family in var_debian_based_os
+  when: ansible_pkg_mgr == 'apt'
   tags:
     - ws
     - sec
@@ -225,7 +225,7 @@
   file:
     path: /etc/shadow
     group: '42'
-  when: ansible_os_family in var_debian_based_os
+  when: ansible_pkg_mgr == 'apt'
   tags:
     - ws
     - sec
@@ -387,10 +387,10 @@
 - name: Ensure owner 0 and permissions 0600 on /boot/grub/grub.cfg @grub_cfg_owner_and_permissions
   ignore_errors: "{{ansible_check_mode}}"
   file:
-    path: "{{'/boot/grub/grub.cfg' if ansible_os_family in var_debian_based_os else '/boot/grub2/grub.cfg'}}"
+    path: "{{'/boot/grub/grub.cfg' if ansible_pkg_mgr == 'apt' else '/boot/grub2/grub.cfg'}}"
     owner: '0'
     mode: '0600'
-  when: ansible_os_family in var_debian_based_os
+  when: ansible_pkg_mgr == 'apt'
   tags:
     - ws
     - sec
@@ -464,7 +464,7 @@
         state: absent
         regexp: "^.*:.*:.*:42:"
         line: ""
-  when: ansible_os_family in var_debian_based_os
+  when: ansible_pkg_mgr == 'apt'
   tags:
     - ws
     - sec

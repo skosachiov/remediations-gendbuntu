@@ -3,3 +3,4 @@
     loop_var: tasks_file
   with_fileglob:
     - main/*.yml
+  when: ansible_os_family in ["Debian", "Ubuntu"]

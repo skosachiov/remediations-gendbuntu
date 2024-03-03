@@ -26,7 +26,7 @@
       when: file_aide.stat.mtime|int < (ansible_date_time.epoch|int - 60*60*48)
       changed_when: file_aide.stat.mtime|int < (ansible_date_time.epoch|int - 60*60*48)
       ignore_errors: "{{ansible_check_mode}}"
-  when: ansible_os_family in var_debian_based_os
+  when: ansible_os_family in ["Debian", "Ubuntu", "RedHat"]
   tags:
     - ws
     - sec
@@ -40,7 +40,7 @@
     dest: /etc/aide/aide.conf.d/99_aide_myrule
     block: |
       /temp R
-  when: ansible_os_family in var_debian_based_os
+  when: ansible_os_family in ["Debian", "Ubuntu", "RedHat"]
   tags:
     - ws
     - sec

@@ -14,14 +14,14 @@
           - tigervnc
           - tigervnc-server-minimal
         state: present
-      when: ansible_os_family in var_redhat_based_os
+      when: ansible_pkg_mgr == 'dnf'
     - name: Install client dependencies Tigervnc deb @ra_install_client_dependencies
       package:
         name:
           - tigervnc-viewer
           - tigervnc-common
         state: present
-      when: ansible_os_family in var_debian_based_os
+      when: ansible_pkg_mgr == 'apt'
     - name: Install client dependencies Tigervnc tools deb @ra_install_client_dependencies
       package:
         name:

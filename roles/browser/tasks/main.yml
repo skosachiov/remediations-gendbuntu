@@ -1,8 +1,7 @@
 - name: Chromium browser latest @chromium_browser_latest
   package:
-    name: "{{ ['chromium-browser', 'libnss3-tools'] if ansible_os_family in var_debian_based_os else 'chromium'}}"
+    name: "{{ ['chromium-browser', 'libnss3-tools'] if ansible_os_family == 'Ubuntu' else 'chromium'}}"
     state: latest
-  when: ansible_os_family in var_debian_based_os
   tags:
     - ws
     - chromium_browser_latest

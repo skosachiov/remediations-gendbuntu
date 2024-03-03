@@ -1,15 +1,22 @@
 - name: Notify on grub update @notify_on_grub_update
   block:
     - name: Notify on grub update Stat @notify_on_grub_update
-      stat:
-        path: /boot/grub/grub.cfg
+      find:
+        paths:
+          - /boot/grub
+          - /boot/grub2
+        patterns: grub.cfg
       register: file_grub
+    - name: Notify on grub update Stat @notify_on_grub_update
+      stat:
+        path: "{{file_grub.files[0].path}}"
+      register: result
     - name: Notify on grub update Fact @notify_on_grub_update
       set_fact:
         var_notification_list: "{{ var_notification_list | combine(new_item) }}"
       vars:
         new_item: "{ 'utmost-report': {{var_notification_list['reboot']}} }"
-      when: file_grub.stat.mtime|int > (ansible_date_time.epoch|int - ansible_uptime_seconds|int)
+      when: result.stat.mtime|int > (ansible_date_time.epoch|int - ansible_uptime_seconds|int)
   tags:
     - ws
     - notify_on_grub_update

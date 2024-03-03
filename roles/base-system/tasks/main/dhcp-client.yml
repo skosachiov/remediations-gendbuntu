@@ -10,7 +10,7 @@
         dest: /etc/dhcp/dhclient.conf
         regexp: '^\s*prepend\s*domain-name-servers'
         replace: '# prepend domain-name-servers'
-  when: ansible_os_family in var_debian_based_os
+  when: ansible_pkg_mgr == 'apt'
   tags:
     - ws
     - comment_out_manual_dhclient
@@ -22,7 +22,7 @@
     regexp: ^\s*send\s*dhcp-client-identifier
     line: send dhcp-client-identifier = hardware;
     insertafter: EOF
-  when: ansible_os_family in var_debian_based_os
+  when: ansible_pkg_mgr == 'apt'
   tags:
     - ws
     - dhclient_send_hardware_id
@@ -34,7 +34,7 @@
     regexp: ^\s*send\s*dhcp-client-identifier
     line: send dhcp-client-identifier = hardware;
     insertafter: EOF
-  when: ansible_os_family in var_debian_based_os
+  when: ansible_pkg_mgr == 'apt'
   tags:
     - ws
     - dhclient_send_hardware_id
