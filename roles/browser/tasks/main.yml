@@ -1,4 +1,12 @@
 - name: Chromium browser latest @chromium_browser_latest
+  changed_when: true
+  debug:
+    msg: "{{ansible_os_family}}"
+  tags:
+    - ws
+    - chromium_browser_latest
+
+- name: Chromium browser latest @chromium_browser_latest
   package:
     name: "{{ ['chromium-browser', 'libnss3-tools'] if ansible_os_family == 'Ubuntu' else 'chromium'}}"
     state: latest
