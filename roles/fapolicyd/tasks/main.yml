@@ -1,0 +1,16 @@
+- name: Fapolicyd active @fapolicyd_active
+  ignore_errors: "{{ansible_check_mode}}"
+  block:
+    - name: Fapolicyd active @fapolicyd_active
+      packages:
+        name:
+          - fapolicyd
+        state: present
+  rescue:
+    - name: Fapolicyd active Failed @fapolicyd_active
+      debug:
+        msg: "Fapolicyd active Failed"
+  tags:
+    - ws
+    - sec
+    - fapolicyd_active

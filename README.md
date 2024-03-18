@@ -130,6 +130,16 @@ This role is designed to configure and manage regional content distribution poin
 
 Obviously, the resources of a large enterprise must be protected from leaks. The default dlp setting allows you to connect a keyboard, mouse, headphones, cameras, but blocks any flash drives. The dlp role disables wireless communication modules and some keyjacks radio keyboards. You can always add the necessary devices to the white list.
 
+## fapolicyd
+
+The ansible-controlled version of fapolisyd is an analogue of Applocker on the Windows platform. In addition to the Applocker functions Fapolicy can use file digital signature in combination with IMA/SELinux. In this project, the default fapolicyd role behavior is:
+- install fapolicyd
+- create whitelist (sha256) executables using dpkg or rpm lists
+- prohibit execution of non-whitelisted binary files for regular users
+- prevent bytecode and source code from running in runtime environments (OpenJDK, Python, Wine etc.) from the home and tmp folders
+- make an exception for the system user
+- add executable files from installed deb or rpm to the whitelist daily
+
 ## firewall
 
 The firewall role replaces the uncomplicated ufw with the more advanced firewalld, defines multiple zones based on outgoing ip addresses. In addition, the role performs various checks, for example, for suspicious open ports. Configuring the netfilter-persistent package makes it possible to override the default ACCEPT mode for INPUT chains.
