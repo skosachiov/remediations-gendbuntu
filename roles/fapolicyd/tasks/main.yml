@@ -8,22 +8,24 @@
       systemd_service:
         name: fapolicyd
         masked: true
-      when: ansible_facts_packages['fapolicyd'] is undefined
+      when: ansible_facts.packages['fapolicyd'] is undefined
     - name: Fapolicyd active Present @fapolicyd_active
-      packages:
+      package:
         name:
           - fapolicyd
         state: present
       register: result
+    - name: Fapolicyd active Templates @fapolicyd_active
+      template:
+        src: "{{item}}"
+        dest: '/etc/fapolicyd/rules.d/{{(item|basename).split(".")[0]}}.rules'
+        mode: '0640'
+      with_fileglob:
+        - "{{playbook_dir}}/roles/fapolicyd/templates/*"
+      notify: Fapolicyd restarted
     - name: Fapolicyd active Copy @fapolicyd_active
       copy:
-        src: "{{playbook_dir}}/roles/all/files/fapolicyd/rules.d/"
-        dest: /etc/fapolicyd/rules.d/
-        mode: go-rwx
-      notify: Fapolicyd restart
-    - name: Fapolicyd active Copy @fapolicyd_active
-      copy:
-        src: "{{playbook_dir}}/roles/all/files/fapolicyd/fapolicyd.trust"
+        src: "{{playbook_dir}}/inventories/distribution/{{ansible_distribution}}/{{ansible_distribution_major_version}}/files/fapolicyd/fapolicyd.trust"
         dest: /etc/fapolicyd/
         mode: go-rwx
       notify: Fapolicyd restarted
@@ -39,10 +41,17 @@
         regexp: ^trust
         line: "trust = {{'debdb' if ansible_pkg_mgr == 'apt' else 'rpmdb'}},file"
       notify: Fapolicyd restarted
-    - name: Fapolicyd active Start @fapolicyd_active
+    - name: Fapolicyd active Unmask @fapolicyd_active
       systemd_service:
         name: fapolicyd
         masked: false
+    - name: Fapolicyd active Enabled @fapolicyd_active
+      systemd_service:
+        name: fapolicyd
+        enabled: true
+    - name: Fapolicyd active Started @fapolicyd_active
+      systemd_service:
+        name: fapolicyd
         state: started
   rescue:
     - name: Fapolicyd active Failed @fapolicyd_active
@@ -52,3 +61,34 @@
     - ws
     - sec
     - fapolicyd_active
+
+- name: Fapolicyd remove outdated files @fapolicyd_remove_outdated_files
+  ignore_errors: true
+  block:
+    - name: Fapolicyd remove outdated files Set default @fapolicyd_remove_outdated_files
+      set_fact:
+        local_files:
+          - 19-dummy.rules
+    - name: Fapolicyd remove outdated files Set local @fapolicyd_remove_outdated_files
+      set_fact:
+        local_files: "{{ local_files + [item | basename | replace('.j2', '') ] }}"
+      with_fileglob:
+        - "{{playbook_dir}}/roles/fapolicyd/templates/*"
+    - name: Fapolicyd remove outdated files Find @fapolicyd_remove_outdated_files
+      find:
+        path: /etc/fapolicyd/rules.d/
+        recurse: no
+        file_type: file
+      register: remote_files_path
+    - name: Fapolicyd remove outdated files Set remote @fapolicyd_remove_outdated_files
+      set_fact:
+        remote_files: "{{ remote_files | default([]) + [item.path | basename] }}"
+      with_items: "{{remote_files_path.files}}"
+    - name: Fapolicyd remove outdated files Remove @fapolicyd_remove_outdated_files
+      file:
+        path: /etc/fapolicyd/rules.d/{{item}}
+        state: absent
+      with_items: "{{ remote_files | difference(local_files) }}"
+  tags:
+    - ws
+    - fapolicyd_remove_outdated_files
