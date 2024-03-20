@@ -1,0 +1,5 @@
+- name: Fapolicyd restarted
+  ignore_errors: "{{ansible_check_mode}}"
+  service:
+    name: fapolicyd
+    state: restarted

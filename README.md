@@ -134,10 +134,11 @@ Obviously, the resources of a large enterprise must be protected from leaks. The
 
 The ansible-controlled version of fapolisyd is an analogue of Applocker on the Windows platform. In addition to the Applocker functions Fapolicy can use file digital signature in combination with IMA/SELinux. In this project, the default fapolicyd role behavior is:
 - install fapolicyd
-- create whitelist (sha256) executables using dpkg or rpm lists
+- use whitelist executables using dpkg or rpm database
+- use whitelist executables using ansible updated fapolicyd.trust
 - prohibit execution of non-whitelisted binary files for regular users
 - prevent bytecode and source code from running in runtime environments (OpenJDK, Python, Wine etc.) from the home and tmp folders
-- make an exception for the system user
+- make an exception for the system user (auid=-1, patch included)
 - add executable files from installed deb or rpm to the whitelist daily
 
 ## firewall

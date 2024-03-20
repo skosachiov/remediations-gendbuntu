@@ -1,11 +1,49 @@
 - name: Fapolicyd active @fapolicyd_active
   ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Fapolicyd active @fapolicyd_active
+    - name: Fapolicyd active Package facts @fapolicyd_active
+      package_facts:
+        manager: auto
+    - name: Fapolicyd active Mask if no present @fapolicyd_active
+      systemd_service:
+        name: fapolicyd
+        masked: true
+      when: ansible_facts_packages['fapolicyd'] is undefined
+    - name: Fapolicyd active Present @fapolicyd_active
       packages:
         name:
           - fapolicyd
         state: present
+      register: result
+    - name: Fapolicyd active Copy @fapolicyd_active
+      copy:
+        src: "{{playbook_dir}}/roles/all/files/fapolicyd/rules.d/"
+        dest: /etc/fapolicyd/rules.d/
+        mode: go-rwx
+      notify: Fapolicyd restart
+    - name: Fapolicyd active Copy @fapolicyd_active
+      copy:
+        src: "{{playbook_dir}}/roles/all/files/fapolicyd/fapolicyd.trust"
+        dest: /etc/fapolicyd/
+        mode: go-rwx
+      notify: Fapolicyd restarted
+    - name: Fapolicyd active Lineinfile @fapolicyd_active
+      lineinfile:
+        dest: /etc/fapolicyd/fapolicyd.conf
+        regexp: ^db_max_size
+        line: db_max_size = 128
+      notify: Fapolicyd restarted
+    - name: Fapolicyd active Lineinfile @fapolicyd_active
+      lineinfile:
+        dest: /etc/fapolicyd/fapolicyd.conf
+        regexp: ^trust
+        line: "trust = {{'debdb' if ansible_pkg_mgr == 'apt' else 'rpmdb'}},file"
+      notify: Fapolicyd restarted
+    - name: Fapolicyd active Start @fapolicyd_active
+      systemd_service:
+        name: fapolicyd
+        masked: false
+        state: started
   rescue:
     - name: Fapolicyd active Failed @fapolicyd_active
       debug:
