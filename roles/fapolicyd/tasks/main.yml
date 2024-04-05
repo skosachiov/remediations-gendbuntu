@@ -5,9 +5,7 @@
       package_facts:
         manager: auto
     - name: Fapolicyd active Mask if no present @fapolicyd_active
-      systemd_service:
-        name: fapolicyd
-        masked: true
+      command: systemctl mask fapolicyd
       when: ansible_facts.packages['fapolicyd'] is undefined
     - name: Fapolicyd active Present @fapolicyd_active
       package:
@@ -15,6 +13,11 @@
           - fapolicyd
         state: present
       register: result
+    - name: Fapolicyd active Templates @fapolicyd_active
+      file:
+        path: '/etc/fapolicyd/rules.d'
+        state: directory
+        mode: '0640'
     - name: Fapolicyd active Templates @fapolicyd_active
       template:
         src: "{{item}}"
@@ -42,15 +45,14 @@
         line: "trust = {{'debdb' if ansible_pkg_mgr == 'apt' else 'rpmdb'}},file"
       notify: Fapolicyd restarted
     - name: Fapolicyd active Unmask @fapolicyd_active
-      systemd_service:
-        name: fapolicyd
-        masked: false
+      changed_when: false
+      command: systemctl unmask fapolicyd
     - name: Fapolicyd active Enabled @fapolicyd_active
-      systemd_service:
+      service:
         name: fapolicyd
         enabled: true
     - name: Fapolicyd active Started @fapolicyd_active
-      systemd_service:
+      service:
         name: fapolicyd
         state: started
   rescue:

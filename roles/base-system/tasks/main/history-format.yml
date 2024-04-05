@@ -1,0 +1,10 @@
+- name: Bashrc history format Line @bashrc_history_format
+  lineinfile:
+    dest: '/etc/bash.bashrc'
+    line: HISTTIMEFORMAT='%Y-%m-%d %H:%M:%S '
+    regexp: HISTTIMEFORMAT
+    state: present
+  ignore_errors: true
+  tags:
+    - ws
+    - bashrc_history_format

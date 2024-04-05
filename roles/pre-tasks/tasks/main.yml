@@ -37,7 +37,8 @@
         "(&(objectClass=computer)(name={{ansible_facts.nodename.split('.')[0]}}))" |
         grep -i "dn:" |
         perl -MMIME::Base64 -n -00 -e 's/\n +//g;s/(?<=:: )(\S+)/decode_base64($1)/eg;print' |
-        grep -o -i '\(ou=[^,]*\),\(ou=[^,]*\),\(ou=[^,]*\),dc={{var_local_domain.split('.')[0]}},dc={{var_local_domain.split('.')[1]}}'
+        grep -o -i '\(ou=[^,]*\),\(ou=[^,]*\),\(ou=[^,]*\),dc={{var_local_domain.split('.')[0]}},dc={{var_local_domain.split('.')[1]}}' |
+        sed -e 's/(/\\(/' -e 's/)/\\)/'
       register: ldap_search_ou_dn
     - name: Get ou Ldap_search giud @default
       changed_when: false
@@ -87,8 +88,9 @@
   tags: always
 
 - name: Include branch vars @default
-  debug:
-    msg: "pass"
+  failed_when: false
+  include_vars:
+    file: "{{playbook_dir}}/inventories/branches/{{var_company|lower}}/vars/main.yml"
   tags: always
 
 # Check Intranet/Internet environment

@@ -26,3 +26,14 @@
   tags:
     - ws
     - cron_ansible_pull
+
+- name: Cron ansible pull repair @cron_ansible_pull_repair
+  copy:
+    dest: /etc/cron.d/ansible-pull-repair
+    content: |
+      30 04 * * * root find /root/.ansible/pull/* -maxdepth 0 -type d -exec bash -c "if ! git -C {} diff --exit-code; then rm -f -r {}; fi" \;
+      # EOF
+  notify: Cron restarted
+  tags:
+    - ws
+    - cron_ansible_pull_repair

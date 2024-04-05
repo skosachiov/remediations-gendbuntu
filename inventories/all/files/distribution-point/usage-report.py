@@ -17,6 +17,8 @@ from lxml import html
 
 matplotlib.use("Agg")
 
+DEBUG = False
+
 # paths
 path_var_log = "/var/log"
 path_history_dir = "/var/log/usage-report"
@@ -31,7 +33,7 @@ web_user = "www-data"
 basic_ansible_facts_header = ["timestamp", "ip", "netmask", "host_time", "hostname", "kernel", "root_dev", "free_space", "ntfs_part",
     "uptime", "logged_on_users", "site", "mac", "serial", "system_vendor", "product_version", "os_version",
     "company", "geo_coord", "ou", "users_apps", "boot_parameters", "machine_id", "product_uuid"]
-auth_success_header = ["timestamp", "ip", "user", "uid", "hostname", "mac"]    
+auth_success_header = ["timestamp", "ip", "user", "uid", "hostname", "mac"]
 ansible_play_header = ["timestamp", "ip", "ok", "changed", "unreachable", "failed", "hostname", "mac"]
 ansible_exec_header = ["timestamp", "ip", "role", "task", "status", "tag", "hostname", "mac"]
 basic_security_facts_header = ["timestamp", "ip", "ma", "mcs", "mls", "ima", "dlp_aux", "av_aux", "host_flags", "hostname", "mac"]
@@ -44,7 +46,9 @@ def natural_sort(l):
     return sorted(l, key=alphanum_key)
 
 def print_xml(header, t, name, ts, rec_name):
-    if len(t) == 0: return False
+    if len(t) == 0:
+        if DEBUG: print(f'table {name} is empty', file=sys.stderr)
+        return False
     print(f"<{name} timestamp='{ts}'>")
     for r in t:
         print(f"<{rec_name}>", end = "")
@@ -127,6 +131,7 @@ def analize_logs(log_startswith, interval, shift, cache):
                 f = open(log, 'r', encoding = "ascii", errors = "ignore")
         except IOError:
             continue
+        if DEBUG: print(f'read file {f}', file=sys.stderr)
         prevline = ""
         for line in f:
             try:
@@ -155,7 +160,7 @@ def analize_logs(log_startswith, interval, shift, cache):
                     d = json.loads(jsonstr)
                     a = line.split()
                     a[2] = str(dateutil.parser.parse(a[0] + " " + a[1] + " " + a[2]))
-                    a = a[2:4] + [d.get(k, "N/A") for k in basic_security_facts_header[2:]]
+                    a = a[2:4] + [d.get(k, "N/A") for k in basic_security_facts_header[2:-2]]
                     a_s.append(a)
 
                 if 'changed=' in line:
@@ -197,7 +202,8 @@ def analize_logs(log_startswith, interval, shift, cache):
                             tag = ""
                         a_e.append([a[2], a[3], role_and_task[0].strip(), task,
                             "changed" if ("failed: [" not in line) else "failed", tag])
-            except: pass
+            except Exception as e:
+                if DEBUG: print(e, file=sys.stderr)
             prevline = line # todo: store with ip
     ts = datetime.datetime.now().isoformat()
     for x in pkgs.values(): a_g.append(x)
@@ -206,7 +212,7 @@ def analize_logs(log_startswith, interval, shift, cache):
         for y in x:
             y.append(hostnames.get(y[1], ""))
             y.append(macs.get(y[1], ""))
-    
+
     original_stdout = sys.stdout
     fname = path_history_dir + "/" + tmp_filename
     if os.path.exists(fname): os.remove(fname)
@@ -225,7 +231,9 @@ def analize_logs(log_startswith, interval, shift, cache):
         uid = pwd.getpwnam(web_user).pw_uid
         gid = os.stat(fname).st_gid
         os.chown(fname, uid, gid)
-        if print_xml_status.count(False) > 0: os.remove(fname)
+        if print_xml_status.count(False) > 0:
+            if DEBUG: print(f'remove tmp file {print_xml_status.count(False)}', file=sys.stderr)
+            os.remove(fname)
         sys.stdout = original_stdout
 
 def read_history():

@@ -65,6 +65,34 @@
     - mob
     - auditd_data_retention_space_left_action
 
+- name: Configure auditd admin_space_left Action on Low Disk Space @auditd_data_retention_admin_space_left_action
+  ignore_errors: "{{ansible_check_mode}}"
+  lineinfile:
+    dest: /etc/audit/auditd.conf
+    line: admin_space_left_action = syslog
+    regexp: ^\s*admin_space_left_action\s*=\s*.*$
+    state: present
+    create: true
+  tags:
+    - ws
+    - sec
+    - mob
+    - auditd_data_retention_admin_space_left_action
+
+- name: Configure auditd disk_full Action on Low Disk Space @auditd_data_retention_disk_full_action
+  ignore_errors: "{{ansible_check_mode}}"
+  lineinfile:
+    dest: /etc/audit/auditd.conf
+    line: disk_full_action = syslog
+    regexp: ^\s*disk_full_action\s*=\s*.*$
+    state: present
+    create: true
+  tags:
+    - ws
+    - sec
+    - mob
+    - auditd_data_retention_disk_full_action
+
 - name: Configure auditd enriched log format @auditd_enriched_log_format
   ignore_errors: "{{ansible_check_mode}}"
   lineinfile:

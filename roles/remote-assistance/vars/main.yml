@@ -6,6 +6,9 @@ fqdn_sshserver: "{{var_fqdn_sshserver}}"
 
 var_sleep_timeout: 2
 
+# geom=$(xrandr --listactivemonitors | awk -- "BEGIN { getline } { gsub(/\/[[:digit:]]+/,\"\",\$3) ; print \$3 }" | head -n 1);
+# x11vnc -clip $geom ...
+
 var_remote_assistance_exec: >-
   pass=$((32767+$RANDOM));
   port=$((32767+$RANDOM));

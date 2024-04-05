@@ -28,6 +28,13 @@
         ssh_key_bits: 4096
         ssh_key_file: .ssh/id_rsa
       when: result.stdout_lines[0] == '0'
+    - name: Create ansible user Check home folder @create_ansible_user
+      file:
+        path: "/home/{{var_ansible_username}}"
+        state: directory
+        owner: "{{var_ansible_username}}"
+        group: "{{var_ansible_group}}"
+        mode: 0700
     - name: Create ansible user Lpadmin @create_ansible_user
       ignore_errors: true
       user:

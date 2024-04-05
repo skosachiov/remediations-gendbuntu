@@ -15,6 +15,27 @@
     - ws
     - remove_outdate_dist_upgrade_flag_file
 
+- name: Switch to new kernel @switch_to_new_kernel
+  block:
+    - name: Switch to new kernel Apt
+      failed_when: false
+      apt:
+        name: "{{var_switch_to_new_kernel}}"
+        state: latest
+    - name: Switch to new kernel Rm line
+      lineinfile:
+        dest: /etc/default/grub
+        regexp: ^GRUB_DEFAULT=
+        state: absent
+      register: result
+    - name: Switch to new kernel Update grub
+      command: update-grub
+      when: result.changed
+  when: var_switch_to_new_kernel is defined
+  tags:
+    - ws
+    - switch_to_new_kernel
+
 - name: Apt dist-upgrade @apt_dist_upgrade
   ignore_errors: "{{ansible_check_mode}}"
   block:

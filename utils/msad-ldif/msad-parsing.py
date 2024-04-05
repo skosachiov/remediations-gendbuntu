@@ -6,7 +6,8 @@
 # ./msad-parsing.py /tmp/msad.ldif /var/log/usage-report/usage-report-history.json /tmp/msad-report.xml
 #
 
-LAG = 14
+LAG_ANSIBLE = 45
+LAG_MSAD = 14
 DEBUG = False
 
 import sys, base64, uuid, struct, datetime, xmltodict, json
@@ -15,6 +16,7 @@ from dateutil import parser
 ldif = [{}]
 clear = set()
 unclear = set()
+parser_err_count = 0
 
 def convert_sid(binary):
     version = struct.unpack('B', binary[0:1])[0]
@@ -72,12 +74,13 @@ with open(sys.argv[1], "r") as f:
 # errors
 
 if DEBUG: print('clear:', clear, file = sys.stderr)
-if DEBUG: print('unclear:', unclear, file = sys.stderr)
+if DEBUG: print('unclear', unclear, file = sys.stderr)
 
 # get ansible comps
 
 now = datetime.datetime.now()
-lag = datetime.timedelta(days = LAG)
+lag_ansible = datetime.timedelta(days = LAG_ANSIBLE)
+lag_msad = datetime.timedelta(days = LAG_MSAD)
 
 ansible = set()
 history = {}
@@ -90,7 +93,7 @@ with open(fname_hist) as f:
 for r in history['computers']:
     hostname = r['hostname'].split('.')[0].upper()
     computers[hostname] = (r.get('ip', ''), r.get('serial', ''), r.get('mac', ''))
-    if parser.parse(r['timestamp']) > now - lag:
+    if parser.parse(r['timestamp']) > now - lag_ansible:
         ansible.add(hostname)
 
 # report
@@ -100,19 +103,26 @@ tmp_report = []
 for r in ldif:
     if 'DUPLICATE' in r.get('sAMAccountName', ''): continue
     try:
-        if parser.parse(r.get('lastLogonTimestamp')) > now - lag:
-            tmp_report.append(
-                (
-                r.get('operatingSystem', ''),
-                r.get('dn').split(',', 1)[1],
-                r.get('dNSHostName').split('.')[0].upper(),
-                r.get('lastLogonTimestamp'),
-                True if r.get('dNSHostName').split('.')[0].upper() in ansible else False )
-            )
-    except:
-        pass
+        active = True if parser.parse(r.get('lastLogonTimestamp', '1970-01-01T00:00:01')) > now - lag_msad else False
+        tmp_report.append(
+            (
+            r.get('operatingSystem', ''),
+            r.get('dn', ',').split(',', 1)[1],
+            r.get('cn', ''),
+            r.get('dNSHostName', '').split('.')[0].upper(),
+            r.get('lastLogonTimestamp', '1970-01-01T00:00:01'),
+            True if r.get('dNSHostName', '').split('.')[0].upper() in ansible else False,
+            active)
+        )
+    except Exception as e:
+        if DEBUG: print('parser_error', r, e, file = sys.stderr)
+        parser_err_count += 1
 
-tmp_report.sort(key = lambda x: (x[0], x[1], - parser.parse(x[3]).timestamp()))
+tmp_report.sort(key = lambda x: (x[0], x[1], - parser.parse(x[4]).timestamp()))
+
+if DEBUG: print('ldif_len', len(ldif), file = sys.stderr)
+if DEBUG: print('parser_err_count', parser_err_count, file = sys.stderr)
+if DEBUG: print('report_len', len(tmp_report), file = sys.stderr)
 
 report = {'root': {'computer': []}}
 
@@ -122,9 +132,11 @@ for i, r in enumerate(tmp_report):
         'id': i,
         'operatingSystem': r[0],
         'ou': r[1],
-        'dNSHostName': r[2],
-        'lastLogonTimestamp': r[3],
-        'ansible': r[4],
+        'cn': r[2],
+        'dNSHostName': r[3],
+        'lastLogonTimestamp': r[4],
+        'ansible': r[5],
+        'active': r[6],
         'ip': c[0] if c else '',
         'serial': c[1] if c else '',
         'mac': c[2] if c else ''  })
@@ -139,7 +151,7 @@ with open(sys.argv[3], 'w', encoding = 'utf-8') as out_file:
         for r in  report['root']['computer']:
             os[r['operatingSystem']] = os.get(r['operatingSystem'], 0) + 1
         html = "<html><head></head><body>\n"
-        html += "<table border='1' cellpadding='0' cellspacing='0' style='border-collapse:collapse;'>\n"
+        html += "<table border='1' cellpadding='0' cellspacing='0' style='border-collapse:collapse;' table-layout='fixed;'>\n"
         for k, v in os.items():
             k = 'None' if k == '' else k
             html += f"<b>{k}: {v}</b>, " if v > 10 else f"{k}: {v}, "

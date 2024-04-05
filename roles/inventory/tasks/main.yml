@@ -210,10 +210,14 @@
         result_flags: >
           {{ 'ma' if var_mandatory_access else '' }}
           {{ 'aw' if var_admin_workstation else '' }}
+          {{ 'sw' if var_superadmin_workstation else '' }}
           {{ 'na' if var_network_auditd else '' }}
           {{ 'ao' if var_always_on_display else '' }}
           {{ 'dw' if var_devel_workstation else '' }}
+          {{ 'tw' if var_test_workstation else '' }}
+          {{ 'lw' if var_legacy_workstation else '' }}
           {{ 'uo' if var_unrestricted_os else '' }}
+          {{ 'ro' if var_restricted_os else '' }}
           {{ 'tc' if var_thin_client else '' }}
           {{ 'he' if var_home_with_exec else '' }}
           {{ 'du' if var_dist_upgrade else '' }}
@@ -266,4 +270,35 @@
   tags:
     - ws
     - monitored_packages
+
+- name: Locally installed packages @locally_installed_packages
+  ignore_errors: true
+  block:
+    - name: Locally installed packages Present @locally_installed_packages
+      package:
+        name: aptitude
+        state: present
+    - name: Locally installed packages Aptitude @locally_installed_packages
+      changed_when: false
+      command: aptitude search ~o -F %p
+      register: result
+    - name: Locally installed packages Set @monitored_packages
+      changed_when: false
+      set_fact:
+         locally_installed_packages: "{{ locally_installed_packages|default([]) + [item] }}"
+      when: result.stdout_lines|length > 0
+      with_items: "{{result.stdout_lines}}"
+    - name: Locally installed packages Set @monitored_packages
+      changed_when: false
+      set_fact:
+        locally_installed:
+          packages: "{{locally_installed_packages}}"
+    - name: Locally installed packages Syslogger @monitored_packages
+      changed_when: false
+      syslogger:
+        msg: "locally_installed: {{locally_installed}}"
+  when: ansible_pkg_mgr == 'apt'
+  tags:
+    - ws
+    - locally_installed_packages
 
