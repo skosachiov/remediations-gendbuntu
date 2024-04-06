@@ -138,7 +138,7 @@ The ansible-controlled version of fapolisyd is an analogue of Applocker on the W
 - use whitelist executables using ansible updated fapolicyd.trust
 - prohibit execution of non-whitelisted binary files for regular users
 - prevent bytecode and source code from running in runtime environments (OpenJDK, Python, Wine etc.) from the home and tmp folders
-- make an exception for the system user (auid=-1, patch included)
+- make an exception for root and ansible user
 - add executable files from installed deb or rpm to the whitelist daily
 
 ## firewall
