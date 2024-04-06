@@ -45,6 +45,7 @@
     - role: common
     - role: desktop
     - role: dlp
+    - role: fapolicyd
     - role: firewall
     - role: flatpak
     - role: integrity-check

@@ -1,4 +1,5 @@
 # Allow execute for system users
 
+allow perm=execute auid=root all : all
 allow perm=execute auid={{var_ansible_username}} all : all
 # allow perm=execute auid=-1 all : all
