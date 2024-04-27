@@ -1,0 +1,75 @@
+- name: Install kde and sddm @install_kde_sddm
+  package:
+    name:
+      - plasma-desktop
+      - sddm
+      - sddm-theme-breeze
+    state: present
+  when:
+    - var_preffered_desktop is defined
+    - var_preffered_desktop == 'kde'
+  tags:
+    - ws
+    - install_kde_sddm
+
+- name: Sddm_hide_users @sddm_hide_users
+  block:
+    - name: Sddm_hide_users Copy patch @sddm_hide_users
+      changed_when: false
+      copy:
+        src: "{{playbook_dir}}/roles/desktop/tasks/never/sddm-breeze-theme.patch"
+        dest: /tmp/sddm-breeze-theme.patch
+    - name: Sddm_hide_users Check patch @sddm_hide_users
+      changed_when: false
+      shell:
+        cmd: patch -R -p0 -s -f --dry-run < /tmp/sddm-breeze-theme.patch
+        chdir: /usr/share
+      register: result
+    - name: Sddm_hide_users Patch @sddm_hide_users
+      shell:
+        cmd: patch -p0 < /tmp/sddm-breeze-theme.patch
+        chdir: /usr/share
+      when: result.rc == 1
+    - name: Sddm_hide_users Patch @sddm_hide_users
+      file:
+        path: /usr/share/sddm/themes/breeze/Main.qml
+        mode: a+r
+    - name: Sddm_hide_users Rm patch @sddm_hide_users
+      changed_when: false
+      file:
+        path: /tmp/sddm-breeze-theme.patch
+        state: absent
+  when:
+    - var_preffered_desktop is defined
+    - var_preffered_desktop == 'kde'
+  tags:
+    - ws
+    - sddm_hide_users
+
+- name: Sddm configure @sddm_configure
+  copy:
+    backup: true
+    dest: /etc/sddm.conf
+    content: |
+      [Theme]
+      Current=/usr/share/sddm/themes/breeze
+  when:
+    - var_preffered_desktop is defined
+    - var_preffered_desktop == 'kde'
+  tags:
+    - ws
+    - sddm_configure
+
+- name: Sddm default dm @sddm_default_dm
+  copy:
+    backup: true
+    dest: /etc/X11/default-display-manager
+    content: |
+      /usr/bin/sddm
+  when:
+    - var_preffered_desktop is defined
+    - var_preffered_desktop == 'kde'
+  tags:
+    - ws
+    - sddm_default_dm
+

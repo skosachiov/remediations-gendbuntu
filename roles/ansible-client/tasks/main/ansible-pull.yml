@@ -32,6 +32,7 @@
     dest: /etc/cron.d/ansible-pull-repair
     content: |
       30 04 * * * root find /root/.ansible/pull/* -maxdepth 0 -type d -exec bash -c "if ! git -C {} diff --exit-code; then rm -f -r {}; fi" \;
+      31 04 * * * root find /root/.ansible/pull/ -maxdepth 3 -type f -name HEAD -mtime +7 -exec bash -c "echo {} | cut -f 5 -d / | xargs -I {} rm -f -r /root/.ansible/pull/{}" \;
       # EOF
   notify: Cron restarted
   tags:

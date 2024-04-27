@@ -211,17 +211,20 @@
           {{ 'ma' if var_mandatory_access else '' }}
           {{ 'aw' if var_admin_workstation else '' }}
           {{ 'sw' if var_superadmin_workstation else '' }}
+          {{ 'pw' if var_programmer_workstation else '' }}
           {{ 'na' if var_network_auditd else '' }}
           {{ 'ao' if var_always_on_display else '' }}
           {{ 'dw' if var_devel_workstation else '' }}
-          {{ 'tw' if var_test_workstation else '' }}
-          {{ 'lw' if var_legacy_workstation else '' }}
           {{ 'uo' if var_unrestricted_os else '' }}
           {{ 'ro' if var_restricted_os else '' }}
           {{ 'tc' if var_thin_client else '' }}
           {{ 'he' if var_home_with_exec else '' }}
           {{ 'du' if var_dist_upgrade else '' }}
           {{ 'mu' if var_manual_updates else '' }}
+          {{ 'fa' if var_fapolicyd_service else '' }}
+          {{ 'fu' if var_fs_userspace else '' }}
+          {{ 'kd' if var_preffered_desktop == 'kde' else '' }}
+          {{ 'uf' if var_preferred_dlp == 'usbguard' else '' }}
     - name: Print main ansible facts @basic_security_facts
       changed_when: false
       set_fact:
@@ -235,7 +238,7 @@
           host_flags: "{{result_flags.split() | join(':')}}"
     - name: Print main ansible facts @basic_security_facts
       changed_when: false
-      ignore_errors: yes
+      ignore_errors: true
       syslogger:
         msg: "basic_security_facts: {{basic_security_facts}}"
   rescue:

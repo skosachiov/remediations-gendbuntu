@@ -172,3 +172,29 @@
     - ws
     - sec
     - syslog_ng_memorymax
+
+- name: Set syslog-ng global options @syslog_ng_global_options
+  ignore_errors: "{{ansible_check_mode}}"
+  block:
+    - name: Set syslog-ng global options @syslog_ng_global_options
+      replace:
+        path: /etc/syslog-ng/syslog-ng.conf
+        regexp: 'owner\(\"[a-z]*\"\);\s*group\(\"[a-z]*\"\);\s*perm\([0-9]*\);'
+        replace: 'owner("root"); group("adm"); perm(0640);'
+      notify: Syslog-ng restarted
+    - name: Set syslog-ng global options @syslog_ng_global_options
+      blockinfile:
+        dest: /etc/syslog-ng/syslog-ng.conf
+        marker_begin: BEGIN_GLOBAL_OPTIONS
+        marker_end: END_GLOBAL_OPTIONS
+        insertafter: "bad_hostname"
+        block: |
+          log_msg_size(8192); log_fifo_size(1024); flush_lines(128);
+        create: true
+        state: "{{ 'present' if var_installation_type in ['workstation', 'devel-workstation'] else 'absent' }}"
+      notify: Syslog-ng restarted
+  when: ansible_facts.nodename != var_dp_rsyslog_server
+  tags:
+    - ws
+    - sec
+    - syslog_ng_global_options

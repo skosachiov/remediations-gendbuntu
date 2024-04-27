@@ -32,12 +32,25 @@
         dest: /etc/fapolicyd/
         mode: go-rwx
       notify: Fapolicyd restarted
+    - name: Fapolicyd active Trust @fapolicyd_active
+      copy:
+        src: "{{item}}"
+        dest: '/etc/fapolicyd/trust.d/'
+        mode: '0640'
+      with_fileglob:
+        - "{{playbook_dir}}/inventories/distribution/{{ansible_distribution}}/{{ansible_distribution_major_version}}/files/fapolicyd/trust.d/*"
+      notify: Fapolicyd restarted
     - name: Fapolicyd active Lineinfile @fapolicyd_active
       lineinfile:
         dest: /etc/fapolicyd/fapolicyd.conf
         regexp: ^db_max_size
-        line: db_max_size = 128
+        line: db_max_size = 384
       notify: Fapolicyd restarted
+    - name: Fapolicyd active Lineinfile @fapolicyd_active
+      lineinfile:
+        dest: /etc/fapolicyd/fapolicyd.conf
+        regexp: ^integrity
+        line: integrity = sha256
     - name: Fapolicyd active Lineinfile @fapolicyd_active
       lineinfile:
         dest: /etc/fapolicyd/fapolicyd.conf
@@ -59,38 +72,78 @@
     - name: Fapolicyd active Failed @fapolicyd_active
       debug:
         msg: "Fapolicyd active Failed"
+  when:
+    - var_fapolicyd_service is defined
+    - var_fapolicyd_service
   tags:
     - ws
     - sec
     - fapolicyd_active
 
-- name: Fapolicyd remove outdated files @fapolicyd_remove_outdated_files
+- name: Fapolicyd remove outdated files @fapolicyd_remove_outdated_rules
   ignore_errors: true
   block:
-    - name: Fapolicyd remove outdated files Set default @fapolicyd_remove_outdated_files
+    - name: Fapolicyd remove outdated files Set default @fapolicyd_remove_outdated_rules
       set_fact:
         local_files:
           - 19-dummy.rules
-    - name: Fapolicyd remove outdated files Set local @fapolicyd_remove_outdated_files
+    - name: Fapolicyd remove outdated files Set local @fapolicyd_remove_outdated_rules
       set_fact:
         local_files: "{{ local_files + [item | basename | replace('.j2', '') ] }}"
       with_fileglob:
         - "{{playbook_dir}}/roles/fapolicyd/templates/*"
-    - name: Fapolicyd remove outdated files Find @fapolicyd_remove_outdated_files
+    - name: Fapolicyd remove outdated files Find @fapolicyd_remove_outdated_rules
       find:
         path: /etc/fapolicyd/rules.d/
         recurse: no
         file_type: file
       register: remote_files_path
-    - name: Fapolicyd remove outdated files Set remote @fapolicyd_remove_outdated_files
+    - name: Fapolicyd remove outdated files Set remote @fapolicyd_remove_outdated_rules
       set_fact:
         remote_files: "{{ remote_files | default([]) + [item.path | basename] }}"
       with_items: "{{remote_files_path.files}}"
-    - name: Fapolicyd remove outdated files Remove @fapolicyd_remove_outdated_files
+    - name: Fapolicyd remove outdated files Remove @fapolicyd_remove_outdated_rules
       file:
         path: /etc/fapolicyd/rules.d/{{item}}
         state: absent
       with_items: "{{ remote_files | difference(local_files) }}"
+  when:
+    - var_fapolicyd_service is defined
+    - var_fapolicyd_service
   tags:
     - ws
-    - fapolicyd_remove_outdated_files
+    - fapolicyd_remove_outdated_rules
+
+- name: Fapolicyd remove outdated files @fapolicyd_remove_outdated_trust
+  ignore_errors: true
+  block:
+    - name: Fapolicyd remove outdated files Set default @fapolicyd_remove_outdated_trust
+      set_fact:
+        local_files:
+          - dummy_1.2.3-4.trust
+    - name: Fapolicyd remove outdated files Set local @fapolicyd_remove_outdated_trust
+      set_fact:
+        local_files: "{{ local_files + [item | basename] }}"
+      with_fileglob:
+        - "{{playbook_dir}}/inventories/distribution/{{ansible_distribution}}/{{ansible_distribution_major_version}}/files/fapolicyd/trust.d/*"
+    - name: Fapolicyd remove outdated files Find @fapolicyd_remove_outdated_trust
+      find:
+        path: /etc/fapolicyd/trust.d/
+        recurse: no
+        file_type: file
+      register: remote_files_path
+    - name: Fapolicyd remove outdated files Set remote @fapolicyd_remove_outdated_trust
+      set_fact:
+        remote_files: "{{ remote_files | default([]) + [item.path | basename] }}"
+      with_items: "{{remote_files_path.files}}"
+    - name: Fapolicyd remove outdated files Remove @fapolicyd_remove_outdated_trust
+      file:
+        path: /etc/fapolicyd/trust.d/{{item}}
+        state: absent
+      with_items: "{{ remote_files | difference(local_files) }}"
+  when:
+    - var_fapolicyd_service is defined
+    - var_fapolicyd_service
+  tags:
+    - ws
+    - fapolicyd_remove_outdated_trust

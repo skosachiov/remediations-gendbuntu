@@ -1,42 +1,8 @@
 # use Hidden=true to hide
 
-- name: Users desktop files @users_desktop_files
-  ignore_errors: "{{ansible_check_mode}}"
+- name: Users desktop symlinks @users_desktop_symlinks
   block:
-    - name: Users desktop files Create tmp dir @users_desktop_files
-      changed_when: false
-      tempfile:
-        state: directory
-      register: desktop_tmp_dir
-    - name: Users desktop files Copy commons to tmp @users_desktop_files
-      changed_when: false
-      copy:
-        src: "{{item}}"
-        dest: "{{desktop_tmp_dir.path}}/{{item|basename}}"
-      with_fileglob:
-        - "{{playbook_dir}}/inventories/all/files/desktop/applications/*"
-    - name: Users desktop files Copy to tmp @users_desktop_files
-      changed_when: false
-      copy:
-        src: "{{item}}"
-        dest: "{{desktop_tmp_dir.path}}/{{item|basename}}"
-      with_fileglob:
-        - "{{playbook_dir}}/inventories/subnets/{{var_subnet}}/files/desktop/applications/*"
-    - name: Users desktop files Copy company to tmp @users_desktop_files
-      changed_when: false
-      copy:
-        src: "{{item}}"
-        dest: "{{desktop_tmp_dir.path}}/{{item|basename}}"
-      with_fileglob:
-        - "{{playbook_dir}}/inventories/branches/{{var_company|lower}}/files/desktop/applications/*"
-    - name: Users desktop files Find files @users_desktop_files
-      find:
-        paths: "{{desktop_tmp_dir.path}}/"
-        recurse: no
-        patterns: '*.desktop'
-        file_type: file
-      register: desktop_files
-    - name: Users desktop files Find home @users_desktop_files
+    - name: Users desktop symlinks Find @users_desktop_symlinks
       find:
         paths: /home
         recurse: yes
@@ -44,16 +10,14 @@
         patterns: "Desktop"
         file_type: any
       register: desktopdirs
-    - name: Users desktop files Copy @users_desktop_files
-      copy:
-        src: "{{item.0.path}}"
-        dest: "{{item.1.path}}/{{item.0.path|basename}}"
-        mode: go+r
-        force: false
-        owner: "{{item.1.path.split('/')[2]}}"
-        remote_src: yes
+    - name: Users desktop symlinks File @users_desktop_symlinks
+      file:
+        src: "/usr/share/applications/{{item.0}}"
+        dest: "{{item.1.path}}/{{item.0}}"
+        force: true
+        state: link
       with_nested:
-        - "{{desktop_files.files}}"
+        - "{{var_desktop_symlinks}}"
         - "{{desktopdirs.files}}"
   rescue:
     - name: Failed to copy users desktop files
@@ -61,7 +25,7 @@
         msg: "Failed to copy users desktop files"
   tags:
     - ws
-    - users_desktop_files
+    - users_desktop_symlinks
 
 - name: Users desktop files remove Find home @users_desktop_files
   ignore_errors: "{{ansible_check_mode}}"

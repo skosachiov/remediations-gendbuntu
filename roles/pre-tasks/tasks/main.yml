@@ -125,7 +125,7 @@
         var_external_ansible_ip: "{{not result.failed}}"
   tags: always
 
-# Set admin mandatory control
+# # Set flag mandatory control "ma"
 
 - name: Check file exists @default
   stat:
@@ -139,7 +139,7 @@
   when: result.stat.exists
   tags: always
 
-# Set admin workstations
+# Set flag admin workstations "aw"
 
 - name: Check file exists @default
   stat:
@@ -159,7 +159,7 @@
   when: var_admin_workstation
   tags: always
 
-# Set superadmin workstations
+# Set flag superadmin workstations "sw"
 
 - name: Check file exists @default
   stat:
@@ -179,7 +179,7 @@
   when: var_superadmin_workstation
   tags: always
 
-# Set network auditd
+# Set flag network auditd "na"
 
 - name: Check file exists @default
   stat:
@@ -193,7 +193,7 @@
   when: result.stat.exists
   tags: always
 
-# Set always on display
+# Set flag always on display "ao"
 
 - name: Check file exists @default
   stat:
@@ -207,7 +207,21 @@
   when: result.stat.exists
   tags: always
 
-# Set devel workstation
+# Set flag home with exec "he"
+
+- name: Check file exists @default
+  stat:
+    path: /etc/ansible/home-with-exec
+  register: result
+  tags: always
+
+- name: Set home with exec @default
+  set_fact:
+    var_home_with_exec: true
+  when: result.stat.exists
+  tags: always
+
+# Set flag devel workstation "dw"
 
 - name: Check file exists @default
   stat:
@@ -227,7 +241,7 @@
   when: var_devel_workstation
   tags: always
 
-# Set unrestricted os
+# Set flag unrestricted os "uo"
 
 - name: Check file exists @default
   stat:
@@ -241,7 +255,7 @@
   when: result.stat.exists
   tags: always
 
-# Set dist upgrade
+# Set flag dist upgrade "du"
 
 - name: Check file exists @default
   stat:
@@ -255,7 +269,7 @@
   when: result.stat.exists
   tags: always
 
-# Set manual updates
+# Set flag manual updates "mu"
 
 - name: Check file exists @default
   stat:
@@ -270,7 +284,7 @@
   when: result.stat.exists
   tags: always
 
-# Set fs usersapce
+# Set flag fs userspace "fu"
 
 - name: Check file exists @default
   stat:
@@ -284,7 +298,7 @@
   when: result.stat.exists
   tags: always
 
-# Set thin client
+# Set flag thin client "tc"
 
 - name: Check file exists @default
   stat:
@@ -295,6 +309,49 @@
 - name: Set thin client @default
   set_fact:
     var_thin_client: true
+  when: result.stat.exists
+  tags: always
+
+# Set flag programmer workstation "pw"
+
+- name: Check programmer workstation @default
+  stat:
+    path: /etc/ansible/programmer-workstation
+  register: result
+  tags: always
+
+- name: Set programmer workstation @default
+  set_fact:
+    var_programmer_workstation: true
+  when: result.stat.exists
+  tags: always
+
+# Set flag kde desktop "kd"
+
+- name: Check kde-desktop @default
+  stat:
+    path: /etc/ansible/kde-desktop
+  register: result
+  tags: always
+
+- name: Set kde-desktop @default
+  set_fact:
+    var_preffered_desktop: kde
+  when: result.stat.exists
+  tags: always
+
+# Set flag fapolicyd service "fa"
+
+- name: Check fapolicyd-service @default
+  stat:
+    path: /etc/ansible/fapolicyd-service
+  register: result
+  tags: always
+
+- name: Check fapolicyd-service @default
+  set_fact:
+    var_fapolicyd_service: true
+    var_mandatory_access_ima: false
   when: result.stat.exists
   tags: always
 

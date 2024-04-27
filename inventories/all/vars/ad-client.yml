@@ -2,4 +2,11 @@ var_ad_site: paris-site
 var_kdc: paris-dc.si.mi
 var_admin_server: paris-dc.si.mi
 var_ad_gpo: false
+
 var_simple_deny_groups: "Backup\ Operators, Print\ Operators, Server\ Operators"
+
+var_ad_access_filter: >-
+  (&
+  (!(memberOf=CN=Deny Logon Locally,OU=GPO,OU=Microsoft,OU=Groups,OU=System Accounts,DC=example,DC=com))
+  (!(memberOf=CN=RunAsService,OU=GPO,OU=Microsoft,OU=Groups,OU=System Accounts,DC=example,DC=com))
+  )

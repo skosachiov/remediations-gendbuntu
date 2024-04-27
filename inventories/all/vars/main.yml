@@ -43,6 +43,8 @@ var_dist_upgrade: false
 var_consistent_upgrade: false
 var_manual_updates: false
 var_overlay_root_fs: false
+var_fapolicyd_service: false
+var_home_with_exec: false
 
 var_no_proxy: "127.0.0.1,10.0.0.0/8,localhost,*.si.mi"
 

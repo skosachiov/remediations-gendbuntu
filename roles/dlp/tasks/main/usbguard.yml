@@ -32,6 +32,7 @@
         marker: "{mark}"
         marker_begin: block serial "ANSIBLE_BEGIN"
         marker_end: block serial "ANSIBLE_END"
+        insertbefore: "BOF"
         block: "{{var_usb_rules}}"
       notify: Usbguard restarted
     - name: Usbguard allowed devices Permissions @usbguard_allowed_devices

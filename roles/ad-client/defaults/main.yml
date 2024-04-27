@@ -5,3 +5,9 @@ var_ad_gpo: false
 var_kdc: ad.example.test
 var_admin_server: ad.example.test
 var_ad_server: false
+
+var_ad_access_filter: >-
+  (&
+  (!(memberOf=CN=Deny Logon Locally,OU=GPO,OU=Microsoft,OU=Groups,OU=System Accounts,DC=example,DC=com))
+  (!(memberOf=CN=RunAsService,OU=GPO,OU=Microsoft,OU=Groups,OU=System Accounts,DC=example,DC=com))
+  )

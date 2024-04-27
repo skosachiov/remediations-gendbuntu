@@ -1,0 +1,22 @@
+--- sddm/themes/breeze/Main.qml.orig 2024-04-15 13:13:24.242989315 +0300
++++ sddm/themes/breeze/Main.qml      2024-04-15 13:14:36.347074574 +0300
+@@ -176,8 +176,8 @@
+                 userListModel: userModel
+                 loginScreenUiVisible: loginScreenRoot.uiVisible
+                 userListCurrentIndex: userModel.lastIndex >= 0 ? userModel.lastIndex : 0
+-                lastUserName: userModel.lastUser
+-                showUserList: {
++                lastUserName: "" // userModel.lastUser
++                showUserList:false /* {
+                     if (!userListModel.hasOwnProperty("count")
+                         || !userListModel.hasOwnProperty("disableAvatarsThreshold")) {
+                         return false
+@@ -192,7 +192,7 @@
+                     }
+
+                     return userListModel.count <= userListModel.disableAvatarsThreshold
+-                }
++                } */
+
+                 notificationMessage: {
+                     const parts = [];

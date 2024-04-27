@@ -14,6 +14,11 @@ var_services_blacklist:
 var_sudoers_groups_whitelist:
   - "sudo:x:27:ansible"
 
+var_sudoers_d_sha256_whitelist:
+  - 9201c80451142c6b96c29fd621f257ed00002997ace7a8d44f336bd3a021b1c3
+  - 9d32ba75416d59e547e6e877c231a42389f2895d85aaa226dedb6998b67e2e8b
+  - d541d66cd98cf9ba635cdde3848af0972656d8f397f29196b875290fded2d2a2
+
 var_suid_whitelist:
   - "/usr/lib/chromium/chrome-sandbox"
   - "/usr/lib/kde4/libexec/fileshareset"

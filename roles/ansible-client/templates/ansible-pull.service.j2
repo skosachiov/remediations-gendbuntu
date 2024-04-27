@@ -4,5 +4,5 @@ Wants=ansible-pull.timer
 
 [Service]
 Type=oneshot
-ExecStartPre=/bin/bash -c '/usr/bin/find /root/.ansible/pull/{{var_ansible_repo}}/.git/ -name *.lock -mtime +1 -exec rm -f {} \;'
+ExecStartPre=/bin/bash -c '/usr/bin/find /root/.ansible/pull/{{var_ansible_repo}}/.git/ -name *.lock -mtime +1 -exec rm -f {} \\;'
 ExecStart=/bin/bash -c '/usr/bin/ansible-pull -o -i localhost -d /root/.ansible/pull/{{var_ansible_repo}} -U {{var_ansible_git}} {{var_ansible_playbook}}| logger -n {{var_rsyslog_server}}'
