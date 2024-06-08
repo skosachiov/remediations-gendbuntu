@@ -1,4 +1,4 @@
-name: remediations-gendbuntu-ubuntu-24.04
+name: ubuntu-24.04
 
 on:
   push:
