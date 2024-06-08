@@ -24,7 +24,7 @@
     - check_lock_session_policy
 
 - name: Disable NetworkManager for user @nm_disallow_policy
-  ignore_errors: "{{ansible_check_mode}}"
+  ignore_errors: true
   block:
     - name: Disable NetworkManager for user Disallow @nm_disallow_policy
       ignore_errors: true # workaround for ubuntu 20.04

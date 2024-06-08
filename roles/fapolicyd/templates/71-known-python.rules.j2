@@ -7,10 +7,12 @@ allow perm=open all trust=1 : ftype=application/x-bytecode.python
 
 allow perm=any auid=-1 : ftype=text/x-python
 allow perm=any auid=0 : ftype=text/x-python
+allow perm=any auid=1000 : ftype=text/x-python
 allow perm=any auid={{var_ansible_username}} : ftype=text/x-python
 allow perm=any all : ftype=text/x-python trust=1
 allow perm=open auid=-1 : ftype=application/x-bytecode.python
 allow perm=open auid=0 : ftype=application/x-bytecode.python
+allow perm=open auid=1000 : ftype=application/x-bytecode.python
 allow perm=open auid={{var_ansible_username}} : ftype=application/x-bytecode.python
 allow perm=open all : ftype=application/x-bytecode.python trust=1
 deny_syslog perm=any all : ftype=text/x-python

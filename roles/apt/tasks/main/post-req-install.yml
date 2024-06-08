@@ -7,6 +7,7 @@
       register: logged_in_users
     - name: Post req install Uri @post_req_install
       failed_when: false
+      changed_when: false
       uri:
         url: https://{{var_ansible_fqdn}}/post/{{item}}.post
         method: GET

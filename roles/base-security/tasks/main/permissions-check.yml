@@ -427,7 +427,7 @@
   ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Check dot files with write permission Find @check_dot_files_write_perm
-      shell: find /home/ -maxdepth 2 -type f -name "\.[a-zA-Z]*" -perm /go+w
+      shell: find /home/ -maxdepth 2 -type f -name ".*" -perm /go+w
       failed_when: false
       check_mode: no
       register: result

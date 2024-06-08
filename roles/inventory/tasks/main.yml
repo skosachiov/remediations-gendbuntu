@@ -296,10 +296,12 @@
       set_fact:
         locally_installed:
           packages: "{{locally_installed_packages}}"
+      when: locally_installed_packages is defined
     - name: Locally installed packages Syslogger @monitored_packages
       changed_when: false
       syslogger:
         msg: "locally_installed: {{locally_installed}}"
+      when: locally_installed is defined
   when: ansible_pkg_mgr == 'apt'
   tags:
     - ws
