@@ -68,7 +68,7 @@
         regexp: ^#?\s*(apply_updates).*
         replace: '\1 = yes'
     - name: Dnf automatic Replace apply updates @unattended_security_upgrades_dnf
-      systemd_service:
+      service:
         name: dnf-automatic.timer
         state: started
         enabled: true
