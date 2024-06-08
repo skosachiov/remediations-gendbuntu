@@ -1,4 +1,6 @@
-[![remediations-gendbuntu](https://github.com/skosachiov/remediations-gendbuntu/actions/workflows/main.yml/badge.svg)](https://github.com/skosachiov/remediations-gendbuntu/actions/workflows/main.yml)
+[![remediations-gendbuntu-ubuntu-20.04](https://github.com/skosachiov/remediations-gendbuntu/actions/workflows/main.yml/badge.svg)](https://github.com/skosachiov/remediations-gendbuntu/actions/workflows/ubuntu-20.04.yml)
+[![remediations-gendbuntu-ubuntu-22.04](https://github.com/skosachiov/remediations-gendbuntu/actions/workflows/main.yml/badge.svg)](https://github.com/skosachiov/remediations-gendbuntu/actions/workflows/ubuntu-22.04.yml)
+[![remediations-gendbuntu-ubuntu-24.04](https://github.com/skosachiov/remediations-gendbuntu/actions/workflows/main.yml/badge.svg)](https://github.com/skosachiov/remediations-gendbuntu/actions/workflows/ubuntu-24.04.yml)
 
 # License
 
