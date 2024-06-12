@@ -1,4 +1,5 @@
 - name: Enable fstrim timer @enable_fstrim_timer
+  ignore_errors: "{{ansible_check_mode}}"
   systemd:
     name: fstrim.timer
     state: started
