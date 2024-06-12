@@ -1,4 +1,5 @@
 - name: Notify on grub update @notify_on_grub_update
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Notify on grub update Stat @notify_on_grub_update
       find:
