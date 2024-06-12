@@ -1,6 +1,9 @@
 [![ubuntu-20.04](https://github.com/skosachiov/remediations-gendbuntu/actions/workflows/ubuntu-20.04.yml/badge.svg)](https://github.com/skosachiov/remediations-gendbuntu/actions/workflows/ubuntu-20.04.yml)
 [![ubuntu-22.04](https://github.com/skosachiov/remediations-gendbuntu/actions/workflows/ubuntu-22.04.yml/badge.svg)](https://github.com/skosachiov/remediations-gendbuntu/actions/workflows/ubuntu-22.04.yml)
 [![ubuntu-24.04](https://github.com/skosachiov/remediations-gendbuntu/actions/workflows/ubuntu-24.04.yml/badge.svg)](https://github.com/skosachiov/remediations-gendbuntu/actions/workflows/ubuntu-24.04.yml)
+[![rocky-8](https://github.com/skosachiov/remediations-gendbuntu/actions/workflows/rocky-8.yml/badge.svg)](https://github.com/skosachiov/remediations-gendbuntu/actions/workflows/rocky-8.yml)
+[![rocky-9](https://github.com/skosachiov/remediations-gendbuntu/actions/workflows/rocky-9.yml/badge.svg)](https://github.com/skosachiov/remediations-gendbuntu/actions/workflows/rocky-9.yml)
+
 
 # License
 
