@@ -6,11 +6,13 @@
     state: restarted
 
 - name: Rsyslog restarted
+  ignore_errors: "{{ansible_check_mode}}"
   service:
     name: rsyslog
     state: restarted
 
 - name: Syslog-ng restarted
+  ignore_errors: "{{ansible_check_mode}}"
   service:
     name: syslog-ng
     state: restarted
