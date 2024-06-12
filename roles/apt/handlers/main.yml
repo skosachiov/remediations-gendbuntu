@@ -10,6 +10,7 @@
     update_cache: yes
 
 - name: Cron restarted
+  ignore_errors: "{{ansible_check_mode}}"
   service:
     name: cron
     state: restarted

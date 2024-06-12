@@ -1,4 +1,5 @@
 - name: Cron restarted
+  ignore_errors: "{{ansible_check_mode}}"
   service:
     name: "{{'cron' if ansible_pkg_mgr == 'apt' else 'crond'}}"
     state: restarted
