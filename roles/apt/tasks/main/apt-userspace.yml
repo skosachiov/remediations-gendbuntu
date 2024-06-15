@@ -1,4 +1,5 @@
 - name: Pkgs bash scripts @pkgs_bash_scripts
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Pkgs bash scripts Download @pkgs_bash_scripts
       copy:
@@ -20,6 +21,7 @@
     - pkgs_bash_scripts
 
 - name: Pkgs systemd services @pkgs_systemd_services
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Pkgs systemd services Copy download @pkgs_systemd_services
       copy:
@@ -58,6 +60,7 @@
     - pkgs_systemd_services
 
 - name: Pkgs dbus services @pkgs_dbus_services
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Pkgs dbus services Copy download @pkgs_dbus_services
       copy:
@@ -82,6 +85,7 @@
     - pkgs_dbus_services
 
 - name: Pkgs desktop files @pkgs_desktop_files
+  ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Pkgs desktop files Copy download @pkgs_desktop_files
       copy:
@@ -116,4 +120,3 @@
   tags:
     - ws
     - pkgs_desktop_files
-
