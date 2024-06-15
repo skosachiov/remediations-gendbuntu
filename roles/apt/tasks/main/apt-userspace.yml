@@ -1,0 +1,119 @@
+- name: Pkgs bash scripts @pkgs_bash_scripts
+  block:
+    - name: Pkgs bash scripts Download @pkgs_bash_scripts
+      copy:
+        dest: /usr/local/sbin/pkgs-download.sh
+        content: |
+          #!/bin/bash
+          apt-get dist-upgrade --download-only -y
+        mode: 0755
+    - name: Pkgs bash scripts Update @pkgs_bash_scripts
+      copy:
+        dest: /usr/local/sbin/pkgs-upgrade.sh
+        content: |
+          #!/bin/bash
+          export DEBIAN_FRONTEND=noninteractive
+          apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y -f dist-upgrade
+        mode: 0755
+  tags:
+    - ws
+    - pkgs_bash_scripts
+
+- name: Pkgs systemd services @pkgs_systemd_services
+  block:
+    - name: Pkgs systemd services Copy download @pkgs_systemd_services
+      copy:
+        dest: /usr/lib/systemd/system/pkgs-download.service
+        content: |
+          [Unit]
+          Description=Pkgs_download Service
+          [Service]
+          BusName=org.freedesktop.pkgs_download
+          ExecStart=/usr/local/sbin/pkgs-download.sh
+        mode: 0644
+    - name: Pkgs systemd services Copy download link @pkgs_systemd_services
+      file:
+        src: /usr/lib/systemd/system/pkgs-download.service
+        dest: /usr/lib/systemd/system/dbus-org.freedesktop.pkgs_download.service
+        state: link
+      notify: Systemctl daemon reload
+    - name: Pkgs systemd services Copy upgrade @pkgs_systemd_services
+      copy:
+        dest: /usr/lib/systemd/system/pkgs-upgrade.service
+        content: |
+          [Unit]
+          Description=Pkgs_upgrade Service
+          [Service]
+          BusName=org.freedesktop.pkgs_upgrade
+          ExecStart=/usr/local/sbin/pkgs-upgrade.sh
+        mode: 0644
+    - name: Pkgs systemd services Copy upgrade link @pkgs_systemd_services
+      file:
+        src: /usr/lib/systemd/system/pkgs-upgrade.service
+        dest: /usr/lib/systemd/system/dbus-org.freedesktop.pkgs_upgrade.service
+        state: link
+      notify: Systemctl daemon reload
+  tags:
+    - ws
+    - pkgs_systemd_services
+
+- name: Pkgs dbus services @pkgs_dbus_services
+  block:
+    - name: Pkgs dbus services Copy download @pkgs_dbus_services
+      copy:
+        dest: /usr/share/dbus-1/system-services/org.freedesktop.pkgs_download.service
+        content: |
+          [D-BUS Service]
+          Name=org.freedesktop.pkgs_download
+          Exec=/bin/false
+          SystemdService=dbus-org.freedesktop.pkgs_download.service
+        mode: 0644
+    - name: Pkgs dbus services Copy upgrade @pkgs_dbus_services
+      copy:
+        dest: /usr/share/dbus-1/system-services/org.freedesktop.pkgs_upgrade.service
+        content: |
+          [D-BUS Service]
+          Name=org.freedesktop.pkgs_upgrade
+          Exec=/bin/false
+          SystemdService=dbus-org.freedesktop.pkgs_upgrade.service
+        mode: 0644
+  tags:
+    - ws
+    - pkgs_dbus_services
+
+- name: Pkgs desktop files @pkgs_desktop_files
+  block:
+    - name: Pkgs desktop files Copy download @pkgs_desktop_files
+      copy:
+        dest: /usr/share/applications/pkgs-download.desktop
+        content: |
+          [Desktop Entry]
+          Type=Application
+          Version=1.0
+          Name=Pkgs Download
+          Comment=Download all packages that will be required to update the system
+          Path=/tmp
+          Exec=dbus-send --system --type=signal --dest=org.freedesktop.pkgs_download /org/freedesktop/pkgs_download org.freedesktop.pkgs_download
+          Icon=synaptic
+          Terminal=true
+          Categories=System;
+        mode: 0644
+    - name: Pkgs desktop files Copy upgrade @pkgs_desktop_files
+      copy:
+        dest: /usr/share/applications/pkgs-upgrade.desktop
+        content: |
+          [Desktop Entry]
+          Type=Application
+          Version=1.0
+          Name=Pkgs Upgrade
+          Comment=Upgrade all packages
+          Path=/tmp
+          Exec=dbus-send --system --type=signal --dest=org.freedesktop.pkgs_upgrade /org/freedesktop/pkgs_upgrade org.freedesktop.pkgs_upgrade
+          Icon=synaptic
+          Terminal=true
+          Categories=System;
+        mode: 0644
+  tags:
+    - ws
+    - pkgs_desktop_files
+

@@ -36,6 +36,7 @@
   roles:
     - role: audit
     - role: apt
+      tags: always
     - role: ad-client
     - role: ansible-client
     - role: antivirus
@@ -46,7 +47,6 @@
     - role: desktop
     - role: dlp
     - role: fapolicyd
-      tags: always
     - role: firewall
     - role: flatpak
     - role: integrity-check
