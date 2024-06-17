@@ -1,0 +1,193 @@
+- name: Pkgs bash scripts @pkgs_bash_scripts
+  ignore_errors: "{{ansible_check_mode}}"
+  block:
+    - name: Pkgs bash scripts Download @pkgs_bash_scripts
+      copy:
+        dest: /usr/local/sbin/pkgs-download.sh
+        content: |
+          #!/bin/bash
+          export LANG=C.UTF-8
+          {% if ansible_pkg_mgr == 'apt' %}
+          apt update
+          (umask 002 && apt-get dist-upgrade --download-only -y > /tmp/pkgs-userspace.log)
+          {% else %}
+          (umask 002 && dnf update --downloadonly --refresh -y > /tmp/pkgs-userspace.log)
+          {% endif %}
+        mode: 0755
+    - name: Pkgs bash scripts Update @pkgs_bash_scripts
+      copy:
+        dest: /usr/local/sbin/pkgs-upgrade.sh
+        content: |
+          #!/bin/bash
+          export LANG=C.UTF-8
+          {% if ansible_pkg_mgr == 'apt' %}
+          export DEBIAN_FRONTEND=noninteractive
+          apt update
+          (umask 002 && apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y -f dist-upgrade > /tmp/pkgs-userspace.log)
+          if grep "apt --fix-broken install" /tmp/pkgs-userspace.log; then
+            apt --fix-broken install -y
+            (umask 002 && apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y -f dist-upgrade > /tmp/pkgs-userspace.log)
+          fi
+          {% else %}
+          (umask 002 && dnf update --refresh -y > /tmp/pkgs-userspace.log)
+          {% endif %}
+        mode: 0755
+  tags:
+    - ws
+    - pkgs_bash_scripts
+
+- name: Pkgs bash scripts @pkgs_zenity_progress
+  ignore_errors: "{{ansible_check_mode}}"
+  block:
+    - name: Pkgs bash scripts Download @pkgs_zenity_progress
+      copy:
+        dest: /usr/local/bin/pkgs-download-progress.sh
+        content: |
+          #!/bin/bash
+          (
+          echo "10"; sleep 4;
+          grep "apt --fix-broken install" /tmp/pkgs-userspace.log | sed "s/^/# /";
+          while ! grep -q "Calculating upgrade..." /tmp/pkgs-userspace.log; do sleep 2; done;
+          grep "Calculating upgrade..." /tmp/pkgs-userspace.log | sed "s/^/# /";
+          echo "50"; sleep 2;
+          while ! grep -q "[0-9] upgraded" /tmp/pkgs-userspace.log; do sleep 2; done;
+          grep "[0-9] upgraded" /tmp/pkgs-userspace.log | sed "s/^/# /";
+          echo "100"; sleep 2;
+          ) |
+          zenity --progress \
+          --title="Pkgs Download" \
+          --text="Reading package lists..." \
+          --percentage=0
+          if [ "$?" = -1 ] ; then
+            zenity --error \
+              --text="Download canceled."
+          fi
+        mode: 0755
+    - name: Pkgs bash scripts Update @pkgs_zenity_progress
+      copy:
+        dest: /usr/local/bin/pkgs-upgrade-progress.sh
+        content: |
+          #!/bin/bash
+          (
+          echo "10"; sleep 4;
+          grep "apt --fix-broken install" /tmp/pkgs-userspace.log | sed "s/^/# /";
+          while ! grep -q "Calculating upgrade..." /tmp/pkgs-userspace.log; do sleep 2; done;
+          grep "Calculating upgrade..." /tmp/pkgs-userspace.log | sed "s/^/# /";
+          echo "50"; sleep 2;
+          while ! grep -q "[0-9] upgraded" /tmp/pkgs-userspace.log; do sleep 2; done;
+          grep "[0-9] upgraded" /tmp/pkgs-userspace.log | sed "s/^/# /";
+          echo "100"; sleep 2;
+          ) |
+          zenity --progress \
+          --title="Pkgs Download" \
+          --text="Reading package lists..." \
+          --percentage=0
+          if [ "$?" = -1 ] ; then
+            zenity --error \
+              --text="Download canceled."
+          fi
+        mode: 0755
+  tags:
+    - ws
+    - pkgs_zenity_progress
+
+- name: Pkgs systemd services @pkgs_systemd_services
+  ignore_errors: "{{ansible_check_mode}}"
+  block:
+    - name: Pkgs systemd services Copy download @pkgs_systemd_services
+      copy:
+        dest: /usr/lib/systemd/system/pkgs-download.service
+        content: |
+          [Unit]
+          Description=Pkgs_download Service
+          [Service]
+          BusName=org.freedesktop.pkgs_download
+          ExecStart=/usr/local/sbin/pkgs-download.sh
+        mode: 0644
+    - name: Pkgs systemd services Copy download link @pkgs_systemd_services
+      file:
+        src: /usr/lib/systemd/system/pkgs-download.service
+        dest: /usr/lib/systemd/system/dbus-org.freedesktop.pkgs_download.service
+        state: link
+      notify: Systemctl daemon reload
+    - name: Pkgs systemd services Copy upgrade @pkgs_systemd_services
+      copy:
+        dest: /usr/lib/systemd/system/pkgs-upgrade.service
+        content: |
+          [Unit]
+          Description=Pkgs_upgrade Service
+          [Service]
+          BusName=org.freedesktop.pkgs_upgrade
+          ExecStart=/usr/local/sbin/pkgs-upgrade.sh
+        mode: 0644
+    - name: Pkgs systemd services Copy upgrade link @pkgs_systemd_services
+      file:
+        src: /usr/lib/systemd/system/pkgs-upgrade.service
+        dest: /usr/lib/systemd/system/dbus-org.freedesktop.pkgs_upgrade.service
+        state: link
+      notify: Systemctl daemon reload
+  tags:
+    - ws
+    - pkgs_systemd_services
+
+- name: Pkgs dbus services @pkgs_dbus_services
+  ignore_errors: "{{ansible_check_mode}}"
+  block:
+    - name: Pkgs dbus services Copy download @pkgs_dbus_services
+      copy:
+        dest: /usr/share/dbus-1/system-services/org.freedesktop.pkgs_download.service
+        content: |
+          [D-BUS Service]
+          Name=org.freedesktop.pkgs_download
+          Exec=/bin/false
+          SystemdService=dbus-org.freedesktop.pkgs_download.service
+        mode: 0644
+    - name: Pkgs dbus services Copy upgrade @pkgs_dbus_services
+      copy:
+        dest: /usr/share/dbus-1/system-services/org.freedesktop.pkgs_upgrade.service
+        content: |
+          [D-BUS Service]
+          Name=org.freedesktop.pkgs_upgrade
+          Exec=/bin/false
+          SystemdService=dbus-org.freedesktop.pkgs_upgrade.service
+        mode: 0644
+  tags:
+    - ws
+    - pkgs_dbus_services
+
+- name: Pkgs desktop files @pkgs_desktop_files
+  ignore_errors: "{{ansible_check_mode}}"
+  block:
+    - name: Pkgs desktop files Copy download @pkgs_desktop_files
+      copy:
+        dest: /usr/share/applications/pkgs-download.desktop
+        content: |
+          [Desktop Entry]
+          Type=Application
+          Version=1.0
+          Name=Pkgs Download
+          Comment=Download all packages that will be required to update the system
+          Path=/tmp
+          Exec=bash -c "dbus-send --system --type=signal --dest=org.freedesktop.pkgs_download /org/freedesktop/pkgs_download org.freedesktop.pkgs_download; /usr/local/bin/pkgs-download-progress.sh"
+          Icon=emblem-downloads
+          Terminal=false
+          Categories=System;
+        mode: 0644
+    - name: Pkgs desktop files Copy upgrade @pkgs_desktop_files
+      copy:
+        dest: /usr/share/applications/pkgs-upgrade.desktop
+        content: |
+          [Desktop Entry]
+          Type=Application
+          Version=1.0
+          Name=Pkgs Upgrade
+          Comment=Upgrade all packages
+          Path=/tmp
+          Exec=bash -c "dbus-send --system --type=signal --dest=org.freedesktop.pkgs_upgrade /org/freedesktop/pkgs_upgrade org.freedesktop.pkgs_upgrade; /usr/local/bin/pkgs-upgrade-progress.sh"
+          Icon=emblem-system
+          Terminal=false
+          Categories=System;
+        mode: 0644
+  tags:
+    - ws
+    - pkgs_desktop_files
