@@ -48,7 +48,6 @@
         src: /usr/lib/systemd/system/pkgs-download.service
         dest: /usr/lib/systemd/system/dbus-org.freedesktop.pkgs_download.service
         state: link
-      notify: Systemctl daemon reload
     - name: Pkgs systemd services Copy upgrade @pkgs_systemd_services
       copy:
         dest: /usr/lib/systemd/system/pkgs-upgrade.service
@@ -64,7 +63,6 @@
         src: /usr/lib/systemd/system/pkgs-upgrade.service
         dest: /usr/lib/systemd/system/dbus-org.freedesktop.pkgs_upgrade.service
         state: link
-      notify: Systemctl daemon reload
   tags:
     - ws
     - pkgs_systemd_services
