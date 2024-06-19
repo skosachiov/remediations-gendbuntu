@@ -36,6 +36,7 @@
               (umask 002 && apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y -f dist-upgrade > /tmp/pkgs-userspace.log)
             fi
             {% else %}
+            echo "upgrate completed with code $?" > /tmp/pkgs-userspace.log
             (umask 002 && dnf update --refresh -y > /tmp/pkgs-userspace.log)
             {% endif %}
           mode: 0755
@@ -88,6 +89,9 @@
               while ! grep -q "Reading database ... [0-9]*" /tmp/pkgs-userspace.log; do sleep 4; done;
               tail -n 1 /tmp/pkgs-userspace.log | sed "s/^/# /";
             fi
+            echo "80"; sleep 2;
+            while ! grep -q "upgrate completed with code" /tmp/pkgs-userspace.log; do sleep 2; done;
+            tail -n 1 /tmp/pkgs-userspace.log | sed "s/^/# /";
             echo "100"; sleep 2;
             ) |
             zenity --progress \
@@ -114,6 +118,8 @@
             Description=Pkgs_download Service
             [Service]
             BusName=org.freedesktop.pkgs_download
+            Type=oneshot
+            TimeoutSec=infinity
             ExecStart=/usr/local/sbin/pkgs-download.sh
           mode: 0644
       - name: Pkgs systemd services Copy download link @pkgs_systemd_services
@@ -129,6 +135,8 @@
             Description=Pkgs_upgrade Service
             [Service]
             BusName=org.freedesktop.pkgs_upgrade
+            Type=oneshot
+            TimeoutSec=infinity
             ExecStart=/usr/local/sbin/pkgs-upgrade.sh
           mode: 0644
       - name: Pkgs systemd services Copy upgrade link @pkgs_systemd_services
