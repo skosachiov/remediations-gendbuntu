@@ -20,6 +20,7 @@
             {% else %}
             (umask 002 && dnf update --downloadonly --refresh -y > /tmp/pkgs-userspace.log)
             {% endif %}
+            echo "download completed with code $?" >> /tmp/pkgs-userspace.log
           mode: 0755
       - name: Pkgs bash scripts Update @pkgs_bash_scripts
         copy:
@@ -38,7 +39,7 @@
             {% else %}
             (umask 002 && dnf update --refresh -y > /tmp/pkgs-userspace.log)
             {% endif %}
-            echo "upgrate completed with code $?" >> /tmp/pkgs-userspace.log
+            echo "upgrade completed with code $?" >> /tmp/pkgs-userspace.log
           mode: 0755
     tags:
       - ws
@@ -60,6 +61,9 @@
             echo "50"; sleep 2;
             while ! grep -q "[0-9] upgraded" /tmp/pkgs-userspace.log; do sleep 2; done;
             grep "[0-9] upgraded" /tmp/pkgs-userspace.log | sed "s/^/# /";
+            echo "80"; sleep 2;
+            while ! grep -q "download completed with code" /tmp/pkgs-userspace.log; do sleep 2; done;
+            tail -n 1 /tmp/pkgs-userspace.log | sed "s/^/# /";
             echo "100"; sleep 2;
             ) |
             zenity --progress \
@@ -85,7 +89,7 @@
             while ! grep -q "[0-9] upgraded" /tmp/pkgs-userspace.log; do sleep 2; done;
             grep "[0-9] upgraded" /tmp/pkgs-userspace.log | sed "s/^/# /";
             echo "50"; sleep 2;
-            while ! grep -q "upgrate completed with code" /tmp/pkgs-userspace.log; do sleep 2; done;
+            while ! grep -q "upgrade completed with code" /tmp/pkgs-userspace.log; do sleep 2; done;
             tail -n 1 /tmp/pkgs-userspace.log | sed "s/^/# /";
             echo "100"; sleep 2;
             ) |
