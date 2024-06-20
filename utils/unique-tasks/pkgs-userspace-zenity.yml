@@ -36,9 +36,9 @@
               (umask 002 && apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y -f dist-upgrade > /tmp/pkgs-userspace.log)
             fi
             {% else %}
-            echo "upgrate completed with code $?" > /tmp/pkgs-userspace.log
             (umask 002 && dnf update --refresh -y > /tmp/pkgs-userspace.log)
             {% endif %}
+            echo "upgrate completed with code $?" >> /tmp/pkgs-userspace.log
           mode: 0755
     tags:
       - ws
@@ -85,11 +85,6 @@
             while ! grep -q "[0-9] upgraded" /tmp/pkgs-userspace.log; do sleep 2; done;
             grep "[0-9] upgraded" /tmp/pkgs-userspace.log | sed "s/^/# /";
             echo "50"; sleep 2;
-            if grep -q "After this operation" /tmp/pkgs-userspace.log; then
-              while ! grep -q "Reading database ... [0-9]*" /tmp/pkgs-userspace.log; do sleep 4; done;
-              tail -n 1 /tmp/pkgs-userspace.log | sed "s/^/# /";
-            fi
-            echo "80"; sleep 2;
             while ! grep -q "upgrate completed with code" /tmp/pkgs-userspace.log; do sleep 2; done;
             tail -n 1 /tmp/pkgs-userspace.log | sed "s/^/# /";
             echo "100"; sleep 2;
