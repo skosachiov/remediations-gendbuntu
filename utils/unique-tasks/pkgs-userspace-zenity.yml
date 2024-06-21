@@ -47,7 +47,7 @@
             {% else %}
             (umask 002 && dnf update --refresh -y > /tmp/pkgs-userspace.log)
             {% endif %}
-            systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
+            systemctl unmask sleep.target suspend.target hibernate.target hybrid-sleep.target
             echo "upgrade completed with code $?" >> /tmp/pkgs-userspace.log
           mode: 0755
     tags:
