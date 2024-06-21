@@ -28,17 +28,26 @@
           content: |
             #!/bin/bash
             export LANG=C.UTF-8
+            if ! on_ac_power; then
+              echo "not on_ac_power" > /tmp/pkgs-userspace.log
+              exit 1
+            fi
+            systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
+            mv /var/lib/dkms /var/lib/dkms.backup
             {% if ansible_pkg_mgr == 'apt' %}
             export DEBIAN_FRONTEND=noninteractive
             apt update
-            (umask 002 && apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y -f dist-upgrade > /tmp/pkgs-userspace.log)
+            (umask 002 && apt -y install linux-image-latest-generic > /tmp/pkgs-userspace.log)
+            (umask 002 && apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y -f dist-upgrade >> /tmp/pkgs-userspace.log)
             if grep "apt --fix-broken install" /tmp/pkgs-userspace.log; then
               apt --fix-broken install -y
-              (umask 002 && apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y -f dist-upgrade > /tmp/pkgs-userspace.log)
+              (umask 002 && apt -y install linux-image-latest-generic > /tmp/pkgs-userspace.log)
+              (umask 002 && apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y -f dist-upgrade >> /tmp/pkgs-userspace.log)
             fi
             {% else %}
             (umask 002 && dnf update --refresh -y > /tmp/pkgs-userspace.log)
             {% endif %}
+            systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
             echo "upgrade completed with code $?" >> /tmp/pkgs-userspace.log
           mode: 0755
     tags:
@@ -82,6 +91,11 @@
             #!/bin/bash
             (
             echo "10"; sleep 4;
+            if grep -q "not on_ac_power" /tmp/pkgs-userspace.log; then
+              tail -n 1 /tmp/pkgs-userspace.log | sed "s/^/# /";
+              echo "100"; sleep 2;
+              exit 0
+            fi
             grep "apt --fix-broken install" /tmp/pkgs-userspace.log | sed "s/^/# /";
             while ! grep -q "Calculating upgrade..." /tmp/pkgs-userspace.log; do sleep 2; done;
             grep "Calculating upgrade..." /tmp/pkgs-userspace.log | sed "s/^/# /";
