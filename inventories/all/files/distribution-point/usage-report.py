@@ -53,7 +53,7 @@ def print_xml(header, t, name, ts, rec_name):
     for r in t:
         print(f"<{rec_name}>", end = "")
         for h, c in zip(header, r):
-            c = c.replace('&', '&amp;')
+            if isinstance(c, str): c = c.replace('&', '&amp;')
             print(f"<{h}>{c}</{h}>", end = "")
         print(f"</{rec_name}>")
     print(f"</{name}>")

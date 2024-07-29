@@ -1,7 +1,13 @@
 {
   "ProxySettings":
+{% if var_proxy_pac_url is defined %}
+  { "ProxyMode": "pac_script",
+    "ProxyPacUrl": "{{var_proxy_pac_url}}"
+  }
+{% else %}
   { "ProxyMode": "fixed_servers",
     "ProxyServer": "{{var_proxy_server}}",
     "ProxyBypassList": "10.*.*.*,*.gouv.fr,*.si.mi"
   }
+{% endif %}
 }

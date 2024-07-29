@@ -3,3 +3,22 @@
     loop_var: tasks_file
   with_fileglob:
     - "{{playbook_dir}}/inventories/branches/{{var_company|lower}}/tasks/*.yml"
+
+- name: Hostname tasks @hostname_tasks
+  ignore_errors: true
+  block:
+    - name: Hostname tasks @hostname_tasks
+      set_fact:
+        hostname_tasks: "{{true if ((ansible_facts.nodename.split('.')[0]|lower) in (var_hostname_tasks.keys() | list)) else false}}"
+    - name: Hostname tasks @hostname_tasks
+      set_fact:
+        uniq_tasks_list: "{{ var_hostname_tasks[(ansible_facts.nodename.split('.')[0]|lower)].tasks }}"
+      when: hostname_tasks
+    - include_tasks: "{{playbook_dir}}/inventories/hostnames/tasks/{{tasks_file}}"
+      loop_control:
+        loop_var: tasks_file
+      with_items: "{{uniq_tasks_list}}"
+      when: hostname_tasks
+  tags:
+    - ws
+    - hostname_tasks

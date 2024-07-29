@@ -11,9 +11,9 @@
       package:
         name:
           - fapolicyd
-        state: present
+        state: latest
       register: result
-    - name: Fapolicyd active Templates @fapolicyd_active
+    - name: Fapolicyd active File @fapolicyd_active
       file:
         path: '/etc/fapolicyd/rules.d'
         state: directory
@@ -25,32 +25,53 @@
         mode: '0640'
       with_fileglob:
         - "{{playbook_dir}}/roles/fapolicyd/templates/*"
-      notify: Fapolicyd restarted
+      notify: Fapolicyd reload rules
+    - name: Fapolicyd active Stat ou @fapolicyd_active
+      stat:
+        path: "{{playbook_dir}}/inventories/ou/{{var_ou_guid}}/files/fapolicyd"
+      register: ou_fapolicyd_dir
+      when: var_ou_guid is defined
+    - name: Fapolicyd active Templates ou @fapolicyd_active
+      template:
+        src: "{{item}}"
+        dest: '/etc/fapolicyd/rules.d/{{(item|basename).split(".")[0]}}.rules'
+        mode: '0640'
+      with_fileglob:
+        - "{{playbook_dir}}/inventories/ou/{{var_ou_guid}}/files/fapolicyd/*"
+      when: ou_fapolicyd_dir.stat.exists
+      notify: Fapolicyd reload rules
     - name: Fapolicyd active Copy @fapolicyd_active
       copy:
-        src: "{{playbook_dir}}/inventories/distribution/{{ansible_distribution}}/{{ansible_distribution_major_version}}/files/fapolicyd/fapolicyd.trust"
+        src: "{{playbook_dir}}/inventories/codename/{{ansible_distribution_major_version}}/files/fapolicyd/fapolicyd.trust"
         dest: /etc/fapolicyd/
         mode: go-rwx
-      notify: Fapolicyd restarted
+      notify: Fapolicyd update
     - name: Fapolicyd active Trust @fapolicyd_active
       copy:
         src: "{{item}}"
         dest: '/etc/fapolicyd/trust.d/'
         mode: '0640'
       with_fileglob:
-        - "{{playbook_dir}}/inventories/distribution/{{ansible_distribution}}/{{ansible_distribution_major_version}}/files/fapolicyd/trust.d/*"
+        - "{{playbook_dir}}/inventories/codename/{{ansible_distribution_major_version}}/files/fapolicyd/trust.d/*"
+      notify: Fapolicyd update
+    - name: Fapolicyd active Lineinfile @fapolicyd_active
+      lineinfile:
+        dest: /etc/fapolicyd/fapolicyd.conf
+        regexp: ^permissive
+        line: permissive = 0
       notify: Fapolicyd restarted
     - name: Fapolicyd active Lineinfile @fapolicyd_active
       lineinfile:
         dest: /etc/fapolicyd/fapolicyd.conf
         regexp: ^db_max_size
-        line: db_max_size = 384
+        line: db_max_size = 512
       notify: Fapolicyd restarted
     - name: Fapolicyd active Lineinfile @fapolicyd_active
       lineinfile:
         dest: /etc/fapolicyd/fapolicyd.conf
         regexp: ^integrity
         line: integrity = sha256
+      notify: Fapolicyd restarted
     - name: Fapolicyd active Lineinfile @fapolicyd_active
       lineinfile:
         dest: /etc/fapolicyd/fapolicyd.conf
@@ -92,6 +113,12 @@
         local_files: "{{ local_files + [item | basename | replace('.j2', '') ] }}"
       with_fileglob:
         - "{{playbook_dir}}/roles/fapolicyd/templates/*"
+    - name: Fapolicyd remove outdated files Set local ou @fapolicyd_remove_outdated_rules
+      set_fact:
+        local_files: "{{ local_files + [item | basename | replace('.j2', '') ] }}"
+      with_fileglob:
+        - "{{playbook_dir}}/inventories/ou/{{var_ou_guid}}/files/fapolicyd/*"
+      when: ou_fapolicyd_dir.stat.exists
     - name: Fapolicyd remove outdated files Find @fapolicyd_remove_outdated_rules
       find:
         path: /etc/fapolicyd/rules.d/
@@ -107,6 +134,7 @@
         path: /etc/fapolicyd/rules.d/{{item}}
         state: absent
       with_items: "{{ remote_files | difference(local_files) }}"
+      notify: Fapolicyd reload rules
   when:
     - var_fapolicyd_service is defined
     - var_fapolicyd_service
@@ -125,7 +153,7 @@
       set_fact:
         local_files: "{{ local_files + [item | basename] }}"
       with_fileglob:
-        - "{{playbook_dir}}/inventories/distribution/{{ansible_distribution}}/{{ansible_distribution_major_version}}/files/fapolicyd/trust.d/*"
+        - "{{playbook_dir}}/inventories/codename/{{ansible_distribution_major_version}}/files/fapolicyd/trust.d/*"
     - name: Fapolicyd remove outdated files Find @fapolicyd_remove_outdated_trust
       find:
         path: /etc/fapolicyd/trust.d/
@@ -141,9 +169,24 @@
         path: /etc/fapolicyd/trust.d/{{item}}
         state: absent
       with_items: "{{ remote_files | difference(local_files) }}"
+      notify: Fapolicyd update
   when:
     - var_fapolicyd_service is defined
     - var_fapolicyd_service
   tags:
     - ws
     - fapolicyd_remove_outdated_trust
+
+- name: Fapolicyd apt post invoke @fapolicyd_apt_post_invoke
+  copy:
+    dest: /etc/apt/apt.conf.d/07fapolicyd
+    content: |
+      DPkg::Post-Invoke { "if [ -x /usr/sbin/fapolicyd ]; then fapolicyd-cli -u; fi"; };
+      RPM::Post-Invoke  { "if [ -x /usr/sbin/fapolicyd ]; then fapolicyd-cli -u; fi"; };
+  when:
+    - var_fapolicyd_service is defined
+    - var_fapolicyd_service
+    - when: ansible_distribution == "Debian"
+  tags:
+    - ws
+    - fapolicyd_apt_post_invoke

@@ -1,0 +1,8 @@
+# Only allow trusted wine executables and dll
+
+allow perm=any auid=-1 : ftype=application/vnd.microsoft.portable-executable
+allow perm=any auid=0 : ftype=application/vnd.microsoft.portable-executable
+allow perm=any auid=1000 : ftype=application/vnd.microsoft.portable-executable
+allow perm=any auid={{var_ansible_username}} : ftype=application/vnd.microsoft.portable-executable
+allow perm=open all : ftype=application/vnd.microsoft.portable-executable trust=1
+deny_syslog perm=any all : ftype=application/vnd.microsoft.portable-executable

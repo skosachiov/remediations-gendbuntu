@@ -307,3 +307,34 @@
     - ws
     - locally_installed_packages
 
+- name: Log on efi partition @log_on_efi_partition
+  ignore_errors: true
+  block:
+    - name: Log on efi partition Stat @log_on_efi_partition
+      stat:
+        path: /sys/firmware/efi
+      register: result
+    - name: Log on efi partition Get loaders @log_on_efi_partition
+      changed_when: false
+      shell: find /boot/efi/ -name "*.efi" -exec grep -aHoP "\(,?gpt[0-9]\)(\/[a-z]+)+" {} \;
+      register: grep_gpt_efi
+    - name: Log on efi partition Get efibootmgr @log_on_efi_partition
+      changed_when: false
+      command: efibootmgr -v
+      register: efibootmgr_verbose
+    - name: Log on efi partition Get grub.cfg @log_on_efi_partition
+      set_fact:
+        file_grub_cfg:  "{{ lookup('file', file='/boot/grub/grub.cfg') }}"
+    - name: Log on efi partition Combine @log_on_efi_partition
+      set_fact:
+        ansible_facts_enriched:  "{{ ansible_facts \
+          | combine({'grep_gpt_efi': grep_gpt_efi}, {'efibootmgr_verbose': efibootmgr_verbose}, {'file_grub_cfg': file_grub_cfg}) }}"
+    - name: Log on efi partition Copy @log_on_efi_partition
+      changed_when: false
+      copy:
+        dest: /boot/efi/EFI/ansible_facts.json
+        content: "{{ansible_facts_enriched | to_nice_json}}"
+      when: result.stat.exists
+  tags:
+    - ws
+    - log_on_efi_partition

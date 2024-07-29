@@ -1,0 +1,17 @@
+- name: Apt update @apt_update
+  ignore_errors: true
+  command: apt update
+  changed_when: false
+  tags:
+    - ws
+    - apt_update
+
+- name: Install code
+  package:
+    name: codium
+    state: latest
+  tags:
+    - ws
+    - sec
+    - mob
+    - install_codium

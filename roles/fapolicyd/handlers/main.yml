@@ -3,3 +3,11 @@
   service:
     name: fapolicyd
     state: restarted
+
+- name: Fapolicyd update
+  ignore_errors: "{{ansible_check_mode}}"
+  command: fapolicyd-cli -u
+
+- name: Fapolicyd reload rules
+  ignore_errors: "{{ansible_check_mode}}"
+  command: fapolicyd-cli -r

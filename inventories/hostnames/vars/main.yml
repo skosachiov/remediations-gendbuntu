@@ -1,0 +1,6 @@
+var_hostname_tasks:
+  pc-a:
+    tasks: ["codium.yml"]
+  pc-b:
+    tasks: ["codium.yml"]
+ 

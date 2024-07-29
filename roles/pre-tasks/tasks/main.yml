@@ -29,10 +29,14 @@
     - name: Get ou Kinit @default
       changed_when: false
       command: kinit -kt /etc/krb5.keytab '{{ansible_facts.nodename.split(".")[0]|upper}}$@{{var_default_realm}}'
+    - name: Get ou AD global catalog
+      changed_when: false
+      shell: yes no | LANG=C.UTF8 /usr/sbin/sssctl domain-status {{var_local_domain}} | grep 'AD Global Catalog:' | awk '{print $4}'
+      register: global_ad_catalog
     - name: Get ou Ldapsearch ou @default
       changed_when: false
       shell: >
-        ldapsearch -o ldif-wrap=no -Y GSSAPI -H ldap://{{var_kdc.split(',')[0]}}
+        ldapsearch -o ldif-wrap=no -Y GSSAPI -H ldap://{{global_ad_catalog.stdout_lines[0]}}
         -b "dc={{var_local_domain.split('.')[0]}},dc={{var_local_domain.split('.')[1]}}"
         "(&(objectClass=computer)(name={{ansible_facts.nodename.split('.')[0]}}))" |
         grep -i "dn:" |
@@ -43,7 +47,7 @@
     - name: Get ou Ldap_search giud @default
       changed_when: false
       shell: >
-        ldapsearch -o ldif-wrap=no -Y GSSAPI -H ldap://{{var_kdc.split(',')[0]}}
+        ldapsearch -o ldif-wrap=no -Y GSSAPI -H ldap://{{global_ad_catalog.stdout_lines[0]}}
         -b "dc={{var_local_domain.split('.')[0]}},dc={{var_local_domain.split('.')[1]}}"
         "(&(objectClass=organizationalUnit)(distinguishedName={{ldap_search_ou_dn.stdout_lines[0]}}))" |
         grep -i "objectGUID"

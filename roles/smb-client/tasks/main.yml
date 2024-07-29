@@ -159,3 +159,19 @@
     - ws
     - sec
     - cifs_upcall_trust_dns
+
+- name: Empty autofs master @empty_autofs_master_d
+  blockinfile:
+    dest: /etc/rc.local
+    marker_begin: BEGIN_EMPTY_MASTER
+    marker_end: END_EMPTY_MASTER
+    block: |
+      rm -f /etc/auto.master.d/*.autofs
+    state: present
+    create: true
+  when:
+    - var_installation_type == 'workstation'
+  tags:
+    - ws
+    - sec
+    - empty_autofs_master_d
