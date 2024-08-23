@@ -36,7 +36,7 @@ basic_ansible_facts_header = ["timestamp", "ip", "netmask", "host_time", "hostna
 auth_success_header = ["timestamp", "ip", "user", "uid", "hostname", "mac"]
 ansible_play_header = ["timestamp", "ip", "ok", "changed", "unreachable", "failed", "hostname", "mac"]
 ansible_exec_header = ["timestamp", "ip", "role", "task", "status", "tag", "hostname", "mac"]
-basic_security_facts_header = ["timestamp", "ip", "ma", "mcs", "mls", "ima", "dlp_aux", "av_aux", "host_flags", "hostname", "mac"]
+basic_security_facts_header = ["timestamp", "ip", "ma", "mcs", "mls", "ima", "dlp_aux", "av_aux", "fapolicyd", "host_flags", "hostname", "mac"]
 ansible_facts_packages = ["timestamp", "ip", "pkg", "version", "hostname", "mac"]
 history_header = ["date", "unique_addresses", "unique_users", "changed_count", "failed_count"]
 

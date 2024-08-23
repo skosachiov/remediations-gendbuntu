@@ -33,12 +33,19 @@
       command: mv /usr/lib/cups/backend/smb /usr/lib/cups/backend/smb.orig
       when: not (result.stat.islnk is defined and result.stat.islnk)
     - name: CUPS smb backend Link @cups_smb_backend_set
+      ignore_errors: true
       file:
-        src: >-
-          {{'/usr/lib/x86_64-linux-gnu/samba/smbspool_krb5_wrapper' if ansible_pkg_mgr == 'apt'
-          else '/usr/libexec/samba/smbspool_krb5_wrapper'}}
+        src: /usr/lib/x86_64-linux-gnu/samba/smbspool_krb5_wrapper
         dest: /usr/lib/cups/backend/smb
         state: link
+      register: result
+    - name: CUPS smb backend Link @cups_smb_backend_set
+      ignore_errors: true
+      file:
+        src: /usr/libexec/samba/smbspool_krb5_wrapper
+        dest: /usr/lib/cups/backend/smb
+        state: link
+      when: result.failed
   tags:
     - ws
     - cups_smb_backend_set

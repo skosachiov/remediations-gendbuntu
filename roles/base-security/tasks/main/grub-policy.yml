@@ -89,7 +89,7 @@
     - name: Set-unset unrestricted os Unset @set_unset_unrestricted_os
       replace:
         path: "{{item.path}}"
-        regexp: '\-\-unrestricted '
+        regexp: '\-\-unrestricted'
         replace: ''
       notify: Update grub
       when: not var_unrestricted_os

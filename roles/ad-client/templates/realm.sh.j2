@@ -1,6 +1,11 @@
 #!/bin/bash
 #
+hostdomain=$(hostname -d)
 domainname=$(echo $@ | grep -o "@[^ ]*")
+if [[ ${domainname:1} != ${hostdomain^^} ]]; then
+    echo "The locally defined domain ${hostdomain^^} name does not match the one specified on the command line ${domainname:1}"
+    exit 1
+fi
 if [[ $domainname =~ [a-z] ]]; then
     echo "Use UPPERCASE DOMAIN NAME"
     echo "example: realm.sh -v join -U username@DOMAIN.SUFFIX dc.domain.suffix"

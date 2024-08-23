@@ -235,6 +235,7 @@
           ima: "{{result_ima}}"
           dlp_aux: "{{var_aux_dlp_active if var_aux_dlp_active is defined else false }}"
           av_aux: "{{var_aux_av_active if var_aux_av_active is defined else false }}"
+          fapolicyd: "{{var_fapolicyd_active if var_fapolicyd_active is defined else false }}"
           host_flags: "{{result_flags.split() | join(':')}}"
     - name: Print main ansible facts @basic_security_facts
       changed_when: false
