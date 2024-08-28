@@ -1,0 +1,21 @@
+- name: Fapolicyd active status @fapolicyd_active_status
+  block:
+    - name: Fapolicyd active status Shell @fapolicyd_active_status
+      shell: 'LANG=C.UTF-8 fapolicyd-cli --check-status | grep "Permissive: false"'
+      register: result_fa
+      changed_when: result_fa.stdout_lines|length != 1
+    - name: Fapolicyd active status Set @fapolicyd_active_status
+      set_fact:
+        var_fapolicyd_active: true
+      when:
+        - result_fa.stdout_lines|length == 1
+  when:
+    - var_fapolicyd_service is defined
+    - var_fapolicyd_service
+  rescue:
+    - name: Fapolicyd check active Failed
+      debug:
+        msg: "Fapolicyd check active failed"
+  tags:
+    - ws
+    - fapolicyd_active_status

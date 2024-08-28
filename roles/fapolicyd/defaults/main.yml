@@ -1,0 +1,4 @@
+var_fapolicyd_trust_repo:
+  url: https://host.domain/fapolicyd/
+  packages: packages
+  extension: trust

@@ -1,0 +1,401 @@
+diff --git a/.github/workflows/rockylinux9.yml b/.github/workflows/rockylinux9.yml
+index 2afbccd..28dc7b1 100644
+--- a/.github/workflows/rockylinux9.yml
++++ b/.github/workflows/rockylinux9.yml
+@@ -2,9 +2,11 @@ name: rockylinux9-build
+ 
+ on:
+   push:
+-    branches: [ main ]
++    branches:
++      - '*'
+   pull_request:
+-    branches: [ main ]
++    branches:
++      - '*'
+ 
+ jobs:
+   build:
+diff --git a/.github/workflows/ubuntu22.yml b/.github/workflows/ubuntu22.yml
+index e99ed8f..65e2ac9 100644
+--- a/.github/workflows/ubuntu22.yml
++++ b/.github/workflows/ubuntu22.yml
+@@ -2,9 +2,11 @@ name: ubuntu22-build
+ 
+ on:
+   push:
+-    branches: [ main ]
++    branches:
++      - '*'
+   pull_request:
+-    branches: [ main ]
++    branches:
++      - '*'
+ 
+ jobs:
+   build:
+@@ -24,7 +26,7 @@ jobs:
+       run: apt update
+ 
+     - name: installing dependencies 1
+-      run: apt install -y autoconf automake libtool gcc libdpkg-dev libmd-dev uthash-dev liblmdb-dev libudev-dev 
++      run: apt install -y autoconf automake libtool gcc libdpkg-dev libmd-dev uthash-dev liblmdb-dev libudev-dev
+ 
+     - name: installing dependencies 2
+       run: apt install -y libgcrypt-dev libssl-dev libmagic-dev libcap-ng-dev  libseccomp-dev make debmake debhelper
+diff --git a/doc/fapolicyd.rules.5 b/doc/fapolicyd.rules.5
+index c28bcdf..0931b78 100644
+--- a/doc/fapolicyd.rules.5
++++ b/doc/fapolicyd.rules.5
+@@ -127,7 +127,8 @@ The object is the file that the subject is interacting with. The fields in the r
+ This matches against any obbject. When used, this must be the only object in the rule.
+ .TP
+ .B path
+-This is the full path to the file that will be accessed. Globbing is not supported. You may also use the special keyword \fBuntrusted\fP to match on the object not being listed in the rpm database.
++This is the full path to the file that will be accessed. You may use the special keyword \fBuntrusted\fP to match on the object not being listed in the rpm database. You may also
++use unix shell-style wildcards (fnmatch) e.g. /home/*/.wine/*, however this may result in poor performance and negative security implications.
+ .TP
+ .B dir
+ If you wish to match on access to any file in a directory, then use this by giving the full path to the directory. Its recommended to end with the / to ensure it matches a directory. There are 3 keywords that \fIdir\fP supports: \fBexecdirs\fP, \fBsystemdirs\fP, \fBuntrusted\fP. See the \fBdir\fP option under Subject for an explanation of these keywords.
+@@ -169,7 +170,7 @@ will run and compile all these component files into one master file, compiled.ru
+ .B fagenrules
+ man page for more information.
+ 
+-When you are writing a rule for the execute permission, remember that the file to be executed is an 
++When you are writing a rule for the execute permission, remember that the file to be executed is an
+ .B object.
+ For example, you type ssh into the shell. The shell calls execve on /usr/bin/ssh. At that instant in time, ssh is the object that bash is working on. However, if you are blocking execution
+ .I from
+diff --git a/src/library/database.c b/src/library/database.c
+index 44dd0b2..72e637f 100644
+--- a/src/library/database.c
++++ b/src/library/database.c
+@@ -51,6 +51,7 @@
+ #include "gcc-attributes.h"
+ #include "paths.h"
+ #include "policy.h"
++#include "llist.h"
+ 
+ // Local defines
+ enum { READ_DATA, READ_TEST_KEY, READ_DATA_DUP };
+@@ -83,6 +84,8 @@ extern volatile atomic_bool stop;
+ extern volatile atomic_bool needs_flush;
+ extern volatile atomic_bool reload_rules;
+ 
++// Global variables
++extern list_t wildcards;
+ 
+ static int is_link(const char *path)
+ {
+@@ -615,6 +618,7 @@ static int create_database(int with_sync)
+ 
+ 		list_item_t *item = list_get_first(&be->backend->list);
+ 		for (; item != NULL; item = item->next) {
++			item->index = path_globalization(item->index, 1);
+ 			if ((rc = write_db(item->index, item->data)))
+ 				msg(LOG_ERR,
+ 				    "Error (%d) writing key=\"%s\" data=\"%s\"",
+@@ -1051,7 +1055,11 @@ int check_trust_database(const char *path, struct file_info *info, int fd)
+ 		return -1;
+ 	}
+ 
++	// Wildcards support
++	path = path_globalization(path, 1);
++
+ 	res = read_trust_db(path, &error, info, fd);
++
+ 	if (error)
+ 		retval = -1;
+ 	else if (res)
+diff --git a/src/library/event.c b/src/library/event.c
+index 20bb5b7..dfc6928 100644
+--- a/src/library/event.c
++++ b/src/library/event.c
+@@ -39,6 +39,10 @@
+ #include "lru.h"
+ #include "message.h"
+ #include "policy.h"
++#include "llist.h"
++
++// Global variables
++extern list_t wildcards;
+ 
+ #define ALL_EVENTS (FAN_ALL_EVENTS|FAN_OPEN_PERM|FAN_ACCESS_PERM| \
+ 	FAN_OPEN_EXEC_PERM)
+@@ -288,7 +292,7 @@ int new_event(const struct fanotify_event_metadata *m, event_t *e)
+ 				subject_reset(e->s, EXE_TYPE);
+ 				subject_reset(e->s, SUBJ_TRUST);
+ 			}
+-		} 
++		}
+ 	}
+ 	return 0;
+ }
+@@ -461,7 +465,12 @@ object_attr_t *get_obj_attr(event_t *e, object_type_t t)
+ 			object_attr_t *path =  get_obj_attr(e, PATH);
+ 
+ 			if (path && path->o) {
+-				int res = check_trust_database(path->o, o->info, e->fd);
++				// int res = check_trust_database(path->o, o->info, e->fd);
++				char check_path[PATH_MAX+1];
++				strncpy(check_path, path->o, PATH_MAX);
++				path_globalization(check_path, 1);
++				int res = check_trust_database(check_path, o->info, e->fd);
++				// msg(LOG_DEBUG, "Change object path before check from %s to %s", path->o, check_path);
+ 
+ 				// ignore -1
+ 				if (res == 1)
+diff --git a/src/library/file.c b/src/library/file.c
+index 2dad8b2..5cfb24d 100644
+--- a/src/library/file.c
++++ b/src/library/file.c
+@@ -39,14 +39,20 @@
+ #include <sys/xattr.h>
+ #include <linux/hash_info.h>
+ #include <sys/mman.h>
++#include <fnmatch.h>
++#include <libgen.h>
+ 
+ #include "file.h"
+ #include "message.h"
+ #include "process.h" // For elf info bit mask
++#include "llist.h"
+ 
+ // Local defines
+ #define IMA_XATTR_DIGEST_NG 0x04	// security/integrity/integrity.h
+ 
++// Global variables
++list_t wildcards;
++
+ // Local variables
+ static struct udev *udev;
+ magic_t magic_cookie;
+@@ -878,3 +884,38 @@ rewind_out:
+ 	return info;
+ }
+ 
++// Go through the list of wildcards and replace the path with the first matching wildcard
++// To check trusted files use keep_uniq = 1 or keep_uniq = 0 for rules checking
++const char *path_globalization(const char *path, int keep_uniq) {
++	char buf[PATH_MAX];
++	list_item_t *wc = list_get_first(&wildcards);
++	while (wc != NULL) {
++		if (fnmatch(wc->data, path, 0) == 0) {
++			if (keep_uniq) {
++				int slashes = 0;
++				int i;
++				for (i = 0; ((char *)wc->data)[i] != 0; i++) {
++					if (((char *)wc->data)[i] == '/') slashes++;
++				}
++				for (i = 0; path[i]; i++) {
++					if (path[i] == '/') {
++						slashes--;
++						if (slashes == 0) break;
++					}
++				}
++				strncpy(buf, (char *) wc->data, PATH_MAX-1);
++				dirname(buf);
++				strncat(buf, &path[i], PATH_MAX-1);
++				memcpy((void *)path, buf, strlen(buf) + 1);
++			}
++			else {
++				memcpy((void *)path, wc->data, strlen(wc->data) + 1);
++			}
++			// msg(LOG_DEBUG, "Replace the path with the first matching wildcard %s", path);
++			break;
++		}
++		wc = wc->next;
++	}
++    return path;
++}
++
+diff --git a/src/library/file.h b/src/library/file.h
+index 624f174..46ea32e 100644
+--- a/src/library/file.h
++++ b/src/library/file.h
+@@ -61,5 +61,6 @@ char *bytes2hex(char *final, const unsigned char *buf, unsigned int size)
+ char *get_hash_from_fd2(int fd, size_t size, int is_sha) __attr_dealloc_free;
+ int get_ima_hash(int fd, char *sha);
+ uint32_t gather_elf(int fd, off_t size);
++const char *path_globalization(const char *path, int keep_uniq);
+ 
+ #endif
+diff --git a/src/library/llist.c b/src/library/llist.c
+index 9f78eac..eeb3793 100644
+--- a/src/library/llist.c
++++ b/src/library/llist.c
+@@ -153,3 +153,20 @@ void list_merge(list_t *dest, list_t *src)
+ 	}
+ 	list_init(src);
+ }
++
++void list_bubble_sort(list_t *list, int (*compare)(const void*, const void*)) {
++    list_item_t *lptr, *surface = NULL;
++	while(surface != list->first) {
++		surface = NULL;
++		for (lptr = list->first; lptr->next && lptr != surface; lptr = lptr->next) {
++			if(compare(lptr->data, lptr->next->data) > 0) {
++				const void *data = lptr->data;
++				lptr->data = lptr->next->data;
++				lptr->next->data = data;
++				surface = NULL;
++			}
++			if(surface == NULL) surface = lptr;
++		}
++		if(surface == NULL) surface = list->first;
++    }
++}
+diff --git a/src/library/llist.h b/src/library/llist.h
+index 59eccf1..cf1a94c 100644
+--- a/src/library/llist.h
++++ b/src/library/llist.h
+@@ -47,5 +47,6 @@ void list_empty(list_t *list);
+ int list_contains(list_t *list, const char *str);
+ int list_remove(list_t *list, const char *str);
+ void list_merge(list_t *dest, list_t *src);
++void list_bubble_sort(list_t *list, int (*compare)(const void*, const void*));
+ 
+ #endif
+diff --git a/src/library/policy.c b/src/library/policy.c
+index 09433c2..ce89ccf 100644
+--- a/src/library/policy.c
++++ b/src/library/policy.c
+@@ -35,6 +35,7 @@
+ #include <stdlib.h>
+ #include <stdbool.h>
+ #include <stdatomic.h>
++#include <limits.h>
+ 
+ #include "database.h"
+ #include "escape.h"
+@@ -46,6 +47,7 @@
+ #include "gcc-attributes.h"
+ #include "string-util.h"
+ #include "paths.h"
++#include "llist.h"
+ 
+ #define MAX_SYSLOG_FIELDS	21
+ #define NGID_LIMIT		32
+@@ -75,6 +77,9 @@ static const nv_t table[] = {
+ extern unsigned int debug_mode;
+ extern unsigned int permissive;
+ 
++// Global variables
++extern list_t wildcards;
++
+ #define MAX_DECISIONS (sizeof(table)/sizeof(table[0]))
+ 
+ // These are the constants for things not subj or obj
+@@ -242,12 +247,30 @@ static FILE *open_file(void)
+ 	return f;
+ }
+ 
++// Simple determination of glob expression greediness
++// based on slashes counting before and after first asterisk
++int glob_meter(const char *s) {
++   int slashes = 0, leading = 0;
++   for (int i = 0; s[i]; i++) {
++        if (s[i] == '/') slashes++;
++		else if ((s[i] == '*' || s[i] == '?') && leading == 0) leading = slashes;
++   }
++   if (leading == 0) leading = slashes; // No asterisks found
++   return(leading * PATH_MAX + slashes);
++};
++
++// Comparison of wildcards greediness based on glob_meter function
++int glob_compare(const void* a, const void* b) {
++    return (glob_meter(b) - glob_meter(a));
++}
++
+ // Returns 0 on success and 1 on error
+ static int _load_rules(const conf_t *_config, FILE *f)
+ {
+ 	int rc, lineno = 1;
+ 	char *line = NULL;
+ 	size_t len = 0;
++	list_init(&wildcards);
+ 
+ 	if (rules_create(&rules))
+ 		return 1;
+@@ -260,6 +283,23 @@ static int _load_rules(const conf_t *_config, FILE *f)
+ 		if (ptr)
+ 			*ptr = 0;
+ 		msg(LOG_DEBUG, "%s", line);
++
++		// Get wildcards by keyword from the rule and add to the list
++		char wc_key[16] = "path=";
++		char *wc_data = strstr(line, wc_key);
++		if (wc_data) {
++			if (strpbrk(wc_data, "?*[" ) != NULL) {
++				char *wildcard = malloc(strlen(wc_data));
++				sscanf(wc_data, strcat(wc_key,"%s"), wildcard);
++				if (!list_contains(&wildcards, wildcard)) {
++					msg(LOG_DEBUG, "Add to the list discovered wildcard %s", wildcard);
++					list_append(&wildcards, wildcard, wildcard);
++				}
++			}
++		}
++		// Less greedy glob expressions should be at the top of the list
++		list_bubble_sort(&wildcards, glob_compare);
++
+ 		rc = rules_append(&rules, line, lineno);
+ 		if (rc) {
+ 			free(line);
+@@ -347,6 +387,9 @@ int do_reload_rules(const conf_t *_config)
+ {
+ 	destroy_rules();
+ 
++	// Remove wildcards as well
++	list_empty(&wildcards);
++
+ 	if (init_attr_sets())
+ 		return 1;
+ 
+diff --git a/src/library/rules.c b/src/library/rules.c
+index 849a6c3..62ba9e3 100644
+--- a/src/library/rules.c
++++ b/src/library/rules.c
+@@ -39,12 +39,16 @@
+ #include "message.h"
+ #include "file.h" // This seems wrong
+ #include "database.h"
++#include "llist.h"
+ 
+ #include "subject-attr.h"
+ #include "object-attr.h"
+ 
+ #include "string-util.h"
+ 
++// Global variables
++extern list_t wildcards;
++
+ //#define DEBUG
+ #define UNUSED 0xFF
+ 
+@@ -1321,9 +1325,21 @@ static decision_t check_object(lnode *r, event_t *e)
+ 				break;
+ 			}
+ 
++			// Backup and change path
++			char *backup_path;
++			if (type == PATH && obj->o != NULL) {
++				backup_path = strdup(obj->o);
++				path_globalization((const char *) obj->o, 0);
++			}
++
+ 			if (!check_str_attr_set(r->o[cnt].set, obj->o))
+ 				return 0;
+ 
++			// Restore path
++			if (type == PATH && obj->o != NULL) {
++				memcpy(obj->o, backup_path, strlen(backup_path) + 1);
++			}
++
+ 			break;
+ 		} // case
+ 
+@@ -1496,3 +1512,4 @@ void rules_clear(llist *l)
+ 	l->cur = NULL;
+ 	l->cnt = 0;
+ }
++

@@ -9,8 +9,8 @@
   loop_control:
     loop_var: tasks_file
   with_fileglob:
-    - "{{playbook_dir}}/inventories/ou/{{var_ou_giud}}/tasks/*.yml"
-  when: var_ou_giud is defined
+    - "{{playbook_dir}}/inventories/ou/{{var_ou_guid}}/tasks/*.yml"
+  when: var_ou_guid is defined
 
 - name: Hostname tasks @hostname_tasks
   ignore_errors: true

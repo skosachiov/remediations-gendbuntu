@@ -1,0 +1,25 @@
+- name: Remove sssd db cache @remove_sssd_db_cache
+  ignore_errors: true
+  block:
+    - name: Remove sssd db cache Facts @remove_sssd_db_cache
+      service_facts:
+    - name: Remove sssd db cache Stop @remove_sssd_db_cache
+      changed_when: false
+      service:
+        name: sssd
+        state: stopped
+    - name: Remove sssd db cache Rm @remove_sssd_db_cache
+      changed_when: false
+      shell: rm -f /var/lib/sss/db/*
+    - name: Remove sssd db cache Start @remove_sssd_db_cache
+      changed_when: false
+      service:
+        name: sssd
+        state: started
+  when:
+    - ansible_facts.services['sssd.service'] is defined
+    - ansible_facts.services['sssd.service']['state'] == 'running'
+  tags:
+    - ws
+    - sec
+    - remove_sssd_db_cache

@@ -1,0 +1,10 @@
+diff -ru fapolicyd-1.3.3/init/fapolicyd-magic fapolicyd-1.3.3-3/init/fapolicyd-magic
+--- fapolicyd-1.3.3/init/fapolicyd-magic	2024-06-10 15:41:28.920000000 +0300
++++ fapolicyd-1.3.3-3/init/fapolicyd-magic	2024-06-10 15:43:15.184000000 +0300
+@@ -95,3 +95,6 @@
+ 
+ 0	string/wt	#!\ /usr/sbin/nft	Netfilter tables script text executable
+ !:mime	text/x-nftables
++
++0	belong	0x4d5a9000	Portable executable
++!:mime application/vnd.microsoft.portable-executable

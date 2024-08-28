@@ -1,0 +1,115 @@
+- name: Fapolicyd active @fapolicyd_active
+  ignore_errors: "{{ansible_check_mode}}"
+  block:
+    - name: Fapolicyd active Package facts @fapolicyd_active
+      package_facts:
+        manager: auto
+    - name: Fapolicyd active Mask if no present @fapolicyd_active
+      command: systemctl mask fapolicyd
+      when: ansible_facts.packages['fapolicyd'] is undefined
+    - name: Fapolicyd active Present @fapolicyd_active
+      package:
+        name:
+          - fapolicyd
+        state: latest
+      register: result
+    - name: Fapolicyd active File @fapolicyd_active
+      file:
+        path: '/etc/fapolicyd/rules.d'
+        state: directory
+        mode: '0640'
+    - name: Fapolicyd active Templates @fapolicyd_active
+      template:
+        src: "{{item}}"
+        dest: '/etc/fapolicyd/rules.d/{{(item|basename).split(".")[0]}}.rules'
+        mode: '0640'
+      with_fileglob:
+        - "{{playbook_dir}}/roles/fapolicyd/templates/*"
+      notify: Fapolicyd reload rules
+    - name: Fapolicyd active Stat ou @fapolicyd_active
+      stat:
+        path: "{{playbook_dir}}/inventories/ou/{{var_ou_guid}}/files/fapolicyd"
+      register: ou_fapolicyd_dir
+      when: var_ou_guid is defined
+    - name: Fapolicyd active Templates ou @fapolicyd_active
+      template:
+        src: "{{item}}"
+        dest: '/etc/fapolicyd/rules.d/{{(item|basename).split(".")[0]}}.rules'
+        mode: '0640'
+      with_fileglob:
+        - "{{playbook_dir}}/inventories/ou/{{var_ou_guid}}/files/fapolicyd/*"
+      when: ou_fapolicyd_dir.stat.exists
+      notify: Fapolicyd reload rules
+    - name: Fapolicyd active Copy @fapolicyd_active
+      copy:
+        src: "{{playbook_dir}}/inventories/codename/{{ansible_distribution_major_version}}/files/fapolicyd/fapolicyd.trust"
+        dest: /etc/fapolicyd/
+        mode: go-rwx
+      notify: Fapolicyd update
+    - name: Fapolicyd active Trust @fapolicyd_active
+      copy:
+        src: "{{item}}"
+        dest: '/etc/fapolicyd/trust.d/'
+        mode: '0640'
+      with_fileglob:
+        - "{{playbook_dir}}/inventories/codename/{{ansible_distribution_major_version}}/files/fapolicyd/trust.d/*"
+      notify: Fapolicyd update
+    - name: Fapolicyd active Lineinfile @fapolicyd_active
+      lineinfile:
+        dest: /etc/fapolicyd/fapolicyd.conf
+        regexp: ^permissive
+        line: permissive = 0
+      notify: Fapolicyd restarted
+    - name: Fapolicyd active Lineinfile @fapolicyd_active
+      lineinfile:
+        dest: /etc/fapolicyd/fapolicyd.conf
+        regexp: ^db_max_size
+        line: db_max_size = 512
+      notify: Fapolicyd restarted
+    - name: Fapolicyd active Lineinfile @fapolicyd_active
+      lineinfile:
+        dest: /etc/fapolicyd/fapolicyd.conf
+        regexp: ^integrity
+        line: integrity = sha256
+      notify: Fapolicyd restarted
+    - name: Fapolicyd active Lineinfile @fapolicyd_active
+      lineinfile:
+        dest: /etc/fapolicyd/fapolicyd.conf
+        regexp: ^trust
+        line: "trust = {{'debdb' if ansible_pkg_mgr == 'apt' else 'rpmdb'}},file"
+      notify: Fapolicyd restarted
+    - name: Fapolicyd active Unmask @fapolicyd_active
+      changed_when: false
+      command: systemctl unmask fapolicyd
+    - name: Fapolicyd active Enabled @fapolicyd_active
+      service:
+        name: fapolicyd
+        enabled: true
+    - name: Fapolicyd active Started @fapolicyd_active
+      service:
+        name: fapolicyd
+        state: started
+  rescue:
+    - name: Fapolicyd active Failed @fapolicyd_active
+      debug:
+        msg: "Fapolicyd active Failed"
+  when:
+    - var_fapolicyd_service is defined
+    - var_fapolicyd_service
+  tags:
+    - ws
+    - sec
+    - fapolicyd_active
+
+- name: Fapolicyd apt post invoke @fapolicyd_apt_post_invoke
+  copy:
+    dest: /etc/apt/apt.conf.d/07fapolicyd
+    content: |
+      DPkg::Post-Invoke { "if [ -x /usr/sbin/fapolicyd ]; then fapolicyd-cli -u || true; fi"; };
+      RPM::Post-Invoke  { "if [ -x /usr/sbin/fapolicyd ]; then fapolicyd-cli -u || true; fi"; };
+  when:
+    - var_fapolicyd_service is defined
+    - var_fapolicyd_service
+  tags:
+    - ws
+    - fapolicyd_apt_post_invoke

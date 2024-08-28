@@ -1,0 +1,78 @@
+- name: Fapolicyd repo @fapolicyd_repo
+  ignore_errors: "{{ansible_check_mode}}"
+  block:
+    - name: Fapolicyd repo Facts auto @fapolicyd_repo
+      package_facts:
+        manager: auto
+    - name: Fapolicyd repo Temp file @fapolicyd_repo
+      changed_when: false
+      tempfile:
+        state: file
+      register: tmp_file
+    - name: Fapolicyd repo Get @fapolicyd_repo
+      changed_when: false
+      get_url:
+        url: "{{var_fapolicyd_trust_repo.url}}/{{var_fapolicyd_trust_repo.packages}}"
+        dest: "{{tmp_file.path}}"
+        force: true
+    - name: Fapolicyd repo Cat @fapolicyd_repo
+      changed_when: false
+      command: "cat {{tmp_file.path}}"
+      register: cat_tmp_file
+      failed_when: cat_tmp_file.stdout_lines|length == 0
+    - name: Fapolicyd repo Set @fapolicyd_repo
+      set_fact:
+        trust_remote_files: {}
+    - name: Fapolicyd repo Set @fapolicyd_repo
+      set_fact:
+        trust_remote_files: "{{ trust_remote_files | combine({ item.split('  ')[0]: item.split('  ')[1] }) }}"
+      with_items: "{{cat_tmp_file.stdout_lines}}"
+    - name: Fapolicyd repo Remove tmp @fapolicyd_repo
+      changed_when: false
+      file:
+        path: "{{tmp_file.path}}"
+        state: absent
+    - name: Fapolicyd repo Shell sha256sum @fapolicyd_repo
+      changed_when: false
+      shell: sha256sum /etc/fapolicyd/trust.d/*
+      register: sha_trust_d
+    - name: Fapolicyd repo Set @fapolicyd_repo
+      set_fact:
+        trust_local_files: {}
+    - name: Fapolicyd repo Set @fapolicyd_repo
+      set_fact:
+        trust_local_files: "{{ trust_local_files | combine({ item.split('  ')[0]: item.split('  ')[1] }) }}"
+      with_items: "{{sha_trust_d.stdout_lines}}"
+    - name: Fapolicyd repo Remove by hash @fapolicyd_repo
+      changed_when: false
+      file:
+        path: "{{trust_local_files[item]}}"
+        state: absent
+      with_items: "{{trust_local_files.keys() | difference(trust_remote_files.keys())}}"
+    - name: Fapolicyd repo Remove by name @fapolicyd_repo
+      file:
+        path: "{{trust_local_files[item]}}"
+        state: absent
+      with_items: "{{trust_local_files.keys() | list}}"
+      when: (trust_local_files[item]|basename).split('.')[0] not in ansible_facts.packages
+    - name: Fapolicyd repo Copy by name @fapolicyd_repo
+      get_url:
+        url: "{{var_fapolicyd_trust_repo.url}}/{{trust_remote_files[item]}}"
+        dest: "/etc/fapolicyd/trust.d/{{trust_remote_files[item].split('/')[1]}}.{{var_fapolicyd_trust_repo.extension}}"
+      with_items: "{{trust_remote_files.keys() | difference(trust_local_files.keys())}}"
+      notify: Fapolicyd update
+      when:
+        - trust_remote_files[item].split('/')[1] in ansible_facts.packages
+        - ansible_facts.packages[trust_remote_files[item].split('/')[1]][0].version == trust_remote_files[item].split('/')[2]
+  rescue:
+    - name: Fapolicyd repo Failed @fapolicyd_repo
+      debug:
+        msg: "Fapolicyd repo Failed"
+  when:
+    - var_fapolicyd_service is defined
+    - var_fapolicyd_service
+    - var_devel_workstation or var_test_workstation
+  tags:
+    - ws
+    - sec
+    - fapolicyd_repo
