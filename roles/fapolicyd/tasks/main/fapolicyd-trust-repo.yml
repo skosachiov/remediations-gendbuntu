@@ -71,7 +71,6 @@
   when:
     - var_fapolicyd_service is defined
     - var_fapolicyd_service
-    - var_devel_workstation or var_test_workstation
   tags:
     - ws
     - sec
