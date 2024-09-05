@@ -1,7 +1,9 @@
 - name: Enable service autofs Present @enable_autofs_service
   ignore_errors: "{{ansible_check_mode}}"
   package:
-    name: autofs
+    name: 
+      - autofs
+      - keyutils
     state: present
   tags:
     - ws

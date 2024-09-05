@@ -7,6 +7,7 @@
           - sssd
           - sssd-tools
           - adcli
+          - keyutils
         state: present
     - name: Sssd packages are present Specific @sssd_packages_are_present
       package:
