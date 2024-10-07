@@ -1,0 +1,54 @@
+- name: Grub efi reinstall @grub_efi_reinstall
+  ignore_errors: true
+  block:
+    - name: Grub efi reinstall Check grub default @grub_efi_reinstall
+      changed_when: true
+      debug:
+        msg: "{{grub_default_result.changed}}"
+    - name: Grub efi reinstall Get cmdline @grub_efi_reinstall
+      changed_when: false
+      command: cat /proc/cmdline
+      register: cmdline_result
+    - name: Grub efi reinstall First before @grub_efi_reinstall
+      changed_when: false
+      shell: efibootmgr | grep '^BootOrder' | cut -f 2 -d ' ' | cut -f 1 -d ','
+      register: efifirst_before
+    - name: Grub efi reinstall Get efi @grub_efi_reinstall
+      changed_when: false
+      shell: efibootmgr | grep "^Boot"
+      register: efibootmgr_result
+    - name: Grub efi reinstall Grub reinstall @grub_efi_reinstall
+      shell: >
+        apt -y install --reinstall grub-efi-amd64;
+        grub-install
+      when:
+        - "'quiet' not in cmdline_result.stdout_lines[0]"
+        - "'reFind' in efibootmgr_result.stdout"
+      register: grub_reinstall_result
+    - name: Grub efi reinstall First after @grub_efi_reinstall
+      changed_when: false
+      shell: efibootmgr | grep '^BootOrder' | cut -f 2 -d ' ' | cut -f 1 -d ','
+      register: efifirst_after
+      when: grub_reinstall_result.changed
+    - name: Grub efi reinstall Get windows @grub_efi_reinstall
+      changed_when: false
+      failed_when: false
+      shell: efibootmgr | grep -i Windows | grep -o [0-9]*
+      register: efi_windows
+    - name: Grub efi reinstall New order @grub_efi_reinstall
+      shell: efibootmgr -o {{efifirst_before.stdout_lines[0]}},{{efifirst_after.stdout_lines[0]}}
+      when:
+        - grub_reinstall_result.changed
+        - efifirst_before.stdout_lines[0] != efifirst_after.stdout_lines[0]
+    - name: Grub efi reinstall Windows first @grub_efi_reinstall
+      shell: efibootmgr -o {{efi_windows.stdout_lines[0]}},{{efifirst_after.stdout_lines[0]}}
+      when:
+        - grub_reinstall_result.changed
+        - grub_nondefault.changed
+        - efi_windows.stdout_lines|length > 0
+  when:
+    - var_devel_workstation
+  tags:
+    - ws
+    - dp
+    - grub_efi_reinstall

@@ -23,6 +23,21 @@
     - sec
     - check_lock_session_policy
 
+- name: Suspend disallow policy @suspend_disallow_policy
+  ignore_errors: true
+  xml:
+    path: /usr/share/polkit-1/actions/org.freedesktop.login1.policy
+    xpath: /policyconfig/action[@id="org.freedesktop.login1.{{item}}"]/defaults/allow_active
+    value: "no"
+  with_items:
+    - suspend
+    - suspend-multiple-sessions
+    - hibernate
+    - hibernate-multiple-sessions
+  tags:
+    - ws
+    - suspend_disallow_policy    
+
 - name: Disable NetworkManager for user @nm_disallow_policy
   ignore_errors: true
   block:

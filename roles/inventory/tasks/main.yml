@@ -159,6 +159,11 @@
       package:
         name: sysstat
         state: present
+    - name: Get system load average Service @get_load_average
+      service:
+        name: sysstat
+        enabled: true
+        state: started
     - name: Get system load average Lineinfile @get_load_average
       lineinfile:
         dest: /etc/default/sysstat
@@ -324,12 +329,13 @@
       command: efibootmgr -v
       register: efibootmgr_verbose
     - name: Log on efi partition Get grub.cfg @log_on_efi_partition
-      set_fact:
-        file_grub_cfg:  "{{ lookup('file', file='/boot/grub/grub.cfg') }}"
+      changed_when: false
+      command: cat /boot/grub/grub.cfg
+      register: file_grub_cfg
     - name: Log on efi partition Combine @log_on_efi_partition
       set_fact:
         ansible_facts_enriched:  "{{ ansible_facts \
-          | combine({'grep_gpt_efi': grep_gpt_efi}, {'efibootmgr_verbose': efibootmgr_verbose}, {'file_grub_cfg': file_grub_cfg}) }}"
+          | combine({'grep_gpt_efi': grep_gpt_efi}, {'efibootmgr_verbose': efibootmgr_verbose}, {'file_grub_cfg': file_grub_cfg.stdout_lines}) }}"
     - name: Log on efi partition Copy @log_on_efi_partition
       changed_when: false
       copy:

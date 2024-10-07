@@ -18,7 +18,7 @@
           for certfile in /usr/local/share/ca-certificates/*.der; do
             if ! grep -q "BEGIN CERTIFICATE" "$certfile"; then
               certname=$(openssl x509 -inform DER -nameopt multiline -noout -subject -in ${certfile} | sed -n 's/ *commonName *= //p')
-              for certDB in $(find ~/ -xdev -name "cert9.db")
+              for certDB in $(find ~/.pki/nssdb/ ~/.mozilla/firefox/ -xdev -name "cert9.db" 2> /dev/null)
               do
                 certdir=$(dirname ${certDB});
                 certutil -A -n "${certname}" -t "TC,C,T" -i ${certfile} -d sql:${certdir}

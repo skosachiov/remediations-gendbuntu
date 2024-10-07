@@ -1,0 +1,44 @@
+# This file is part of Remediations.
+#
+# Remediations is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Remediations is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Remediations.  If not, see <https://www.gnu.org/licenses/>.
+
+---
+
+- hosts: all
+
+  environment:
+    PATH: "{{ansible_env.PATH}}:/sbin:/usr/sbin:/usr/local/sbin"
+  vars_files:
+    - inventories/subnets/subnets.yml
+
+  pre_tasks:
+    # Set installation type (workstation/mobile-device/flash-drive/thin-client/distribution-point/server)
+    - name: Set installation type
+      set_fact:
+        var_installation_type: workstation
+      tags: always
+    - include_tasks: roles/pre-tasks/tasks/main.yml
+      tags: always
+    - include_tasks: roles/apt/tasks/set-local-repo.yml
+      tags: always
+
+  roles:
+    - role: cron-daily
+    - role: utmost-report
+
+  post_tasks:
+    - name: Debug
+      debug:
+        msg: "{{ansible_facts}}"
+

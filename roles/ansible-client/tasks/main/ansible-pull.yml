@@ -38,3 +38,22 @@
   tags:
     - ws
     - cron_ansible_pull_repair
+
+- name: Cron periodic ansible pull @cron_periodic_ansible_pull
+  copy:
+    dest: /etc/cron.{{item}}/ansible-pull-{{item}}
+    content: >
+      sleep $((RANDOM % 1800));
+      bash -c "/usr/bin/ansible-pull -i localhost -d /root/.ansible/pull/{{var_ansible_repo}} -U {{var_ansible_git}} workstation-cron-{{item}}.yml |
+      logger -n {{var_rsyslog_server}}"
+    mode: a+rx
+  notify: Cron restarted
+  with_items:
+    - hourly
+    - daily
+    - weekly
+    - monthly
+  when: var_devel_workstation
+  tags:
+    - ws
+    - cron_periodic_ansible_pull

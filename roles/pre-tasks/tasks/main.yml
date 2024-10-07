@@ -382,4 +382,13 @@
   when: ansible_pkg_mgr == 'apt'
   tags: always
 
+# Check grub nondefault
 
+- name: Grub efi reinstall Check grub default @default
+  check_mode: true
+  lineinfile:
+    path: /etc/default/grub
+    regexp: ^GRUB_DEFAULT=[^0]
+    state: absent
+  register: grub_nondefault
+  tags: always

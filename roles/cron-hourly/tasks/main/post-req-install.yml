@@ -1,0 +1,40 @@
+- name: Post req install @post_req_install
+  ignore_errors: true
+  block:
+    - name: Post req install Uri @post_req_install
+      failed_when: false
+      changed_when: false
+      uri:
+        url: https://{{var_ansible_fqdn}}/files/post/{{ansible_facts.nodename.split('.')[0]|lower}}.post
+        method: GET
+        return_content: yes
+        status_code: 200
+        body_format: json
+      register: users_pkgs
+    - name: Post req install Set tasks @post_req_install
+      set_fact:
+        pkgs_present: "{{(users_pkgs.content | from_json)['pkgs_present'] | reject('search', '.yml') | list}}"
+        tasks_present: "{{(users_pkgs.content | from_json)['pkgs_present'] | select('search', '.yml') | list}}"
+        last_modified: "{{users_pkgs.last_modified | to_datetime('%a, %d %b %Y %H:%M:%S %Z')}}"
+      when:
+        - users_pkgs.status == 200
+        - '"pkgs_present" in (users_pkgs.content | from_json)'
+    - name: Post req install Package @post_req_install
+      package:
+        name: "{{item}}"
+        state: present
+      with_items: "{{pkgs_present}}"
+      when:
+        - pkgs_present is defined
+        - last_modified|int > (ansible_date_time.epoch|int - 60*60*72)
+    - include_tasks: "{{playbook_dir}}/inventories/hostnames/tasks/{{tasks_file}}"
+      loop_control:
+        loop_var: tasks_file
+      with_items: "{{tasks_present}}"
+      when:
+        - tasks_present is defined
+        - last_modified|int > (ansible_date_time.epoch|int - 60*60*72)
+  when: var_devel_workstation
+  tags:
+    - ws
+    - post_req_install
