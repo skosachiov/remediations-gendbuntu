@@ -1,10 +1,6 @@
 - name: Grub efi reinstall @grub_efi_reinstall
   ignore_errors: true
   block:
-    - name: Grub efi reinstall Check grub default @grub_efi_reinstall
-      changed_when: true
-      debug:
-        msg: "{{grub_default_result.changed}}"
     - name: Grub efi reinstall Get cmdline @grub_efi_reinstall
       changed_when: false
       command: cat /proc/cmdline

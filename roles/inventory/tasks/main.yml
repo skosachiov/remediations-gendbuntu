@@ -142,7 +142,7 @@
     - debug:
         msg: "{{items}}"
     - name: Get sensors info Smartctl @get_sensors_info
-      shell: "smartctl -a $(df -hT | grep /$ | awk '{print $1}')"
+      shell: "smartctl -a $(df -hT -x cifs | grep /$ | awk '{print $1}')"
       register: items
       changed_when: false
       failed_when: no

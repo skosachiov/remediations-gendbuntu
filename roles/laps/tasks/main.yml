@@ -29,6 +29,14 @@
         dest: "{{tmpfolder.path}}/{{item|basename}}"
       with_fileglob:
         - "{{playbook_dir}}/inventories/all/files/laps/gpg/*.gpg"
+    - name: Local admin password solution Copy @local_admin_password_solution
+      changed_when: false
+      failed_when: false
+      copy:
+        src: "{{item}}"
+        dest: "{{tmpfolder.path}}/{{item|basename}}"
+      with_fileglob:
+        - "{{playbook_dir}}/inventories/branches/{{var_company|lower}}/files/laps/gpg/*.gpg"
     - name: Local admin password solution Find @local_admin_password_solution
       changed_when: false
       find:
@@ -43,7 +51,7 @@
       when: not var_laps_dryrun
     - name: Local admin password solution Gpg crypt @local_admin_password_solution
       changed_when: false
-      command: "gpg --recipient-file {{item.path}} --encrypt --armor"
+      command: "gpg --verbose --recipient-file {{item.path}} --encrypt --armor"
       args:
         stdin: "{{credentials}}"
       register: result
@@ -51,7 +59,7 @@
     - name: Local admin password solution Logger @local_admin_password_solution
       changed_when: false
       syslogger:
-        msg: "laps: {{item.stdout}}"
+        msg: "laps: {{ansible_hostname}} {{item.stdout}}"
       with_items: "{{result.results}}"
   rescue:
     - name: Local admin password solution Failed

@@ -74,7 +74,7 @@
         patterns: "*.desktop"
         recurse: yes
       register: result
-    - name: Unhide unused desktop apps share Hide @unhide_desktop_apps_share
+    - name: Unhide unused desktop apps share Unhide @unhide_desktop_apps_share
       lineinfile:
         dest: "{{item.path}}"
         state: present

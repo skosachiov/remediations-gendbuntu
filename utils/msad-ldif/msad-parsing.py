@@ -145,7 +145,7 @@ with open(sys.argv[3], 'w', encoding = 'utf-8') as out_file:
     if '.xml' in sys.argv[3]:
         out_file.write(xmltodict.unparse(report, pretty = True))
     elif '.json' in sys.argv[3]:
-        out_file.write(json.dumps(report['root'], indent = 4))
+        out_file.write(json.dumps(report['root'], ensure_ascii=False, indent = 4))
     else:
         os = {}
         for r in  report['root']['computer']:

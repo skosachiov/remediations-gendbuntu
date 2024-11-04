@@ -1,0 +1,11 @@
+- name: Tcp mtu probing @tcp_mtu_probing
+  sysctl:
+    name: net.ipv4.tcp_mtu_probing
+    value: '2'
+    reload: yes
+    ignoreerrors: yes
+  when: var_devel_workstation
+  tags:
+    - ws
+    - sec
+    - tcp_mtu_probing

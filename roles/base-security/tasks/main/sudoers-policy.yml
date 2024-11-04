@@ -8,7 +8,7 @@
         marker_end: END_GROUPS
         block: |
           %{{var_local_admins_group}} ALL=(ALL) EXEC:ALL, PASSWD:ALL
-          %{{var_domain_admins_group}} ALL=(ALL) EXEC:ALL, PASSWD:ALL
+          %{{var_domain_admins_group|lower}} ALL=(ALL) EXEC:ALL, PASSWD:ALL
         insertafter: EOF
       when: not var_admin_workstation
     - name: Set sudoers groups Admin @set_sudoers_groups

@@ -15,6 +15,7 @@ var_usb_rules:
   block id 045e:07b2
   block id 045e:07a5
   allow with-interface one-of { 09:*:* }
-  allow with-interface one-of { 01:*:* } if !allowed-matches(with-interface one-of { 01:*:* })
-  allow with-interface one-of { 03:*:* } if !allowed-matches(with-interface one-of { 03:*:* })
-  allow with-interface one-of { 0e:*:* } if !allowed-matches(with-interface one-of { 0e:*:* })
+  allow with-interface one-of { 01:*:* }
+  allow with-interface one-of { 03:*:* }
+  allow with-interface one-of { 0b:*:* }
+  allow with-interface one-of { 0e:*:* }

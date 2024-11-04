@@ -10,3 +10,16 @@
     - sec
     - mob
     - remove_execution_bit
+
+- name: Set execution bit @var_set_exec_bit
+  ignore_errors: "{{ansible_check_mode}}"
+  file:
+    path: "{{item}}"
+    mode: go+rx
+  failed_when: false
+  with_items: "{{var_set_exec_bit}}"
+  tags:
+    - ws
+    - sec
+    - mob
+    - set_execution_bit
