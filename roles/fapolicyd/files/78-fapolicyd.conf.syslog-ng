@@ -1,0 +1,13 @@
+filter f_notify {
+    message("^.*fapolicyd.*deny_syslog.*$")
+};
+
+destination d_notify {
+    program("/usr/local/bin/notify-send-all.sh" template("<${PRI}>${DATE} ${HOST} ${MESSAGE}\n") );
+};
+
+log {
+    source(s_src);
+    filter(f_notify);
+    destination(d_notify);
+};
