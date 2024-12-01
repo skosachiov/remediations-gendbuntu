@@ -8,8 +8,11 @@
         marker_end: END_GROUPS
         block: |
           %{{var_local_admins_group}} ALL=(ALL) EXEC:ALL, PASSWD:ALL
-          %{{var_domain_admins_group|lower}} ALL=(ALL) EXEC:ALL, PASSWD:ALL
+          {% for element in var_domain_admin_groups %}
+          %{{ element|lower }} ALL=(ALL) EXEC:ALL, PASSWD:ALL
+          {% endfor %}          
         insertafter: EOF
+        validate: /usr/sbin/visudo -cf %s
       when: not var_admin_workstation
     - name: Set sudoers groups Admin @set_sudoers_groups
       blockinfile:
@@ -19,6 +22,7 @@
         block: |
           %{{var_local_admins_group}} ALL=(ALL) EXEC:ALL, PASSWD:ALL
         insertafter: EOF
+        validate: /usr/sbin/visudo -cf %s
       when: var_admin_workstation
   tags:
     - ws

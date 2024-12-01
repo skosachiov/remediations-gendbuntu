@@ -336,7 +336,7 @@
         path: /etc/ssh/sshd_config
         create: true
         regexp: ^\s*AllowGroups\s*
-        line: AllowGroups {{var_ansible_username}} {{var_domain_admins_group}} {{var_local_admins_group}}
+        line: AllowGroups {{var_ansible_username}} {{var_domain_admin_groups|join(" ")|lower}} {{var_local_admins_group}}
         state: present
         insertbefore: ^[#\s]*Match
         validate: /usr/sbin/sshd -t -f %s

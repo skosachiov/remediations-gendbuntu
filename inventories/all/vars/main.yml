@@ -21,7 +21,7 @@ var_proxy_server: "http://paris-proxy.si.mi:3128"
 var_export_proxy_vars: false
 var_internet_connectivity: false
 
-var_domain_admins_group: gend_admins
+var_domain_admin_groups: ['gend_admins']
 
 var_clamav_server: paris-clamav.si.mi
 

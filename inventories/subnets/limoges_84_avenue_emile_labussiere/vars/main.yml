@@ -14,7 +14,7 @@ var_dfs:
 var_proxy_server: "http://paris-proxy.si.mi:3128"
 var_cups_printers:
   - { uri: 'ipp://limoges-dc.si.mi/prn', auth: negotiate, model: 'everywhere' }
-var_domain_admins_group: gend_admins
+var_domain_admin_groups: ['gend_admins']
 var_clamav_server: paris-clamav.si.mi
 var_site_address: "limoges_84_avenue_emile_labussiere"
 var_company: ordnance

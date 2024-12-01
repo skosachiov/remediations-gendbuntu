@@ -14,7 +14,7 @@ var_dfs:
 var_proxy_server: "http://paris-proxy.si.mi:3128"
 var_cups_printers:
   - { uri: 'ipp://montpellier-prn.si.mi/followme', auth: negotiate, model: 'everywhere' }
-var_domain_admins_group: gend_admins
+var_domain_admin_groups: ['gend_admins']
 var_clamav_server: montpellier-clamav.si.mi
 var_site_address: "montpellier_206_rue_du_comte_de_melgueil"
 var_company: ordnance

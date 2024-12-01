@@ -99,7 +99,7 @@
         path: /etc/xrdp/sesman.ini
         create: true
         regexp: ^\s*TerminalServerUsers
-        line: TerminalServerUsers={{var_ansible_username}} {{var_domain_admins_group}} {{var_local_admins_group}}
+        line: TerminalServerUsers={{var_ansible_username}} {{var_domain_admin_groups|join(" ")|lower}} {{var_local_admins_group}}
         state: present
         insertafter: ^\[Security\]
       notify: Xrdp restarted
@@ -109,7 +109,7 @@
         path: /etc/xrdp/sesman.ini
         create: true
         regexp: ^\s*TerminalServerAdmins
-        line: TerminalServerAdmins={{var_ansible_username}} {{var_domain_admins_group}} {{var_local_admins_group}}
+        line: TerminalServerAdmins={{var_ansible_username}} {{var_domain_admin_groups|join(" ")|lower}} {{var_local_admins_group}}
         state: present
         insertafter: ^\[Security\]
       notify: Xrdp restarted

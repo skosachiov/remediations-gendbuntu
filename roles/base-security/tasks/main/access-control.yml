@@ -10,7 +10,9 @@
         block: |
           + : {{var_ansible_username}} : ALL
           + : {{var_local_admins_group}} : ALL
-          + : {{var_domain_admins_group|lower}} : ALL
+          {% for element in var_domain_admin_groups %}
+          + : {{ element|lower }} : ALL
+          {% endfor %}
           + : @{{var_domain_users_group}} : {{var_domain_users_group_access}}
           - : ALL : ALL
         insertafter: #

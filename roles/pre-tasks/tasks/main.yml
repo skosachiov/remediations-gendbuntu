@@ -20,6 +20,34 @@
     file: "{{playbook_dir}}/inventories/subnets/{{var_subnet}}/vars/main.yml"
   tags: always
 
+# Get time starttransfer
+
+- name: Get curl time starttransfer @default
+  block:
+    - name: Get curl time starttransfer Shell @default
+      changed_when: false
+      shell: LANG=C.UTF-8 curl -w "%{time_starttransfer}" -o /dev/null -s https://{{var_ansible_fqdn}}
+      register: result
+    - name: Get curl time starttransfer Set @default
+      set_fact:
+        var_time_starttransfer: "{{ 9.999999 if (result.stdout_lines[0]|float) == 0.000000 else (result.stdout_lines[0]|float) }}"
+  rescue:
+    - name: Get curl time starttransfer Rescue @default
+      set_fact:
+        var_time_starttransfer: 0.100000
+  tags: always
+
+# Do not continue if server load is high
+
+- name: Do not continue if server load is high @default
+  failed_when: true
+  syslogger:
+    msg: "do not continue if server load is high"
+  when: var_time_starttransfer|float > 2.500000
+  tags: always
+
+# Get ou
+
 - name: Get ou @default
   block:
     - name: Get ou Sssd status @default
