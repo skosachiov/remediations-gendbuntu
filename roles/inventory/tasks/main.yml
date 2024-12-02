@@ -109,7 +109,7 @@
           users_apps: "{{users_apps_json}}"
           boot_parameters: "{{boot_parameters}}"
           machine_id: "{{ansible_machine_id}}"
-          product_uuid: "{{ansible_product_uuid}}",
+          product_uuid: "{{ansible_product_uuid}}"
           load_average: "{{load_average.stdout_lines[0]}}"
     - name: Print main ansible facts @basic_ansible_facts
       changed_when: false
