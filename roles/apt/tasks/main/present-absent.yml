@@ -67,6 +67,8 @@
       - libp11-kit0
       - p11-kit-modules
       - vim
+      - exfat-fuse
+      - ntfs-3g
     state: latest
   ignore_errors: yes
   tags:
@@ -79,7 +81,6 @@
     name:
       - ufw
       - exim4-daemon-light
-      - ntfs-3g
       - psi-plus
       - psi-plus-common
       - psi-plus-l10n

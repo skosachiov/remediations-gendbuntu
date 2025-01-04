@@ -50,6 +50,8 @@ var_suid_whitelist:
   - "/sbin/mount.ecryptfs_private"
   - "/bin/efibootmgr"
   - "/bin/fusermount"
+  - "/sbin/mount.exfat-fuse"
+  - "/usr/sbin/mount.exfat-fuse"
   - "/bin/su"
   - "/bin/mount"
   - "/bin/umount"

@@ -125,6 +125,11 @@
     file: "{{playbook_dir}}/inventories/branches/{{var_company|lower}}/vars/main.yml"
   tags: always
 
+- name: Include subnet vars @default
+  include_vars:
+    file: "{{playbook_dir}}/inventories/subnets/{{var_subnet}}/vars/main.yml"
+  tags: always
+
 # Check Intranet/Internet environment
 
 - name: Get ansible server IP @default
