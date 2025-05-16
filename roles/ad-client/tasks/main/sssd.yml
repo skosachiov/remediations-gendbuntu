@@ -6,6 +6,7 @@
           - realmd
           - sssd
           - sssd-tools
+          - sssd-kcm
           - adcli
           - keyutils
         state: present
@@ -25,6 +26,15 @@
   tags:
     - ws
     - sssd_service_enabled
+
+- name: Sssd-kcm service Enabled @sssd_service_enabled
+  ignore_errors: "{{ansible_check_mode}}"
+  service:
+    name: sssd-kcm
+    enabled: yes
+  tags:
+    - ws
+    - sssd_kcm_service_enabled    
 
 - name: Root copy realm wrapper @copy_realm_wrapper
   template:
