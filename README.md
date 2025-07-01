@@ -4,7 +4,7 @@
 [![rocky-8](https://github.com/skosachiov/remediations-gendbuntu/actions/workflows/rocky-8.yml/badge.svg)](https://github.com/skosachiov/remediations-gendbuntu/actions/workflows/rocky-8.yml)
 [![rocky-9](https://github.com/skosachiov/remediations-gendbuntu/actions/workflows/rocky-9.yml/badge.svg)](https://github.com/skosachiov/remediations-gendbuntu/actions/workflows/rocky-9.yml)
 
-<img src="https://github.com/skosachiov/remediations-gendbuntu/remediations-gendbuntu.png" width="100">
+<img src="https://github.com/skosachiov/remediations-gendbuntu/blob/main/remediations-gendbuntu.png" width="100">
 
 # License
 
