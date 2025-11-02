@@ -278,6 +278,10 @@ ansible-pull -i localhost -d /root/.ansible/pull/remediations-gendbuntu -t mob -
 wget http://example.test/git/remediations-gendbuntu/late-script-mob.sh
 sh late-script-mob.sh
 
+## Install workstation with preseed.cfg (all data on the disk will be lost)
+
+auto=true priority=critical url=https://github.com/skosachiov/remediations-gendbuntu/raw/main/assets/preseed.cfg
+
 ## Check Workstation security in push mode
 
 For information security purpose (check only).

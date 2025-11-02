@@ -60,6 +60,8 @@
     - role: remote-assistance
     - role: scap
     - role: security-modules
+    - role: secure-boot
+      tags: always
     - role: smb-client
     - role: ssh
     - role: terminal-server

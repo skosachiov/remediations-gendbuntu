@@ -34,5 +34,5 @@ dracut -f
 update-grub
 
 echo "localhost ansible_connection=local" >> /etc/ansible/hosts
-echo '@reboot root bash -c "sleep 30 && /usr/bin/ansible-pull -i localhost -U https://github.com/skosachiov/remediations-gendbuntu/raw/main/workstation-test.yml"' >> /etc/cron.d/ansible-pull
+echo '@reboot root bash -c "sleep 30 && /usr/bin/ansible-pull -i localhost -U https://github.com/skosachiov/remediations-gendbuntu/raw/main/workstation-test.yml -t dummy"' >> /etc/cron.d/ansible-pull
 
