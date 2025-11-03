@@ -7,7 +7,7 @@ sed -i "s/127.0.1.1.*/127.0.1.1\t$HOSTNAME/" /etc/hosts
 	
 sed -i "s/deb cdrom/# deb cdrom/" /etc/apt/sources.list
 echo 'XKBMODEL="pc105"
-XKBLAYOUT="us,ru"
+XKBLAYOUT="us,fr"
 XKBVARIANT=","
 XKBOPTIONS=""
 BACKSPACE="guess"' > /etc/default/keyboard
