@@ -23,7 +23,7 @@ openssl rand -hex 4096 > /tmp/unlock-key-file
 cp /tmp/unlock-key-file /etc/unlock-key-file.backup
 chmod 400 /tmp/unlock-key-file
 echo insecure | cryptsetup luksAddKey $CRYPTPART /tmp/unlock-key-file
-systemd-cryptenroll --unlock-key-file=/tmp/unlock-key-file --tpm2-device=auto --tpm2-pcrs=0+1+2 $CRYPTPART
+systemd-cryptenroll --unlock-key-file=/tmp/unlock-key-file --tpm2-device=auto --tpm2-pcrs=0+2 $CRYPTPART
 cryptsetup --key-file=/tmp/unlock-key-file luksKillSlot $CRYPTPART 0
 rm -f /boot/efi/unlock-key-file.gpg
 wget -O /tmp/sample-pubkey.asc https://github.com/skosachiov/remediations-gendbuntu/raw/main/assets/sample-pubkey.asc
