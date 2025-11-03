@@ -36,5 +36,5 @@ update-grub
 
 mkdir -p /etc/ansible
 echo "localhost ansible_connection=local" >> /etc/ansible/hosts
-echo '@reboot root bash -c "sleep 30 && /usr/bin/ansible-pull -i localhost -t dummy -U https://github.com/skosachiov/remediations-gendbuntu.git workstation-test.yml"' >> /etc/cron.d/ansible-pull
+echo '@reboot root bash -c "sleep 30 && /usr/bin/ansible-pull -i localhost -t dummy -U https://github.com/skosachiov/remediations-gendbuntu.git workstation-test.yml | logger"' >> /etc/cron.d/ansible-pull
 
