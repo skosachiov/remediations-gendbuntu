@@ -5,7 +5,7 @@
   set_fact:
     var_subnet: "{{item.0.key}}"
   loop: "{{ var_subnets | dict2items | subelements('value') }}"
-  when: ansible_default_ipv4.address | ipaddr(item.1)
+  when: ansible_default_ipv4.address | ansible.utils.ipaddr(item.1)
   tags: always
 
 # Include vars
