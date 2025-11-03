@@ -13,7 +13,7 @@ XKBOPTIONS=""
 BACKSPACE="guess"' > /etc/default/keyboard
 apt-get -y install keyboard-configuration
 
-apt-get -y install openssh-server vim
+apt-get -y install openssh-server vim curl
 
 apt-get -y install systemd-cryptsetup tpm2-tools tpm2-tss-engine-tools dracut gnupg
 
