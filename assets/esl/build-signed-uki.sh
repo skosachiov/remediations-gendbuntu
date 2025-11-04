@@ -6,20 +6,11 @@ set -e
 
 echo "=== UKI Build and Sign Script ==="
 
-# Detect kernel version
-KERNEL_VERSION=$(basename /boot/vmlinuz-* | sort -V | tail -n1 | sed 's/vmlinuz-//')
-if [ -z "$KERNEL_VERSION" ]; then
-    echo "ERROR: Could not detect kernel version"
-    exit 1
-fi
-
-echo "Detected kernel version: $KERNEL_VERSION"
-
 # Configuration
 OUTPUT_DIR="${OUTPUT_DIR:-./artifacts}"
 UNSIGNED_UKI="linux.uki"
 SIGNED_UKI="linux-signed.uki"
-CMDLINE="${CMDLINE:-root=LABEL=cloudimg-rootfs ro console=tty1 console=ttyS0}"
+CMDLINE="${CMDLINE:-root=LABEL=rw quiet}"
 
 # Validate environment
 if [ -z "$SB_DB_KEY" ]; then
@@ -30,17 +21,6 @@ fi
 
 if [ ! -f "assets/esl/DB.crt" ]; then
     echo "ERROR: DB.crt not found at assets/esl/DB.crt"
-    exit 1
-fi
-
-# Validate kernel files exist
-if [ ! -f "/boot/vmlinuz-$KERNEL_VERSION" ]; then
-    echo "ERROR: Kernel not found: /boot/vmlinuz-$KERNEL_VERSION"
-    exit 1
-fi
-
-if [ ! -f "/boot/initrd.img-$KERNEL_VERSION" ]; then
-    echo "ERROR: Initrd not found: /boot/initrd.img-$KERNEL_VERSION"
     exit 1
 fi
 
@@ -56,6 +36,15 @@ apt-get install -y \
     linux-headers-amd64 \
     systemd-ukify \
     systemd-boot-efi
+
+# Detect kernel version
+KERNEL_VERSION=$(basename /boot/vmlinuz-* | sort -V | tail -n1 | sed 's/vmlinuz-//')
+if [ -z "$KERNEL_VERSION" ]; then
+    echo "ERROR: Could not detect kernel version"
+    exit 1
+fi
+
+echo "Detected kernel version: $KERNEL_VERSION"
 
 echo "=== Building UKI ==="
 ukify build \
