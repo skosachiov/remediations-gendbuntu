@@ -1,0 +1,37 @@
+- name: Get secure boot status @get_secure_boot_status
+  ignore_errors: "{{ansible_check_mode}}"
+  block:
+    - name: Ensure mokutil present @ensure_mokutil_present
+      package:
+        name: 
+          - mokutil
+        state: present
+    - name: Check Secure Boot status with mokutil
+      command:  mokutil --sb-state
+      register: mokutil_output
+      changed_when: false
+    - name: Set secure_boot variable
+      set_fact:
+        var_secure_boot_status: "{{ true if 'SecureBoot enabled' in mokutil_output.stdout else false }}"
+  when: var_secure_boot
+  tags:
+    - ws
+    - get_secure_boot_status
+
+- name: Corp keys loaded
+  when: var_secure_boot and not var_secure_boot_status
+
+- name: Linux-uki installed
+  when: var_secure_boot
+
+- name: Check cryptenroll status with detailed output
+  shell: |
+    for device in $(lsblk -n -o NAME,FSTYPE | grep crypto_LUKS | cut -d' ' -f1); do
+      echo "=== Device: /dev/$device ==="
+      systemd-cryptenroll --tpm2-device=list "/dev/$device" 2>/dev/null || echo "No TPM2 enrollment"
+    done
+  register: cryptenroll_status
+  changed_when: false
+
+- name: Force cryptenroll
+  when: cryptenroll_status != var_force_cryptenroll

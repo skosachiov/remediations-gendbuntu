@@ -1,0 +1,89 @@
+name: Build and Sign UKI with Secure Boot
+
+on:
+  push:
+    branches: [ main ]
+  release:
+    types: [ published ]
+
+jobs:
+  build-and-sign-uki:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Build UKI kernel
+      run: |
+        docker run --rm -v $(pwd):/workspace debian:13-slim bash -c '
+          apt-get update && apt-get install -y systemd-ukify linux-image-amd64
+          ukify build \
+            --linux=/boot/vmlinuz-$(uname -r) \
+            --initrd=/boot/initrd.img-$(uname -r) \
+            --cmdline="root=LABEL=cloudimg-rootfs ro console=tty1 console=ttyS0" \
+            --output=/workspace/linux.uki \
+            --uname=$(uname -r)
+        '
+    
+    - name: Setup signing environment
+      run: |
+        mkdir -p signing-keys
+        # Write private key from secret to file
+        echo "${{ secrets.SB_DB_KEY }}" > signing-keys/DB.key
+        chmod 600 signing-keys/DB.key
+        # Copy public certificate from repo
+        cp assets/esl/DB.crt signing-keys/
+    
+    - name: Sign UKI with Secure Boot key
+      run: |
+        docker run --rm -v $(pwd):/workspace debian:13-slim bash -c '
+          apt-get update && apt-get install -y sbsigntool
+          echo "Signing UKI with Secure Boot key..."
+          sbsign --key /workspace/signing-keys/DB.key \
+                 --cert /workspace/signing-keys/DB.crt \
+                 --output /workspace/linux-signed.uki \
+                 /workspace/linux.uki
+        '
+    
+    - name: Verify signature
+      run: |
+        docker run --rm -v $(pwd):/workspace debian:13-slim bash -c '
+          apt-get update && apt-get install -y sbsigntool
+          echo "Verifying signature..."
+          sbverify --list /workspace/linux-signed.uki
+          sbverify --cert /workspace/signing-keys/DB.crt /workspace/linux-signed.uki
+          echo "Signature verification completed successfully"
+        '
+    
+    - name: Clean up sensitive files
+      run: |
+        rm -rf signing-keys/
+        echo "Private key securely removed"
+    
+    - name: Upload unsigned UKI artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: linux-uki-unsigned
+        path: linux.uki
+        retention-days: 7
+    
+    - name: Upload signed UKI artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: linux-uki-signed
+        path: linux-signed.uki
+        retention-days: 30
+    
+    - name: Upload signed UKI to release
+      if: github.event_name == 'release'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: ./linux-signed.uki
+        asset_name: linux-uki-signed.efi
+        asset_content_type: application/octet-stream
