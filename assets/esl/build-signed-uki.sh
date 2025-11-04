@@ -30,12 +30,12 @@ mkdir -p "$OUTPUT_DIR"
 echo "=== Installing required packages ==="
 apt-get update
 apt-get install -y \
-    systemd-ukify \
     sbsigntool \
     linux-image-amd64 \
     linux-headers-amd64 \
     systemd-ukify \
-    systemd-boot-efi
+    systemd-boot-efi \
+    dracut
 
 # Detect kernel version
 KERNEL_VERSION=$(basename /boot/vmlinuz-* | sort -V | tail -n1 | sed 's/vmlinuz-//')
