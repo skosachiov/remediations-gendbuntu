@@ -1,9 +1,9 @@
 - name: Get secure boot status @get_secure_boot_status
   ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Ensure mokutil present @ensure_mokutil_present
+    - name: Ensure mokutil present
       package:
-        name: 
+        name:
           - mokutil
         state: present
     - name: Check Secure Boot status with mokutil
@@ -19,9 +19,23 @@
     - get_secure_boot_status
 
 - name: Corp keys loaded
+  block:
+    - name: Ensure efitools present
+      package:
+        name:
+          - efitools
+        state: present
+    - name: Get efi keys
+      debug:
+        msg: "This is a dummy task, execution reached this point."
+    - name: Load keys if needed
+      debug:
+        msg: "This is a dummy task, execution reached this point."
   when: var_secure_boot and not var_secure_boot_status
 
 - name: Linux-uki installed
+  debug:
+    msg: "This is a dummy task, execution reached this point."
   when: var_secure_boot
 
 - name: Check cryptenroll status with detailed output
@@ -33,5 +47,7 @@
   register: cryptenroll_status
   changed_when: false
 
-- name: Force cryptenroll
+- name: Force cryptenroll if uki installed
+  debug:
+    msg: "This is a dummy task, execution reached this point."
   when: cryptenroll_status != var_force_cryptenroll
