@@ -1,11 +1,17 @@
+- name: Secure boot utils are present @secure_boot_utils_present
+  ignore_errors: "{{ansible_check_mode}}"
+  package:
+    name:
+      - mokutil
+      - efitools
+  when: var_secure_boot
+  tags:
+    - ws
+    - secure_boot_utils_present
+
 - name: Get secure boot status @get_secure_boot_status
   ignore_errors: "{{ansible_check_mode}}"
   block:
-    - name: Ensure mokutil present
-      package:
-        name:
-          - mokutil
-        state: present
     - name: Check Secure Boot status with mokutil
       command:  mokutil --sb-state
       register: mokutil_output
@@ -18,20 +24,30 @@
     - ws
     - get_secure_boot_status
 
-- name: Corp keys loaded
+- name: Secure boot keys are updated @sb_keys are_updated
   block:
-    - name: Ensure efitools present
-      package:
-        name:
-          - efitools
-        state: present
-    - name: Get efi keys
-      debug:
-        msg: "This is a dummy task, execution reached this point."
-    - name: Load keys if needed
-      debug:
-        msg: "This is a dummy task, execution reached this point."
+    - name: Check PK
+      command: mokutil --pk
+      register: result
+    - name: Update PK
+      command: efi-updatevar -f {{playbook_dir}}/assets/esl/PK.auth PK
+      when: result.stdout | trim == ""
+    - name: Check KEK
+      command: mokutil --kek
+      register: result
+    - name: Update KEK
+      command: efi-updatevar -f {{playbook_dir}}/assets/esl/KEK.auth KEK
+      when: result.stdout | trim == ""
+    - name: Check DB
+      command: mokutil --db
+      register: result
+    - name: Update DB
+      command: efi-updatevar -f {{playbook_dir}}/assets/esl/DB.auth db
+      when: result.stdout | trim == ""            
   when: var_secure_boot and not var_secure_boot_status
+  tags:
+    - ws
+    - sb_keys are_updated
 
 - name: Linux-uki installed
   debug:
