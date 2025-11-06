@@ -33,6 +33,7 @@ apt-get install -y \
     sbsigntool \
     linux-image-amd64 \
     linux-headers-amd64 \
+    systemd \
     systemd-ukify \
     systemd-boot-efi \
     dracut
