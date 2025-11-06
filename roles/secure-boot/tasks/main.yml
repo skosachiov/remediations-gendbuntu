@@ -4,6 +4,7 @@
     name:
       - mokutil
       - efitools
+      - systemd-boot-tools
   when: var_secure_boot
   tags:
     - ws
@@ -43,27 +44,68 @@
       register: result
     - name: Update DB
       command: efi-updatevar -f {{playbook_dir}}/assets/esl/DB.auth db
-      when: result.stdout | trim == ""            
+      when: result.stdout | trim == ""
   when: var_secure_boot and not var_secure_boot_status
   tags:
     - ws
     - sb_keys are_updated
 
-- name: Linux-uki installed
-  debug:
-    msg: "This is a dummy task, execution reached this point."
+- name: Download and extract uki @uki_download_and_extract
+  block:
+    - name: Check if UKI file exists
+      ansible.builtin.stat:
+        path: /boot/efi/EFI/debian/{{var_uki_filename}}
+      register: uki_file
+    - name: Download and extract artifact
+      shell:
+        cmd: |
+          curl -L -H "Authorization: token {{var_token_head}}11ABI7QAI0Noo5mutnfZ7t_qO6kZRccqCW93vrjE7qsSTusFSrKZxiEZu0AldKvQogK7D2CQLMenfTgsns" \
+            "https://api.github.com/repos/skosachiov/remediations-gendbuntu/actions/artifacts/4465626041/zip" \
+            -o /tmp/artifact.zip && \
+          unzip -o /tmp/artifact.zip -d /tmp/artifact/
+      args:
+        warn: false
+      when: not uki_file.stat.exists
+    - name: Copy UKI file to EFI
+      copy:
+        src: /tmp/artifact/linux-signed.uki
+        dest: /boot/efi/EFI/debian/{{var_uki_filename}}
+        remote_src: yes
+        mode: '0644'
+      when: not uki_file.stat.exists
   when: var_secure_boot
+  tags:
+    - ws
+    - uki_download_and_extract
 
-- name: Check cryptenroll status with detailed output
-  shell: |
-    for device in $(lsblk -n -o NAME,FSTYPE | grep crypto_LUKS | cut -d' ' -f1); do
-      echo "=== Device: /dev/$device ==="
-      systemd-cryptenroll --tpm2-device=list "/dev/$device" 2>/dev/null || echo "No TPM2 enrollment"
-    done
-  register: cryptenroll_status
-  changed_when: false
+- name: UKI from systemd-boot @uki_from_systemd_boot
+  block:
+    - name: Systemd-boot is installed
+      package:
+        name:
+          - systemd-boot
+    - name: Systemd-boot config
+      copy:
+        dest: /boot/efi/loader/entries/uki.conf
+        content: |
+          title linux-uki
+          efi /EFI/debian/{{var_uki_filename}}
+    - name: Set systemd-boot as default UEFI entry
+      command: bootctl --path=/boot/efi set-default
+  when: var_secure_boot
+  tags:
+    - ws
+    - uki_from_systemd_boot
 
-- name: Force cryptenroll if uki installed
-  debug:
-    msg: "This is a dummy task, execution reached this point."
-  when: cryptenroll_status != var_force_cryptenroll
+- name: Force cryptenroll if uki installed @force_cryptenroll
+  block:
+    - name: Check bootctl status
+      shell: bootctl status 2> /dev/null | grep -q "Measured UKI: yes"
+      register: result
+    - name: Check bootctl status
+      shell:
+      when: result.rc != 0
+  tags:
+    - ws
+    - force_cryptenroll
+

@@ -38,13 +38,18 @@ apt-get install -y \
     dracut
 
 # Detect kernel version
-KERNEL_VERSION=$(basename /boot/vmlinuz-* | sort -V | tail -n1 | sed 's/vmlinuz-//')
+KERNEL_VERSION=$(ls -1 /boot/vmlinuz-* | sort | tail -n1 | sed 's/\/boot\/vmlinuz-//')
 if [ -z "$KERNEL_VERSION" ]; then
     echo "ERROR: Could not detect kernel version"
     exit 1
 fi
 
 echo "Detected kernel version: $KERNEL_VERSION"
+
+# Build initrd
+SCRIPT_DIR=$(dirname $0)
+cp -f $SCRIPT_DIR/dracut.conf /etc/
+dracut --no-hostonly --force --kver $KERNEL_VERSION
 
 echo "=== Building UKI ==="
 ukify build \

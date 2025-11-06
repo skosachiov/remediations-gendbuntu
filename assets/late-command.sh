@@ -1,23 +1,22 @@
 ## echo deb https://deb.debian.org/debian/ stable main >> /etc/apt/sources.list
 apt update
-	
+
 HOSTNAME=$(openssl rand -hex 4)
 echo $HOSTNAME > /etc/hostname
 sed -i "s/127.0.1.1.*/127.0.1.1\t$HOSTNAME/" /etc/hosts
-	
+
 sed -i "s/deb cdrom/# deb cdrom/" /etc/apt/sources.list
 echo 'XKBMODEL="pc105"
 XKBLAYOUT="us,gb"
 XKBVARIANT=","
 XKBOPTIONS=""
 BACKSPACE="guess"' > /etc/default/keyboard
+
 apt-get -y install keyboard-configuration
-
 apt-get -y install openssh-server vim curl
-
 apt-get -y install systemd-cryptsetup tpm2-tools tpm2-tss-engine-tools dracut gnupg
 
-CRYPTDEV=$(lsblk -rbo NAME | grep _crypt)
+CRYPTDEV=$(lsblk -rbo NAME | grep crypt)
 CRYPTPART=$(blkid -t TYPE=crypto_LUKS -o device)
 openssl rand -hex 4096 > /tmp/unlock-key-file
 cp /tmp/unlock-key-file /etc/unlock-key-file.backup
