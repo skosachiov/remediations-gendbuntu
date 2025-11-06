@@ -18,8 +18,8 @@ apt-get -y install systemd-cryptsetup tpm2-tools tpm2-tss-engine-tools dracut gn
 
 CRYPTDEV=$(lsblk -rbo NAME | grep crypt)
 CRYPTPART=$(blkid -t TYPE=crypto_LUKS -o device)
-echo "insecure" > /root/recoovery-key.tmp
-systemd-cryptenroll --unlock-key-file=/root/recoovery-key.tmp --recovery-key --wipe-slot=0 $CRYPTPART > /root/recovery-key.weak
+echo "insecure" > /root/recovery-key.tmp
+systemd-cryptenroll --unlock-key-file=/root/recovery-key.tmp --recovery-key --wipe-slot=password $CRYPTPART > /root/recovery-key.weak
 chnod 400 /root/recovery-key.weak
 systemd-cryptenroll --unlock-key-file=/root/recovery-key.weak --tpm2-device=auto --tpm2-pcrs=0+2 $CRYPTPART
 echo add_dracutmodules+=\" tpm2-tss crypt \" > /etc/dracut.conf
