@@ -93,8 +93,6 @@
         content: |
           title linux-uki
           efi /EFI/debian/{{var_uki_filename}}
-    - name: Set systemd-boot as default UEFI entry
-      command: bootctl --path=/boot/efi set-default
   when: var_secure_boot
   tags:
     - ws
@@ -106,7 +104,7 @@
       shell: cryptsetup luksDump $(blkid -t TYPE=crypto_LUKS -o device) | grep -q {{var_cryptenroll_policy}}
       register: result
     - name:
-      shell: |
+      shell: >
         CRYPTPART=$(blkid -t TYPE=crypto_LUKS -o device)
         openssl rand -hex 4096 > /tmp/unlock-key-file
         chmod 400 /tmp/unlock-key-file
