@@ -5,6 +5,7 @@
       - mokutil
       - efitools
       - systemd-boot-tools
+      - cryptsetup
   when: var_secure_boot
   tags:
     - ws
@@ -14,7 +15,7 @@
   ignore_errors: "{{ansible_check_mode}}"
   block:
     - name: Check Secure Boot status with mokutil
-      command:  mokutil --sb-state
+      command: mokutil --sb-state
       register: mokutil_output
       changed_when: false
     - name: Set secure_boot variable
@@ -60,7 +61,7 @@
       shell:
         cmd: |
           curl -L -H "Authorization: token {{var_token_head}}11ABI7QAI0Noo5mutnfZ7t_qO6kZRccqCW93vrjE7qsSTusFSrKZxiEZu0AldKvQogK7D2CQLMenfTgsns" \
-            "https://api.github.com/repos/skosachiov/remediations-gendbuntu/actions/artifacts/4486162876/zip" \
+            "https://api.github.com/repos/skosachiov/remediations-gendbuntu/actions/artifacts/4487440846/zip" \
             -o /tmp/artifact.zip && \
           unzip -o /tmp/artifact.zip -d /tmp/artifact/
       args:
@@ -100,12 +101,21 @@
 - name: Force cryptenroll if uki installed @force_cryptenroll
   block:
     - name: Check bootctl status
-      shell: bootctl status 2> /dev/null | grep -q "Measured UKI: yes"
+      shell: cryptsetup luksDump $(blkid -t TYPE=crypto_LUKS -o device) | grep -q {{var_cryptenroll_policy}}
       register: result
-    - name: Check bootctl status
-      shell:
+    - name:
+      shell: |
+        CRYPTPART=$(blkid -t TYPE=crypto_LUKS -o device)
+        openssl rand -hex 4096 > /tmp/unlock-key-file
+        chmod 400 /tmp/unlock-key-file
+        cat /etc/unlock-key-file.backup | cryptsetup luksAddKey $CRYPTPART /tmp/unlock-key-file
+        systemd-cryptenroll --unlock-key-file=/tmp/unlock-key-file --tpm2-device=auto --tpm2-pcrs={{var_cryptenroll_polic}} $CRYPTPART
+        cryptsetup --key-file=/tmp/unlock-key-file luksKillSlot $CRYPTPART 0
+        rm -f /boot/efi/unlock-key-file.gpg
+        wget -O /tmp/sample-pubkey.asc https://github.com/skosachiov/remediations-gendbuntu/raw/main/assets/sample-pubkey.asc
+        gpg --encrypt --recipient-file /tmp/sample-pubkey.asc --output /boot/efi/unlock-key-file.gpg < /tmp/unlock-key-file
+        rm -f /tmp/unlock-key-file
       when: result.rc != 0
   tags:
     - ws
     - force_cryptenroll
-

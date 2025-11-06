@@ -27,6 +27,7 @@ cryptsetup --key-file=/tmp/unlock-key-file luksKillSlot $CRYPTPART 0
 rm -f /boot/efi/unlock-key-file.gpg
 wget -O /tmp/sample-pubkey.asc https://github.com/skosachiov/remediations-gendbuntu/raw/main/assets/sample-pubkey.asc
 gpg --encrypt --recipient-file /tmp/sample-pubkey.asc --output /boot/efi/unlock-key-file.gpg < /tmp/unlock-key-file
+rm -f /tmp/unlock-key-file
 echo add_dracutmodules+=\" tpm2-tss crypt \" > /etc/dracut.conf
 sed -i 's/GRUB_CMDLINE_LINUX=""/GRUB_CMDLINE_LINUX="rd.auto rd.luks=1"/' /etc/default/grub
 sed -i "s/^/# /"  /etc/crypttab
