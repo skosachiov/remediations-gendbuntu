@@ -7,6 +7,7 @@
       - systemd-boot-tools
       - cryptsetup
       - gdisk
+      - unzip
   when: var_secure_boot
   tags:
     - ws
