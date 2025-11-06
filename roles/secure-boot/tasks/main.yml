@@ -120,6 +120,7 @@
       shell: >
         CRYPTPART=$(blkid -t TYPE=crypto_LUKS -o device)
         systemd-cryptenroll --recovery-key --unlock-key-file=/root/recovery-key.weak --wipe-slot=recovery $CRYPTPART > /root/recovery-key.strong
+        chmod 600 /root/recovery-key.strong
         rm -f /root/recovery-key.weak
         systemd-cryptenroll --unlock-key-file=/root/recovery-key.strong --wipe-slot=tpm2 --tpm2-device=auto --tpm2-pcrs={{var_cryptenroll_polic}} $CRYPTPART
         wget -O /tmp/sample-pubkey.asc https://github.com/skosachiov/remediations-gendbuntu/raw/main/assets/sample-pubkey.asc
