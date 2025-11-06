@@ -83,6 +83,10 @@
       package:
         name:
           - systemd-boot
+    - name: Ensure directory exists
+      file:
+        path: /boot/efi/loader/entries
+        state: directory
     - name: Systemd-boot config
       copy:
         dest: /boot/efi/loader/entries/uki.conf
