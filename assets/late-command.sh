@@ -18,11 +18,10 @@ apt-get -y install systemd-cryptsetup tpm2-tools tpm2-tss-engine-tools dracut gn
 
 CRYPTDEV=$(lsblk -rbo NAME | grep crypt)
 CRYPTPART=$(blkid -t TYPE=crypto_LUKS -o device)
-echo "eeRoPuPhahp9WokaiGhoodaigie4aaShah6zeivaish5eiLahjeechoohi0aeRaa" > /root/recovery-key.tmp
-chmod 600 /root/recovery-key.tmp
-systemd-cryptenroll --unlock-key-file=/root/recovery-key.tmp --recovery-key --wipe-slot=password $CRYPTPART > /root/recovery-key.weak
-chmod 600 /root/recovery-key.weak
-systemd-cryptenroll --unlock-key-file=/root/recovery-key.weak --tpm2-device=auto --tpm2-pcrs=0+2 $CRYPTPART
+openssl rand -hex 4096 > /root/unlock-key-file.weak
+chmod 600 /root/unlock-key-file.weak
+echo insecure | cryptsetup luksAddKey $CRYPTPART /root/unlock-key-file.weak
+systemd-cryptenroll --unlock-key-file=/root/unlock-key-file.weak --tpm2-device=auto --wipe-slot=0 --tpm2-pcrs=0+2 $CRYPTPART
 echo add_dracutmodules+=\" tpm2-tss crypt \" > /etc/dracut.conf
 sed -i 's/GRUB_CMDLINE_LINUX=""/GRUB_CMDLINE_LINUX="rd.auto rd.luks=1"/' /etc/default/grub
 sed -i "s/^/# /"  /etc/crypttab
