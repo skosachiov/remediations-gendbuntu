@@ -115,6 +115,7 @@
 - name: Cryptenroll if uki installed @uki_cryptenroll
   block:
     - name: Check bootctl status
+      failed_when: false
       shell: cryptsetup luksDump $(blkid -t TYPE=crypto_LUKS -o device) | grep -q {{var_cryptenroll_policy}}
       register: result
     - name:
