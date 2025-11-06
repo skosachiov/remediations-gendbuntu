@@ -98,7 +98,7 @@
     - ws
     - uki_from_systemd_boot
 
-- name: Force cryptenroll if uki installed @force_cryptenroll
+- name: Cryptenroll if uki installed @uki_cryptenroll
   block:
     - name: Check bootctl status
       shell: cryptsetup luksDump $(blkid -t TYPE=crypto_LUKS -o device) | grep -q {{var_cryptenroll_policy}}
@@ -106,16 +106,13 @@
     - name:
       shell: >
         CRYPTPART=$(blkid -t TYPE=crypto_LUKS -o device)
-        openssl rand -hex 4096 > /tmp/unlock-key-file
-        chmod 400 /tmp/unlock-key-file
-        cat /etc/unlock-key-file.backup | cryptsetup luksAddKey $CRYPTPART /tmp/unlock-key-file
-        systemd-cryptenroll --unlock-key-file=/tmp/unlock-key-file --tpm2-device=auto --tpm2-pcrs={{var_cryptenroll_polic}} $CRYPTPART
-        cryptsetup --key-file=/tmp/unlock-key-file luksKillSlot $CRYPTPART 0
-        rm -f /boot/efi/unlock-key-file.gpg
+        systemd-cryptenroll --recovery-key --unlock-key-file=/root/recovery-key.weak --wipe-slot=recovery $CRYPTPART > /root/recovery-key.strong
+        rm -f /root/recovery-key.weak
+        systemd-cryptenroll --unlock-key-file=/root/recovery-key.strong --wipe-slot=tpm2 --tpm2-device=auto --tpm2-pcrs={{var_cryptenroll_polic}} $CRYPTPART
         wget -O /tmp/sample-pubkey.asc https://github.com/skosachiov/remediations-gendbuntu/raw/main/assets/sample-pubkey.asc
-        gpg --encrypt --recipient-file /tmp/sample-pubkey.asc --output /boot/efi/unlock-key-file.gpg < /tmp/unlock-key-file
-        rm -f /tmp/unlock-key-file
+        gpg --encrypt --recipient-file /tmp/sample-pubkey.asc --output /boot/efi/recovery-key.gpg < /root/recovery-key.strong
+        rm -f /root/recovery-key.strong
       when: result.rc != 0
   tags:
     - ws
-    - force_cryptenroll
+    - uki_cryptenroll
