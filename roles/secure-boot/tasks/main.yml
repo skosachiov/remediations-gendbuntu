@@ -64,8 +64,6 @@
             "https://api.github.com/repos/skosachiov/remediations-gendbuntu/actions/artifacts/4487440846/zip" \
             -o /tmp/artifact.zip && \
           unzip -o /tmp/artifact.zip -d /tmp/artifact/
-      args:
-        warn: false
       when: not uki_file.stat.exists
     - name: Copy UKI file to EFI
       copy:
