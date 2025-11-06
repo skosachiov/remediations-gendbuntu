@@ -36,7 +36,16 @@ apt-get install -y \
     systemd \
     systemd-ukify \
     systemd-boot-efi \
-    dracut
+    cryptsetup \
+    dracut \
+    systemd-cryptsetup \
+    tpm2-tools \
+    tpm2-tss-engine-tools \
+    tpm2-abrmd \
+    cryptsetup-initramfs \
+    efibootmgr \
+    binutils \
+    gnutls-bin
 
 # Detect kernel version
 KERNEL_VERSION=$(ls -1 /boot/vmlinuz-* | sort | tail -n1 | sed 's/\/boot\/vmlinuz-//')
