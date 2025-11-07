@@ -28,33 +28,56 @@
     - ws
     - get_secure_boot_status
 
-# TODO
-- name: Systemd boot partitons @systemd_boot_partitions
-  ignore_errors: "{{ansible_check_mode}}"
-  shell: >
-    sgdisk --partition-guid=1:c12a7328-f81f-11d2-ba4b-00a0c93ec93b /dev/vda;
-    sgdisk --partition-guid=2:bc13c2ff-59e6-4262-a352-b275fd6f7172 /dev/vda;
-    sgdisk --partition-guid=3:4f68bce3-e8cd-4db1-96e7-fbcaf984b709 /dev/vda;
+- name: Systemd root partition guid @systemd_root_partition_guid
+  ignore_errors: "{{ ansible_check_mode }}"
+  block:
+    - name: Get crypto LUKS partition
+      changed_when: false
+      command: blkid -t TYPE=crypto_LUKS -o device
+      register: crypto_luks
+    - name: Get parent device and partition number
+      changed_when: false
+      shell: |
+        CRYPTPART="{{ crypto_luks.stdout }}"
+        echo $(dirname "$CRYPTPART")/$(basename "$CRYPTPART" | sed 's/[^0-9]*//g')
+      register: partition_info
+    - name: Extract device and partition number
+      set_fact:
+        parent_device: "{{ partition_info.stdout.split('/')[:-1] | join('/') }}/{{ partition_info.stdout.split('/')[-1][0:-1] }}"
+        partition_number: "{{ partition_info.stdout.split('/')[-1][-1] }}"
+    - name: Check current partition GUID
+      changed_when: false
+      command: sgdisk -i "{{ partition_number }}" "{{ parent_device }}"
+      register: current_guid_info
+    - name: Change partition GUID
+      command: sgdisk --partition-guid={{ partition_number }}:4f68bce3-e8cd-4db1-96e7-fbcaf984b709 "{{ parent_device }}"
+      when: 
+        - current_guid_info is defined
+        - current_guid_info.stdout is defined
+        - "4f68bce3-e8cd-4db1-96e7-fbcaf984b709" not in current_guid_info.stdout
   when: var_secure_boot
   tags:
     - ws
-    - systemd_boot_partitions
+    - systemd_root_partition_guid
 
 - name: Secure boot keys are updated @sb_keys are_updated
   block:
     - name: Check PK
+      changed_when: false
       command: mokutil --pk
       register: result
     - name: Update PK
       command: efi-updatevar -f {{playbook_dir}}/assets/esl/PK.auth PK
       when: result.stdout | trim == ""
     - name: Check KEK
+      changed_when: false
       command: mokutil --kek
       register: result
     - name: Update KEK
       command: efi-updatevar -f {{playbook_dir}}/assets/esl/KEK.auth KEK
       when: result.stdout | trim == ""
     - name: Check DB
+      changed_when: false
       command: mokutil --db
       register: result
     - name: Update DB
