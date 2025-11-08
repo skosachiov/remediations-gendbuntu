@@ -28,31 +28,40 @@
     - ws
     - get_secure_boot_status
 
-- name: Systemd root partition unique guid @systemd_root_uniq_guid
+
+- name: Systemd partition unique guid @systemd_uniq_guid
   ignore_errors: "{{ ansible_check_mode }}"
   block:
-    - name: Get crypto LUKS partition
-      changed_when: false
-      command: blkid -t TYPE=crypto_LUKS -o device
-      register: crypto_luks
-    - name: Extract device and partition number
+    - name: Set partition GUID facts
       set_fact:
-        parent_device: "{{ crypto_luks.stdout | regex_replace('([0-9]+)$', '') }}"
-        partition_number: "{{ crypto_luks.stdout | regex_replace('^.*?([0-9]+)$', '\\1') }}"
-    - name: Check current partition GUID
+        part_guid:
+          - {'mount_point': '/', 'guid': '4f68bce3-e8cd-4db1-96e7-fbcaf984b709'}
+          - {'mount_point': '/boot/efi', 'guid': 'c12a7328-f81f-11d2-ba4b-00a0c93ec93b'}
+          - {'mount_point': '/boot', 'guid': 'bc13c2ff-59e6-4262-a352-b275fd6f7172'}
+    - name: Get device for each mount point
+      command: findmnt -n -o SOURCE "{{ item.mount_point }}"
+      register: mount_devices
+      loop: "{{ part_guid }}"
       changed_when: false
-      shell: sgdisk -i "{{ partition_number }}" "{{ parent_device }}" | grep "Partition unique GUID:" | cut -d' ' -f4
-      register: current_guid_info
-    - name: Change partition GUID
-      command: sgdisk --partition-guid={{ partition_number }}:4f68bce3-e8cd-4db1-96e7-fbcaf984b709 {{ parent_device }}
-      when: 
-        - current_guid_info is defined
-        - current_guid_info.stdout is defined
-        - "'4f68bce3-e8cd-4db1-96e7-fbcaf984b709' not in current_guid_info.stdout"
+    - name: Process each partition
+      block:
+        - name: Extract device and partition number
+          set_fact:
+            parent_device: "{{ item.stdout | regex_replace('([0-9]+)$', '') }}"
+            partition_number: "{{ item.stdout | regex_replace('^.*?([0-9]+)$', '\\1') }}"
+        - name: Check current partition GUID
+          command: sgdisk -i "{{ partition_number }}" "{{ parent_device }}" | awk '/Partition unique GUID:/ {print $4}'
+          register: current_guid
+          changed_when: false
+        - name: Change partition GUID
+          command: sgdisk --partition-guid={{ partition_number }}:{{ item.item.guid }} "{{ parent_device }}"
+          when: current_guid.stdout != item.item.guid
+      loop: "{{ mount_devices.results }}"
+      when: item.stdout != ""
   when: var_secure_boot
   tags:
     - ws
-    - systemd_root_uniq_guid
+    - systemd_uniq_guid
 
 - name: Secure boot keys are updated @sb_keys are_updated
   block:
