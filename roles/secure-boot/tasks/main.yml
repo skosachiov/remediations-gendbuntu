@@ -53,10 +53,6 @@
       loop: "{{ mount_devices.results }}"
       when: item.stdout != ""
       changed_when: false
-    - name: DEBUG
-      debug:
-        msg: sgdisk --partition-guid={{ item.0.stdout[-1] }}:{{ item.0.item.guid }} "{{ item.0.stdout[:-1] }}",         {{item.1.stdout}},  {{item.0.item.guid}}
-      loop: "{{ mount_devices.results | zip(current_guids.results) | list }}"
     - name: Change partition GUIDs if needed
       command: sgdisk --partition-guid={{ item.0.stdout[-1] }}:{{ item.0.item.guid }} "{{ item.0.stdout[:-1] }}"
       loop: "{{ mount_devices.results | zip(current_guids.results) | list }}"
@@ -150,7 +146,7 @@
       shell: cryptsetup luksDump $(blkid -t TYPE=crypto_LUKS -o device) | grep -q {{var_cryptenroll_policy}}
       register: result
     - name:
-      shell: >
+      shell: |
         export CRYPTPART=$(blkid -t TYPE=crypto_LUKS -o device);
         systemd-cryptenroll --recovery-key --unlock-key-file=/root/unlock-key-file.weak $CRYPTPART > /root/recovery-key.strong
         chmod 600 /root/recovery-key.strong;
