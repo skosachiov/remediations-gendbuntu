@@ -135,7 +135,9 @@
         content: |
           title linux-uki
           efi /EFI/debian/{{var_uki_filename}}
-  when: var_secure_boot
+  when:
+    - false 
+    - var_secure_boot
   tags:
     - ws
     - uki_from_systemd_boot
@@ -182,3 +184,6 @@
   tags:
     - ws
     - uki_cryptenroll
+
+# efibootmgr -c -d /dev/vda -p 1 -L "Debian UKI 20251106" -l '\EFI\debian\linux-uki-signed-20251106.efi'
+# rootflags=subvol=@
