@@ -5,6 +5,7 @@
       - mokutil
       - efitools
       - systemd-boot-tools
+      - systemd-ukify
       - cryptsetup
       - gdisk
       - unzip
@@ -95,7 +96,7 @@
 - name: Download and extract uki @uki_download_and_extract
   block:
     - name: Check if UKI file exists
-      ansible.builtin.stat:
+      stat:
         path: /boot/efi/EFI/debian/{{var_uki_filename}}
       register: uki_file
     - name: Download and extract artifact
@@ -139,6 +140,22 @@
     - ws
     - uki_from_systemd_boot
 
+- name: Generate tpm2 keys @tpm2_keys
+  block:
+    - name: Check public exists
+      stat:
+        path: /etc/systemd/tpm2-pcr-public-key-system.pem
+      register: pcr_public_key
+    - name: 
+      command: |
+        ukify genkey \
+          --pcr-private-key=/etc/systemd/tpm2-pcr-private-key-system.pem \
+          --pcr-public-key=/etc/systemd/tpm2-pcr-public-key-system.pem
+      when: not pcr_public_key.stat.exists
+  tags:
+    - ws
+    - tpm2_keys
+
 - name: Cryptenroll if uki installed @uki_cryptenroll
   block:
     - name: Check bootctl status
@@ -150,9 +167,10 @@
         export CRYPTPART=$(blkid -t TYPE=crypto_LUKS -o device);
         systemd-cryptenroll --recovery-key --unlock-key-file=/root/unlock-key-file.weak $CRYPTPART > /root/recovery-key.strong
         chmod 600 /root/recovery-key.strong;
-        systemd-cryptenroll --unlock-key-file=/root/unlock-key-file.weak --wipe-slot=tpm2 --tpm2-device=auto --tpm2-pcrs={{var_cryptenroll_tpm2_pcrs}} $CRYPTPART;
-        wget -O /tmp/sample-pubkey.asc https://github.com/skosachiov/remediations-gendbuntu/raw/main/assets/sample-pubkey.asc;
+        systemd-cryptenroll --unlock-key-file=/root/unlock-key-file.weak --wipe-slot=tpm2 --tpm2-device=auto --tpm2-pcrs={{var_cryptenroll_tpm2_pcrs}} --tpm2-public-key=/etc/systemd/tpm2-pcr-public-key-system.pem --tpm2-public-key-pcrs=11 $CRYPTPART;
+        wget -O /tmp/sample-pubkey.asc {{var_sec_officer_pubkey}};
         gpg --batch --encrypt --recipient-file /tmp/sample-pubkey.asc --output /boot/efi/recovery-key.gpg < /root/recovery-key.strong;
+        gpg --batch --encrypt --recipient-file /tmp/sample-pubkey.asc --output /boot/efi/tpm2-pcr-public-key-system.gpg < /etc/systemd/tpm2-pcr-private-key-system.pem;
       when: result.rc != 0
   tags:
     - ws
