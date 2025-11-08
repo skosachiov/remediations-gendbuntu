@@ -54,7 +54,7 @@
       when: 
         - current_guid_info is defined
         - current_guid_info.stdout is defined
-        - "4f68bce3-e8cd-4db1-96e7-fbcaf984b709" not in current_guid_info.stdout
+        - "'4f68bce3-e8cd-4db1-96e7-fbcaf984b709' not in current_guid_info.stdout"
   when: var_secure_boot
   tags:
     - ws
