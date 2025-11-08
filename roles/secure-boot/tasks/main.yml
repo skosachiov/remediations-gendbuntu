@@ -48,6 +48,9 @@
       loop: "{{ mount_devices.results }}"
       when: item.stdout != ""
       changed_when: false
+    - name: debug
+      debug:
+        msg: "{{current_guids}}"
     - name: Change partition GUIDs if needed
       command: sgdisk --partition-guid={{ item.item.stdout | regex_replace('^.*?([0-9]+)$', '\\1') }}:{{ item.item.item.guid }} "{{ item.item.stdout | regex_replace('([0-9]+)$', '') }}"
       loop: "{{ mount_devices.results | zip(current_guids.results) | list }}"
