@@ -28,7 +28,6 @@
     - ws
     - get_secure_boot_status
 
-
 - name: Systemd partition unique guid @systemd_uniq_guid
   ignore_errors: "{{ ansible_check_mode }}"
   block:
@@ -44,24 +43,21 @@
       loop: "{{ part_guid }}"
       changed_when: false
     - name: Process each partition
-      block:
-        - name: Extract device and partition number
-          set_fact:
-            parent_device: "{{ item.stdout | regex_replace('([0-9]+)$', '') }}"
-            partition_number: "{{ item.stdout | regex_replace('^.*?([0-9]+)$', '\\1') }}"
-        - name: Check current partition GUID
-          command: sgdisk -i "{{ partition_number }}" "{{ parent_device }}" | awk '/Partition unique GUID:/ {print $4}'
-          register: current_guid
-          changed_when: false
-        - name: Change partition GUID
-          command: sgdisk --partition-guid={{ partition_number }}:{{ item.item.guid }} "{{ parent_device }}"
-          when: current_guid.stdout != item.item.guid
+      command: sgdisk -i "{{ item.stdout | regex_replace('^.*?([0-9]+)$', '\\1') }}" "{{ item.stdout | regex_replace('([0-9]+)$', '') }}" | awk '/Partition unique GUID:/ {print $4}'
+      register: current_guids
       loop: "{{ mount_devices.results }}"
       when: item.stdout != ""
+      changed_when: false
+    - name: Change partition GUIDs if needed
+      command: sgdisk --partition-guid={{ item.item.stdout | regex_replace('^.*?([0-9]+)$', '\\1') }}:{{ item.item.item.guid }} "{{ item.item.stdout | regex_replace('([0-9]+)$', '') }}"
+      loop: "{{ mount_devices.results | zip(current_guids.results) | list }}"
+      when: 
+        - item.1.stdout != item.0.item.guid
+        - item.0.stdout != ""
   when: var_secure_boot
   tags:
     - ws
-    - systemd_uniq_guid
+    - systemd_uniq_guid    
 
 - name: Secure boot keys are updated @sb_keys are_updated
   block:
