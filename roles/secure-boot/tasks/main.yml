@@ -52,7 +52,11 @@
       register: current_guids
       loop: "{{ mount_devices.results }}"
       when: item.stdout != ""
-      changed_when: false    
+      changed_when: false
+    - name: DEBUG
+      debug:
+        msg: sgdisk --partition-guid={{ item.0.stdout | regex_replace('^.*?([0-9]+)$', '\\1') }}:{{ item.0.item.guid }} "{{ item.0.stdout | regex_replace('([0-9]+)$', '') }}",         {{item.1.stdout}},  {{item.0.item.guid}}
+      loop: "{{ mount_devices.results | zip(current_guids.results) | list }}"
     - name: Change partition GUIDs if needed
       command: sgdisk --partition-guid={{ item.0.stdout | regex_replace('^.*?([0-9]+)$', '\\1') }}:{{ item.0.item.guid }} "{{ item.0.stdout | regex_replace('([0-9]+)$', '') }}"
       loop: "{{ mount_devices.results | zip(current_guids.results) | list }}"
