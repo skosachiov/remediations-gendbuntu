@@ -38,7 +38,7 @@
           - {'mount_point': '/boot/efi', 'guid': 'c12a7328-f81f-11d2-ba4b-00a0c93ec93b'}
           - {'mount_point': '/boot', 'guid': 'bc13c2ff-59e6-4262-a352-b275fd6f7172'}
     - name: Get device for each mount point
-      shell: |
+      shell: >
         if [ "{{ item.mount_point }}" = "/" ]; then 
           blkid -t TYPE=crypto_LUKS -o device;
         else
@@ -48,17 +48,17 @@
       loop: "{{ part_guid }}"
       changed_when: false
     - name: Process each partition
-      shell: sgdisk -i "{{ item.stdout | regex_replace('^.*?([0-9]+)$', '\\1') }}" "{{ item.stdout | regex_replace('([0-9]+)$', '') }}" | awk '/Partition unique GUID:/ {print $4}'
+      shell: sgdisk -i "{{ item.stdout[-1] }}" "{{ item.stdout[:-1] }}" | awk '/Partition unique GUID:/ {print $4}'
       register: current_guids
       loop: "{{ mount_devices.results }}"
       when: item.stdout != ""
       changed_when: false
     - name: DEBUG
       debug:
-        msg: sgdisk --partition-guid={{ item.0.stdout | regex_replace('^.*?([0-9]+)$', '\\1') }}:{{ item.0.item.guid }} "{{ item.0.stdout | regex_replace('([0-9]+)$', '') }}",         {{item.1.stdout}},  {{item.0.item.guid}}
+        msg: sgdisk --partition-guid={{ item.0.stdout[-1] }}:{{ item.0.item.guid }} "{{ item.0.stdout[:-1] }}",         {{item.1.stdout}},  {{item.0.item.guid}}
       loop: "{{ mount_devices.results | zip(current_guids.results) | list }}"
     - name: Change partition GUIDs if needed
-      command: sgdisk --partition-guid={{ item.0.stdout | regex_replace('^.*?([0-9]+)$', '\\1') }}:{{ item.0.item.guid }} "{{ item.0.stdout | regex_replace('([0-9]+)$', '') }}"
+      command: sgdisk --partition-guid={{ item.0.stdout[-1] }}:{{ item.0.item.guid }} "{{ item.0.stdout[:-1] }}"
       loop: "{{ mount_devices.results | zip(current_guids.results) | list }}"
       when: 
         - item.1.stdout != item.0.item.guid
