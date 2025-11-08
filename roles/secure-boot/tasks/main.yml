@@ -48,7 +48,7 @@
       loop: "{{ part_guid }}"
       changed_when: false
     - name: Process each partition
-      command: sgdisk -i "{{ item.stdout | regex_replace('^.*?([0-9]+)$', '\\1') }}" "{{ item.stdout | regex_replace('([0-9]+)$', '') }}" | awk '/Partition unique GUID:/ {print $4}'
+      shell: sgdisk -i "{{ item.stdout | regex_replace('^.*?([0-9]+)$', '\\1') }}" "{{ item.stdout | regex_replace('([0-9]+)$', '') }}" | awk '/Partition unique GUID:/ {print $4}'
       register: current_guids
       loop: "{{ mount_devices.results }}"
       when: item.stdout != ""
