@@ -26,7 +26,7 @@
   when: var_secure_boot
   tags:
     - ws
-    - get_secure_boot_status    
+    - get_secure_boot_status        
 
 - name: Systemd partition unique guid @systemd_uniq_guid
   ignore_errors: "{{ ansible_check_mode }}"
@@ -37,46 +37,32 @@
           - {'mount_point': '/', 'guid': '4f68bce3-e8cd-4db1-96e7-fbcaf984b709'}
           - {'mount_point': '/boot/efi', 'guid': 'c12a7328-f81f-11d2-ba4b-00a0c93ec93b'}
           - {'mount_point': '/boot', 'guid': 'bc13c2ff-59e6-4262-a352-b275fd6f7172'}
-    
     - name: Get device for each mount point
-      command: findmnt -n -o SOURCE "{{ item.mount_point }}"
+      shell: |
+        if [ "{{ item.mount_point }}" = "/" ]; then 
+          blkid -t TYPE=crypto_LUKS -o device;
+        else
+          findmnt -n -o SOURCE "{{ item.mount_point }}";
+        fi
       register: mount_devices
       loop: "{{ part_guid }}"
       changed_when: false
-    
-    - name: Extract device info for each partition
-      set_fact:
-        partition_info: []
-    
-    - name: Process device information
-      set_fact:
-        partition_info: "{{ partition_info + [{
-          'mount_point': item.item.mount_point,
-          'device': item.stdout,
-          'parent': item.stdout | regex_replace('([0-9]+)$', ''),
-          'number': item.stdout | regex_replace('^.*?([0-9]+)$', '\\1')
-        }] }}"
+    - name: Process each partition
+      command: sgdisk -i "{{ item.stdout | regex_replace('^.*?([0-9]+)$', '\\1') }}" "{{ item.stdout | regex_replace('([0-9]+)$', '') }}" | awk '/Partition unique GUID:/ {print $4}'
+      register: current_guids
       loop: "{{ mount_devices.results }}"
       when: item.stdout != ""
-    
-    - name: Check current partition GUIDs
-      command: sgdisk -i "{{ item.number }}" "{{ item.parent }}" | awk '/Partition unique GUID:/ {print $4}'
-      register: current_guids
-      loop: "{{ partition_info }}"
-      changed_when: false
-    
+      changed_when: false    
     - name: Change partition GUIDs if needed
-      command: sgdisk --partition-guid={{ item.0.number }}:{{ item.0.guid }} "{{ item.0.parent }}"
-      loop: "{{ partition_info | zip(current_guids.results) | list }}"
-      when: item.1.stdout != item.0.guid
-      notify: reboot_required
-      vars:
-        item_guid: "{{ part_guid | selectattr('mount_point', 'equalto', item.0.mount_point) | map(attribute='guid') | first }}"
-      
+      command: sgdisk --partition-guid={{ item.0.stdout | regex_replace('^.*?([0-9]+)$', '\\1') }}:{{ item.0.item.guid }} "{{ item.0.stdout | regex_replace('([0-9]+)$', '') }}"
+      loop: "{{ mount_devices.results | zip(current_guids.results) | list }}"
+      when: 
+        - item.1.stdout != item.0.item.guid
+        - item.0.stdout != ""
   when: var_secure_boot
   tags:
     - ws
-    - systemd_uniq_guid    
+    - systemd_uniq_guid
 
 - name: Secure boot keys are updated @sb_keys are_updated
   block:
