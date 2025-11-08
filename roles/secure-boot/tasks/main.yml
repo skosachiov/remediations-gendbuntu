@@ -152,16 +152,23 @@
           --pcr-private-key=/etc/systemd/tpm2-pcr-private-key-system.pem \
           --pcr-public-key=/etc/systemd/tpm2-pcr-public-key-system.pem
       when: not pcr_public_key.stat.exists
+  when: var_secure_boot
   tags:
     - ws
     - tpm2_keys
 
 - name: Cryptenroll if uki installed @uki_cryptenroll
   block:
-    - name: Check bootctl status
+    - name: Check cryptsetup status hash pcrs
+      changed_when: false
       failed_when: false
       shell: cryptsetup luksDump $(blkid -t TYPE=crypto_LUKS -o device) | grep -q {{var_cryptenroll_tpm2_pcrs.split(":")[0]}}
-      register: result
+      register: result_hash
+    - name: Check cryptsetup status pubkey
+      changed_when: false
+      failed_when: false
+      shell: cryptsetup luksDump $(blkid -t TYPE=crypto_LUKS -o device) | grep -q tpm2-pubkey-pcrs:\s*[0-9]
+      register: result_pubkey
     - name:
       shell: |
         export CRYPTPART=$(blkid -t TYPE=crypto_LUKS -o device);
@@ -171,7 +178,7 @@
         wget -O /tmp/sample-pubkey.asc {{var_sec_officer_pubkey}};
         gpg --batch --encrypt --recipient-file /tmp/sample-pubkey.asc --output /boot/efi/recovery-key.gpg < /root/recovery-key.strong;
         gpg --batch --encrypt --recipient-file /tmp/sample-pubkey.asc --output /boot/efi/tpm2-pcr-public-key-system.gpg < /etc/systemd/tpm2-pcr-private-key-system.pem;
-      when: result.rc != 0
+      when: result_hash.rc != 0 or result_pubkey.rc != 0
   tags:
     - ws
     - uki_cryptenroll
