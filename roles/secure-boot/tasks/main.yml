@@ -143,14 +143,14 @@
   block:
     - name: Check bootctl status
       failed_when: false
-      shell: cryptsetup luksDump $(blkid -t TYPE=crypto_LUKS -o device) | grep -q {{var_cryptenroll_policy}}
+      shell: cryptsetup luksDump $(blkid -t TYPE=crypto_LUKS -o device) | grep -q {{var_cryptenroll_tmp_pcrs.split(":")[0]}}
       register: result
     - name:
       shell: |
         export CRYPTPART=$(blkid -t TYPE=crypto_LUKS -o device);
         systemd-cryptenroll --recovery-key --unlock-key-file=/root/unlock-key-file.weak $CRYPTPART > /root/recovery-key.strong
         chmod 600 /root/recovery-key.strong;
-        systemd-cryptenroll --unlock-key-file=/root/unlock-key-file.weak --wipe-slot=tpm2 --tpm2-device=auto --tpm2-pcrs={{var_cryptenroll_policy}} $CRYPTPART;
+        systemd-cryptenroll --unlock-key-file=/root/unlock-key-file.weak --wipe-slot=tpm2 --tpm2-device=auto --tpm2-pcrs={{var_cryptenroll_tmp_pcrs}} $CRYPTPART;
         wget -O /tmp/sample-pubkey.asc https://github.com/skosachiov/remediations-gendbuntu/raw/main/assets/sample-pubkey.asc;
         gpg --batch --encrypt --recipient-file /tmp/sample-pubkey.asc --output /boot/efi/recovery-key.gpg < /root/recovery-key.strong;
       when: result.rc != 0
