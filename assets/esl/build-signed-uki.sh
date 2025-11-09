@@ -10,7 +10,7 @@ echo "=== UKI Build and Sign Script ==="
 OUTPUT_DIR="${OUTPUT_DIR:-./artifacts}"
 UNSIGNED_UKI="linux.uki"
 SIGNED_UKI="linux-signed.uki"
-CMDLINE="ro rd.auto rd.luks=1 systemd.decrypt_tpm2=yes rootflags=subvol=@rootfs quiet"
+CMDLINE="root=/dev/mapper/crypt-root ro rd.auto rd.luks=1 systemd.decrypt_tpm2=yes rootflags=subvol=@rootfs quiet"
 
 # Validate environment
 if [ -z "$SB_DB_KEY" ]; then
