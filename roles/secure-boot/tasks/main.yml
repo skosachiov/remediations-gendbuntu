@@ -222,8 +222,13 @@
     - name:
       shell: |
         systemd-cryptenroll --unlock-key-file=/root/unlock-key-file.weak \
-          --wipe-slot=tpm2 --tpm2-device=auto --tpm2-pcrs={{var_cryptenroll_tpm2_pcrs}} \
-          {% if var_cryptenroll_tpm2_pubkey_pcrs != '' %} \
+          --wipe-slot=tpm2 --tpm2-device=auto \
+          {% secure_boot_status %} \ 
+          --tpm2-pcrs={{var_cryptenroll_tpm2_pcrs}} \
+          {% else %}
+          --tpm2-pcrs=0+2 \
+          {% endif %} \
+          {% if var_cryptenroll_tpm2_pubkey_pcrs != '' and secure_boot_status %} \
           --tpm2-public-key=/etc/systemd/tpm2-pcr-public-key-system.pem \
           --tpm2-public-key-pcrs={{var_cryptenroll_tpm2_pubkey_pcrs}} \
           {% endif %} {{crypto_luks_device}}
