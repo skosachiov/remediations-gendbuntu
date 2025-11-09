@@ -23,7 +23,14 @@
       changed_when: false
     - name: Set secure_boot variable
       set_fact:
-        var_secure_boot_status: "{{ true if 'SecureBoot enabled' in mokutil_output.stdout else false }}"
+        secure_boot_status: "{{ true if 'SecureBoot enabled' in mokutil_output.stdout else false }}"
+    - name: Get crypto luks device
+      changed_when: false
+      command: blkid -t TYPE=crypto_LUKS -o device
+      register: result
+    - name: Set crypto luks device
+      set_fact:
+        crypto_luks_device: "{{result.stdout}}"
   when: var_secure_boot
   tags:
     - ws
@@ -88,7 +95,7 @@
     - name: Update DB
       command: efi-updatevar -f {{playbook_dir}}/assets/esl/DB.auth db
       when: result.stdout | trim == ""
-  when: var_secure_boot and not var_secure_boot_status
+  when: var_secure_boot and not secure_boot_status
   tags:
     - ws
     - sb_keys are_updated
@@ -159,28 +166,68 @@
     - ws
     - tpm2_keys
 
+- name: Create recovery @create_recovery_key 
+  block:
+    - name: Check recovery key exists
+      stat:
+        path: "{{var_crypt_recovery_key}}"
+      register: result
+    - name: 
+      shell: | 
+        systemd-cryptenroll --recovery-key \
+          --unlock-key-file={{var_crypt_unlock_key_file}} {{crypto_luks_device}} > {{var_crypt_recovery_key}}
+      when: not result.stat.exists
+    - name: Ensure recovery key permissions
+      file:
+        path: "{{var_crypt_recovery_key}}"
+        mode: "0600"
+        owner: root
+        group: root
+    - name: Download gpg asc
+      get_url:
+        url: "{{var_sec_officer_pubkey}}"
+        dest: /tmp/sample-pubkey.asc
+    - name: Check recovery key exists
+      stat:
+        path: /boot/efi/recovery-key.gpg
+      register: result
+    - name: Encrypt gpg 
+      shell: |
+        gpg --batch --encrypt --recipient-file /tmp/sample-pubkey.asc \
+          --output /boot/efi/recovery-key.gpg < /root/recovery-key.strong;
+        gpg --batch --encrypt --recipient-file /tmp/sample-pubkey.asc \
+          --output /boot/efi/tpm2-pcr-public-key-system.gpg < /etc/systemd/tpm2-pcr-private-key-system.pem;
+      when: not result.stat.exists
+  when: var_secure_boot
+  tags:
+    - ws
+    - create_recovery_key
+
 - name: Cryptenroll if uki installed @uki_cryptenroll
   block:
     - name: Check cryptsetup status hash pcrs
       changed_when: false
       failed_when: false
-      shell: cryptsetup luksDump $(blkid -t TYPE=crypto_LUKS -o device) | grep -q {{var_cryptenroll_tpm2_pcrs.split(":")[0]}}
+      shell: |
+        cryptsetup luksDump {{crypto_luks_device}} \
+          | grep -q "tpm2-hash-pcrs: {{var_cryptenroll_tpm2_pcrs.split(':')[0]}}"
       register: result_hash
     - name: Check cryptsetup status pubkey
       changed_when: false
       failed_when: false
-      shell: cryptsetup luksDump $(blkid -t TYPE=crypto_LUKS -o device) | grep -q "tpm2-pubkey-pcrs:\s*[0-9]"
+      shell: |
+        cryptsetup luksDump {{crypto_luks_device}} \
+          | grep -q "tpm2-pubkey-pcrs: {{var_cryptenroll_tpm2_pubkey_pcrs}}"
       register: result_pubkey
     - name:
-      shell: |
-        export CRYPTPART=$(blkid -t TYPE=crypto_LUKS -o device);
-        systemd-cryptenroll --recovery-key --unlock-key-file=/root/unlock-key-file.weak $CRYPTPART > /root/recovery-key.strong
-        chmod 600 /root/recovery-key.strong;
-        systemd-cryptenroll --unlock-key-file=/root/unlock-key-file.weak --wipe-slot=tpm2 --tpm2-device=auto --tpm2-pcrs={{var_cryptenroll_tpm2_pcrs}} --tpm2-public-key=/etc/systemd/tpm2-pcr-public-key-system.pem --tpm2-public-key-pcrs=11 $CRYPTPART;
-        wget -O /tmp/sample-pubkey.asc {{var_sec_officer_pubkey}};
-        gpg --batch --encrypt --recipient-file /tmp/sample-pubkey.asc --output /boot/efi/recovery-key.gpg < /root/recovery-key.strong;
-        gpg --batch --encrypt --recipient-file /tmp/sample-pubkey.asc --output /boot/efi/tpm2-pcr-public-key-system.gpg < /etc/systemd/tpm2-pcr-private-key-system.pem;
-      when: result_hash.rc != 0 or result_pubkey.rc != 0 #TODO
+      shell: >-
+        systemd-cryptenroll --unlock-key-file=/root/unlock-key-file.weak
+          --wipe-slot=tpm2 --tpm2-device=auto --tpm2-pcrs={{var_cryptenroll_tpm2_pcrs}}
+          {% if var_cryptenroll_tpm2_pubkey_pcrs != '' %}
+          --tpm2-public-key=/etc/systemd/tpm2-pcr-public-key-system.pem
+          --tpm2-public-key-pcrs={{var_cryptenroll_tpm2_pubkey_pcrs}}
+          {% endif %} {{crypto_luks_device}};
+      when: result_hash.rc != 0 or result_pubkey.rc != 0  
   tags:
     - ws
     - uki_cryptenroll
@@ -200,7 +247,7 @@
     - name: Add UKI to EFI boot entries
       command: |
         efibootmgr -c -d {{result.stdout[:-1]}} -p {{result.stdout[-1]}} \
-          -L "Debian UKI" -l '\EFI\debian\{{var_uki_filename}}'
+          -L "{{var_uki_filename}}" -l '\EFI\debian\{{var_uki_filename}}'
       when: boot_entry_check.rc != 0
   tags:
     - ws

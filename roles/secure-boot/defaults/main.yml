@@ -1,7 +1,11 @@
 var_secure_boot: true
 # var_cryptenroll_tpm2_pcrs: 0+2+7+15:sha256=0000000000000000000000000000000000000000000000000000000000000000
 var_cryptenroll_tpm2_pcrs: 7+15:sha256=0000000000000000000000000000000000000000000000000000000000000000
+# var_cryptenroll_tpm2_pubkey_pcrs: "11"
+var_cryptenroll_tpm2_pubkey_pcrs: ""
 var_uki_filename: linux-uki-signed-2025110806.efi
 var_uki_filename_atrifact: "4511677787"
 var_token_head: github_pat_
 var_sec_officer_pubkey: https://github.com/skosachiov/remediations-gendbuntu/raw/main/assets/sample-pubkey.asc
+var_crypt_unlock_key_file: /root/unlock-key-file.weak
+var_crypt_recovery_key: /root/recovery-key.strong
