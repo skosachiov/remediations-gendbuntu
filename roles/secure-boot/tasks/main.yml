@@ -169,7 +169,7 @@
     - name: Check cryptsetup status pubkey
       changed_when: false
       failed_when: false
-      shell: cryptsetup luksDump $(blkid -t TYPE=crypto_LUKS -o device) | grep -q tpm2-pubkey-pcrs:\s*[0-9]
+      shell: cryptsetup luksDump $(blkid -t TYPE=crypto_LUKS -o device) | grep -q "tpm2-pubkey-pcrs:\s*[0-9]"
       register: result_pubkey
     - name:
       shell: |
