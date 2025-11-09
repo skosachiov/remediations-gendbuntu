@@ -180,7 +180,7 @@
         wget -O /tmp/sample-pubkey.asc {{var_sec_officer_pubkey}};
         gpg --batch --encrypt --recipient-file /tmp/sample-pubkey.asc --output /boot/efi/recovery-key.gpg < /root/recovery-key.strong;
         gpg --batch --encrypt --recipient-file /tmp/sample-pubkey.asc --output /boot/efi/tpm2-pcr-public-key-system.gpg < /etc/systemd/tpm2-pcr-private-key-system.pem;
-      when: result_hash.rc != 0 or result_pubkey.rc != 0 or not uki_file.stat.exists #TODO
+      when: result_hash.rc != 0 or result_pubkey.rc != 0 #TODO
   tags:
     - ws
     - uki_cryptenroll
