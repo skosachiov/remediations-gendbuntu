@@ -58,7 +58,7 @@
       command: sgdisk --partition-guid={{ item.0.stdout[-1] }}:{{ item.0.item.guid }} "{{ item.0.stdout[:-1] }}"
       loop: "{{ mount_devices.results | zip(current_guids.results) | list }}"
       when: 
-        - item.1.stdout != item.0.item.guid
+        - item.1.stdout | lower != item.0.item.guid | lower
         - item.0.stdout != ""
   when: var_secure_boot
   tags:
