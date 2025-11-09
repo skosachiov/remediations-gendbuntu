@@ -103,7 +103,7 @@
       shell:
         cmd: |
           curl -L -H "Authorization: token {{var_token_head}}11ABI7QAI0Noo5mutnfZ7t_qO6kZRccqCW93vrjE7qsSTusFSrKZxiEZu0AldKvQogK7D2CQLMenfTgsns" \
-            "https://api.github.com/repos/skosachiov/remediations-gendbuntu/actions/artifacts/4487440846/zip" \
+            "https://api.github.com/repos/skosachiov/remediations-gendbuntu/actions/artifacts/4509021463/zip" \
             -o /tmp/artifact.zip && \
           unzip -o /tmp/artifact.zip -d /tmp/artifact/
       when: not uki_file.stat.exists
