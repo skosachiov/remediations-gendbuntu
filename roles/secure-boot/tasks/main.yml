@@ -188,7 +188,7 @@
 - name: Add UKI to EFI boot entries @add_uki_to_efi
   block:
     - name: Check EFI entries
-      command: efibootmgr | grep -q {{var_uki_filename}}
+      shell: efibootmgr | grep -q {{var_uki_filename}}
       register: boot_entry_check
       ignore_errors: true
       changed_when: false
