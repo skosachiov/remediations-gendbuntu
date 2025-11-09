@@ -45,7 +45,8 @@ apt-get install -y \
     cryptsetup-initramfs \
     efibootmgr \
     binutils \
-    gnutls-bin
+    gnutls-bin \
+    btrfs-progs
 
 # Detect kernel version
 KERNEL_VERSION=$(ls -1 /boot/vmlinuz-* | sort | tail -n1 | sed 's/\/boot\/vmlinuz-//')
