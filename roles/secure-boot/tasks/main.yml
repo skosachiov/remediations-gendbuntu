@@ -220,13 +220,13 @@
           | grep -q "tpm2-pubkey-pcrs: {{var_cryptenroll_tpm2_pubkey_pcrs}}"
       register: result_pubkey
     - name:
-      shell: >-
-        systemd-cryptenroll --unlock-key-file=/root/unlock-key-file.weak
-          --wipe-slot=tpm2 --tpm2-device=auto --tpm2-pcrs={{var_cryptenroll_tpm2_pcrs}}
-          {% if var_cryptenroll_tpm2_pubkey_pcrs != '' %}
-          --tpm2-public-key=/etc/systemd/tpm2-pcr-public-key-system.pem
-          --tpm2-public-key-pcrs={{var_cryptenroll_tpm2_pubkey_pcrs}}
-          {% endif %} {{crypto_luks_device}};
+      shell: |
+        systemd-cryptenroll --unlock-key-file=/root/unlock-key-file.weak \
+          --wipe-slot=tpm2 --tpm2-device=auto --tpm2-pcrs={{var_cryptenroll_tpm2_pcrs}} \
+          {% if var_cryptenroll_tpm2_pubkey_pcrs != '' %} \
+          --tpm2-public-key=/etc/systemd/tpm2-pcr-public-key-system.pem \
+          --tpm2-public-key-pcrs={{var_cryptenroll_tpm2_pubkey_pcrs}} \
+          {% endif %} {{crypto_luks_device}}
       when: result_hash.rc != 0 or result_pubkey.rc != 0  
   tags:
     - ws
