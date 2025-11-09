@@ -185,5 +185,24 @@
     - ws
     - uki_cryptenroll
 
-# efibootmgr -c -d /dev/vda -p 1 -L "Debian UKI 20251106" -l '\EFI\debian\linux-uki-signed-20251106.efi'
-# rootflags=subvol=@
+- name: Add UKI to EFI boot entries @add_uki_to_efi
+  block:
+    - name: Check EFI entries
+      command: efibootmgr | grep -q {{var_uki_filename}}
+      register: boot_entry_check
+      ignore_errors: true
+      changed_when: false
+    - name: Get efi device
+      command: findmnt -n -o SOURCE /boot/efi
+      changed_when: false
+      register: result
+      when: boot_entry_check.rc != 0
+    - name: Add UKI to EFI boot entries
+      command: |
+        efibootmgr -c -d {{result.stdout[:-1]}} -p {{result.stdout[-1]}} \
+          -L "Debian UKI" -l '\EFI\debian\{{var_uki_filename}}'
+      when: boot_entry_check.rc != 0
+  tags:
+    - ws
+    - add_uki_to_efi    
+
