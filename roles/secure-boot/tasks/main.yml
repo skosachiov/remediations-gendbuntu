@@ -251,6 +251,7 @@
       command: |
         efibootmgr -c -d {{result.stdout[:-1]}} -p {{result.stdout[-1]}} \
           -L "{{var_uki_filename}}" -l '\EFI\debian\{{var_uki_filename}}'
+      notify: Reboot system
       when: boot_entry_check.rc != 0
   tags:
     - ws
