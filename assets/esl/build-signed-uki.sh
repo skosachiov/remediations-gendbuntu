@@ -67,7 +67,7 @@ SIGNING_DIR=$(mktemp -d)
 trap 'rm -rf "$SIGNING_DIR"' EXIT
 
 echo "$PCR_PRIVATE_KEY" > "$SIGNING_DIR/tpm2-pcr-private-key-system.pem"
-chmod 640 "$SIGNING_DIR/tpm2-pcr-private-key-system.pem"
+chmod 600 "$SIGNING_DIR/tpm2-pcr-private-key-system.pem"
 cp assets/esl/tpm2-pcr-public-key-system.pem "$SIGNING_DIR/"
 
 echo "=== Building UKI ==="
