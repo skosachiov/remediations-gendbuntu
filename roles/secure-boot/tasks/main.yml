@@ -183,14 +183,15 @@
         mode: "0600"
         owner: root
         group: root
-    - name: Download gpg asc
-      get_url:
-        url: "{{var_sec_officer_pubkey}}"
-        dest: /tmp/sample-pubkey.asc
     - name: Check recovery key exists
       stat:
         path: /boot/efi/recovery-key.gpg
       register: result
+    - name: Download gpg asc
+      get_url:
+        url: "{{var_sec_officer_pubkey}}"
+        dest: /tmp/sample-pubkey.asc
+      when: not result.stat.exists
     - name: Encrypt gpg
       shell: |
         gpg --batch --encrypt --recipient-file /tmp/sample-pubkey.asc \
