@@ -34,7 +34,7 @@
   when: var_secure_boot
   tags:
     - ws
-    - get_secure_boot_status        
+    - get_secure_boot_status
 
 - name: Systemd partition unique guid @systemd_uniq_guid
   ignore_errors: "{{ ansible_check_mode }}"
@@ -47,7 +47,7 @@
           - {'mount_point': '/boot', 'guid': 'bc13c2ff-59e6-4262-a352-b275fd6f7172'}
     - name: Get device for each mount point
       shell: >
-        if [ "{{ item.mount_point }}" = "/" ]; then 
+        if [ "{{ item.mount_point }}" = "/" ]; then
           blkid -t TYPE=crypto_LUKS -o device;
         else
           findmnt -n -o SOURCE "{{ item.mount_point }}";
@@ -64,7 +64,7 @@
     - name: Change partition GUIDs if needed
       command: sgdisk --partition-guid={{ item.0.stdout[-1] }}:{{ item.0.item.guid }} "{{ item.0.stdout[:-1] }}"
       loop: "{{ mount_devices.results | zip(current_guids.results) | list }}"
-      when: 
+      when:
         - item.1.stdout | lower != item.0.item.guid | lower
         - item.0.stdout != ""
   when: var_secure_boot
@@ -143,7 +143,7 @@
           title linux-uki
           efi /EFI/debian/{{var_uki_filename}}
   when:
-    - false 
+    - false
     - var_secure_boot
   tags:
     - ws
@@ -155,7 +155,7 @@
       stat:
         path: /etc/systemd/tpm2-pcr-public-key-system.pem
       register: pcr_public_key
-    - name: 
+    - name:
       command: |
         ukify genkey \
           --pcr-private-key=/etc/systemd/tpm2-pcr-private-key-system.pem \
@@ -166,14 +166,14 @@
     - ws
     - tpm2_keys
 
-- name: Create recovery @create_recovery_key 
+- name: Create recovery @create_recovery_key
   block:
     - name: Check recovery key exists
       stat:
         path: "{{var_crypt_recovery_key}}"
       register: result
-    - name: 
-      shell: | 
+    - name:
+      shell: |
         systemd-cryptenroll --recovery-key \
           --unlock-key-file={{var_crypt_unlock_key_file}} {{crypto_luks_device}} > {{var_crypt_recovery_key}}
       when: not result.stat.exists
@@ -191,7 +191,7 @@
       stat:
         path: /boot/efi/recovery-key.gpg
       register: result
-    - name: Encrypt gpg 
+    - name: Encrypt gpg
       shell: |
         gpg --batch --encrypt --recipient-file /tmp/sample-pubkey.asc \
           --output /boot/efi/recovery-key.gpg < /root/recovery-key.strong;
@@ -228,7 +228,8 @@
           --tpm2-public-key=/etc/systemd/tpm2-pcr-public-key-system.pem \
           --tpm2-public-key-pcrs={{var_cryptenroll_tpm2_pubkey_pcrs}} \
           {% endif %} {{crypto_luks_device}}
-      when: result_hash.rc != 0 or result_pubkey.rc != 0  
+      notify: Reboot system
+      when: result_hash.rc != 0 or result_pubkey.rc != 0
   when: secure_boot_status
   tags:
     - ws
@@ -253,5 +254,5 @@
       when: boot_entry_check.rc != 0
   tags:
     - ws
-    - add_uki_to_efi    
+    - add_uki_to_efi
 
