@@ -1,0 +1,4 @@
+- name: Reboot system
+  reboot:
+    msg: "System rebooting for maintenance"
+    reboot_timeout: 60
