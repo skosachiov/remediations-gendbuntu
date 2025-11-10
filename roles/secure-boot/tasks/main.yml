@@ -149,22 +149,14 @@
     - ws
     - uki_from_systemd_boot
 
-- name: Generate tpm2 keys @tpm2_keys
-  block:
-    - name: Check public exists
-      stat:
-        path: /etc/systemd/tpm2-pcr-public-key-system.pem
-      register: pcr_public_key
-    - name:
-      command: |
-        ukify genkey \
-          --pcr-private-key=/etc/systemd/tpm2-pcr-private-key-system.pem \
-          --pcr-public-key=/etc/systemd/tpm2-pcr-public-key-system.pem
-      when: not pcr_public_key.stat.exists
+- name: Copy tpm2 pcr public key @tpm2_pcr_public_key
+  copy:
+    src: "{{playbook_dir}}/assets/esl/tpm2-pcr-public-key-system.pem"
+    dest: /etc/systemd/tpm2-pcr-public-key-system.pem
   when: var_secure_boot
   tags:
     - ws
-    - tpm2_keys
+    - tpm2_pcr_public_key
 
 - name: Create recovery @create_recovery_key
   block:
