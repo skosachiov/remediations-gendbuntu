@@ -210,14 +210,14 @@
       failed_when: false
       shell: |
         cryptsetup luksDump {{crypto_luks_device}} \
-          | grep -q "tpm2-hash-pcrs: {{var_cryptenroll_tpm2_pcrs.split(':')[0]}}"
+          | grep -q "tpm2-hash-pcrs:\s*{{var_cryptenroll_tpm2_pcrs.split(':')[0]}}"
       register: result_hash
     - name: Check cryptsetup status pubkey
       changed_when: false
       failed_when: false
       shell: |
         cryptsetup luksDump {{crypto_luks_device}} \
-          | grep -q "tpm2-pubkey-pcrs: {{var_cryptenroll_tpm2_pubkey_pcrs}}"
+          | grep -q "tpm2-pubkey-pcrs:\s*{{var_cryptenroll_tpm2_pubkey_pcrs}}"
       register: result_pubkey
     - name:
       shell: |
