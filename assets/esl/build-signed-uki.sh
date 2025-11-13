@@ -27,6 +27,9 @@ fi
 # Create output directory
 mkdir -p "$OUTPUT_DIR"
 
+# Log
+cat /etc/apt/sources.list.d/debian.sources
+
 echo "=== Installing required packages ==="
 apt-get update
 apt-get install -y \
@@ -46,9 +49,7 @@ apt-get install -y \
     efibootmgr \
     binutils \
     gnutls-bin \
-    btrfs-progs \
-    intel-microcode \
-    amd64-microcode 
+    btrfs-progs
 
 # Detect kernel version
 KERNEL_VERSION=$(ls -1 /boot/vmlinuz-* | sort | tail -n1 | sed 's/\/boot\/vmlinuz-//')
