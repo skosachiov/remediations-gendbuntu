@@ -46,7 +46,9 @@ apt-get install -y \
     efibootmgr \
     binutils \
     gnutls-bin \
-    btrfs-progs
+    btrfs-progs \
+    intel-microcode \
+    amd64-microcode 
 
 # Detect kernel version
 KERNEL_VERSION=$(ls -1 /boot/vmlinuz-* | sort | tail -n1 | sed 's/\/boot\/vmlinuz-//')
