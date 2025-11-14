@@ -88,8 +88,8 @@ echo "=== Setting up signing environment ==="
 SIGNING_DIR=$(mktemp -d)
 trap 'rm -rf "$SIGNING_DIR"' EXIT
 
-echo "$PCR_PRIVATE_KEY" > "$SIGNING_DIR/tpm2-pcr-private-key-system.key"
-chmod 600 "$SIGNING_DIR/tpm2-pcr-private-key-system.key"
+echo "$PCR_PRIVATE_KEY" > "/tmp/tpm2-pcr-private-key-system.key"
+chmod 600 "/tmp/tpm2-pcr-private-key-system.key"
 
 echo "=== Building UKI ==="
 ukify build \
@@ -97,7 +97,7 @@ ukify build \
     --initrd="/boot/initrd.img-$KERNEL_VERSION" \
     --cmdline="$CMDLINE" \
     --no-measure \
-    --pcr-private-key="$SIGNING_DIR/tpm2-pcr-private-key-system.key" \
+    --pcr-private-key="/tmp/tpm2-pcr-private-key-system.key" \
     --pcr-public-key="assets/esl/tpm2-pcr-public-key-system.pem" \
     --output="/workspace/$UNSIGNED_UKI" \
     --uname="$KERNEL_VERSION"
