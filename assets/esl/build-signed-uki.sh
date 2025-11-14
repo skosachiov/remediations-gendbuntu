@@ -81,8 +81,8 @@ swtpm socket -d --tpmstate dir=/tmp/tpmstate \
           --log level=5
 sleep 10
 export TPM2TOOLS_TCTI="swtpm:port=2321"
-tpm2_startup -c
-tpm2_getrandom --hex 4
+# tpm2_startup -c
+# tpm2_getrandom --hex 4
 
 echo "=== Setting up signing environment ==="
 SIGNING_DIR=$(mktemp -d)
@@ -96,6 +96,8 @@ ukify build \
     --linux="/boot/vmlinuz-$KERNEL_VERSION" \
     --initrd="/boot/initrd.img-$KERNEL_VERSION" \
     --cmdline="$CMDLINE" \
+    --no-policy-digest \
+    --no-measure \
     --pcr-private-key="$SIGNING_DIR/tpm2-pcr-private-key-system.key" \
     --pcr-public-key="assets/esl/tpm2-pcr-public-key-system.pem" \
     --output="/workspace/$UNSIGNED_UKI" \
