@@ -71,6 +71,7 @@ dracut --no-hostonly --force --kver $KERNEL_VERSION
 # modprobe tpm_vtpm_proxy
 # swtpm chardev -d --tpmstate dir=/tmp/tpmstate --tpm2 --vtpm-proxy
 
+apt-get install -y swtmp
 export TPM2TOOLS_TCTI="swtpm:port=2321"
 swtpm socket -d --tpmstate dir=/tmp/tpmstate \
           --ctrl type=tcp,port=2322 \
