@@ -96,7 +96,6 @@ ukify build \
     --linux="/boot/vmlinuz-$KERNEL_VERSION" \
     --initrd="/boot/initrd.img-$KERNEL_VERSION" \
     --cmdline="$CMDLINE" \
-    --policy-digest \
     --no-measure \
     --pcr-private-key="$SIGNING_DIR/tpm2-pcr-private-key-system.key" \
     --pcr-public-key="assets/esl/tpm2-pcr-public-key-system.pem" \
