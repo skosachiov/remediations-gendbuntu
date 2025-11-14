@@ -19,11 +19,6 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y swtpm
 
-    - name: Setup TPM simulator
-      uses: tpm2-software/ci-tpm2@v1
-      with:
-        tpm-simulator: 'swtpm'
-
     # - name: Start swtpm
     #   run: |
     #     modprobe tpm_vtpm_proxy

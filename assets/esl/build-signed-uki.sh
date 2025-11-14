@@ -67,6 +67,10 @@ SCRIPT_DIR=$(dirname $0)
 cp -f $SCRIPT_DIR/dracut.conf /etc/
 dracut --no-hostonly --force --kver $KERNEL_VERSION
 
+# Start swtpm
+modprobe tpm_vtpm_proxy
+swtpm chardev -d --tpmstate dir=/tmp/tpmstate --tpm2 --vtpm-proxy
+
 echo "=== Setting up signing environment ==="
 SIGNING_DIR=$(mktemp -d)
 trap 'rm -rf "$SIGNING_DIR"' EXIT
