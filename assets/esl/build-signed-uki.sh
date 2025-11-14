@@ -68,8 +68,16 @@ cp -f $SCRIPT_DIR/dracut.conf /etc/
 dracut --no-hostonly --force --kver $KERNEL_VERSION
 
 # Start swtpm
-modprobe tpm_vtpm_proxy
-swtpm chardev -d --tpmstate dir=/tmp/tpmstate --tpm2 --vtpm-proxy
+# modprobe tpm_vtpm_proxy
+# swtpm chardev -d --tpmstate dir=/tmp/tpmstate --tpm2 --vtpm-proxy
+
+export TPM2TOOLS_TCTI="swtpm:port=2321"
+swtpm socket -d --tpmstate dir=/tmp/tpmstate \
+          --ctrl type=tcp,port=2322 \
+          --server type=tcp,port=2321 \
+          --tpm2 \
+          --flags not-need-init,startup-clear \
+          --log level=5
 
 echo "=== Setting up signing environment ==="
 SIGNING_DIR=$(mktemp -d)
