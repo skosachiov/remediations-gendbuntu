@@ -26,7 +26,7 @@ jobs:
 
     - name: Build and sign UKI using script
       run: |
-        docker run --rm -v $(pwd):/workspace -w /workspace --privileged \ 
+        docker run --rm --privileged -v $(pwd):/workspace -w /workspace \ 
           -e SB_DB_KEY="${{ secrets.SB_DB_KEY }}" \
           debian:13-slim bash -c '
           chmod +x ./assets/esl/build-signed-uki.sh
