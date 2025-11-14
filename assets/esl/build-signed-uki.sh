@@ -84,7 +84,7 @@ ukify build \
     --initrd="/boot/initrd.img-$KERNEL_VERSION" \
     --cmdline="$CMDLINE" \
     --pcr-private-key="$SIGNING_DIR/tpm2-pcr-private-key-system.key" \
-    --pcr-public-key=assets/esl/tpm2-pcr-public-key-system.pem
+    --pcr-public-key=assets/esl/tpm2-pcr-public-key-system.pem \
     --output="/workspace/$UNSIGNED_UKI" \
     --uname="$KERNEL_VERSION"
 
