@@ -149,23 +149,6 @@
     - ws
     - uki_from_systemd_boot
 
-- name: Generate tpm2 keys @tpm2_keys
-  block:
-    - name: Check public exists
-      stat:
-        path: /etc/systemd/tpm2-pcr-public-key-system.pem
-      register: pcr_public_key
-    - name:
-      command: |
-        ukify genkey \
-          --pcr-private-key=/etc/systemd/tpm2-pcr-private-key-system.pem \
-          --pcr-public-key=/etc/systemd/tpm2-pcr-public-key-system.pem
-      when: not pcr_public_key.stat.exists
-  when: var_secure_boot
-  tags:
-    - ws
-    - tpm2_keys
-
 - name: Create recovery @create_recovery_key
   block:
     - name: Check recovery key exists
@@ -196,8 +179,6 @@
       shell: |
         gpg --batch --encrypt --recipient-file /tmp/sample-pubkey.asc \
           --output /boot/efi/recovery-key.gpg < /root/recovery-key.strong;
-        gpg --batch --encrypt --recipient-file /tmp/sample-pubkey.asc \
-          --output /boot/efi/tpm2-pcr-public-key-system.gpg < /etc/systemd/tpm2-pcr-private-key-system.pem;
       when: not result.stat.exists
   when: var_secure_boot
   tags:
@@ -220,6 +201,14 @@
         cryptsetup luksDump {{crypto_luks_device}} \
           | grep -q "tpm2-pubkey-pcrs:\s*{{var_cryptenroll_tpm2_pubkey_pcrs}}$"
       register: result_pubkey
+    - name: Copy a file from the playbook's files directory
+      copy:
+        src: "{{playbook_dir}}/assets/esl/tpm2-pcr-public-key-system.pem"
+        dest: /etc/systemd/tpm2-pcr-public-key-system.pem
+        owner: root
+        group: root
+        mode: '0644'
+      when: var_cryptenroll_tpm2_pubkey_pcrs != ''    
     - name:
       shell: |
         systemd-cryptenroll --unlock-key-file=/root/unlock-key-file.weak \
