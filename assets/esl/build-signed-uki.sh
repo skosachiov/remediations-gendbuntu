@@ -67,17 +67,22 @@ SCRIPT_DIR=$(dirname $0)
 cp -f $SCRIPT_DIR/dracut.conf /etc/
 dracut --no-hostonly --force --kver $KERNEL_VERSION
 
+echo "=== Setting up signing environment ==="
+SIGNING_DIR=$(mktemp -d)
+trap 'rm -rf "$SIGNING_DIR"' EXIT
+
+echo "$PCR_PRIVATE_KEY" > "$SIGNING_DIR/tpm2-pcr-private-key-system.key"
+chmod 600 "$SIGNING_DIR/tpm2-pcr-private-key-system.key"
+
 echo "=== Building UKI ==="
 ukify build \
     --linux="/boot/vmlinuz-$KERNEL_VERSION" \
     --initrd="/boot/initrd.img-$KERNEL_VERSION" \
     --cmdline="$CMDLINE" \
+    --pcr-private-key="$SIGNING_DIR/tpm2-pcr-private-key-system.key" \
+    --pcr-public-key=assets/esl/tpm2-pcr-public-key-system.pem
     --output="/workspace/$UNSIGNED_UKI" \
     --uname="$KERNEL_VERSION"
-
-echo "=== Setting up signing environment ==="
-SIGNING_DIR=$(mktemp -d)
-trap 'rm -rf "$SIGNING_DIR"' EXIT
 
 echo "$SB_DB_KEY" > "$SIGNING_DIR/DB.key"
 chmod 600 "$SIGNING_DIR/DB.key"

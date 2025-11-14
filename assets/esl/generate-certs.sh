@@ -14,3 +14,6 @@ cert-to-efi-sig-list DB.crt DB.esl
 sign-efi-sig-list -k PK.key -c PK.crt PK PK.esl PK.auth
 sign-efi-sig-list -k PK.key -c PK.crt KEK KEK.esl KEK.auth
 sign-efi-sig-list -k KEK.key -c KEK.crt db DB.esl DB.auth
+
+# Ukify generate the certificate and keys
+ukify genkey --pcr-private-key=tpm2-pcr-private-key-system.pem --pcr-public-key=tpm2-pcr-public-key-system.pem
