@@ -72,6 +72,7 @@ dracut --no-hostonly --force --kver $KERNEL_VERSION
 # swtpm chardev -d --tpmstate dir=/tmp/tpmstate --tpm2 --vtpm-proxy
 
 apt-get install -y swtpm
+mkdir -p /tmp/tpmstate
 export TPM2TOOLS_TCTI="swtpm:port=2321"
 swtpm socket -d --tpmstate dir=/tmp/tpmstate \
           --ctrl type=tcp,port=2322 \
@@ -79,6 +80,7 @@ swtpm socket -d --tpmstate dir=/tmp/tpmstate \
           --tpm2 \
           --flags not-need-init,startup-clear \
           --log level=5
+sleep 10
 
 echo "=== Setting up signing environment ==="
 SIGNING_DIR=$(mktemp -d)
