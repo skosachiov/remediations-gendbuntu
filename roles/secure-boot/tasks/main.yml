@@ -208,7 +208,7 @@
         owner: root
         group: root
         mode: '0644'
-      when: var_cryptenroll_tpm2_pubkey_pcrs != ''    
+      when: var_cryptenroll_tpm2_pubkey_pcrs != ''
     - name:
       shell: |
         systemd-cryptenroll --unlock-key-file=/root/unlock-key-file.weak \
@@ -227,22 +227,30 @@
 
 - name: Add UKI to EFI boot entries @add_uki_to_efi
   block:
-    - name: Check EFI entries
-      shell: efibootmgr | grep -q {{var_uki_filename}}
-      register: boot_entry_check
+    - name: Get first boot
+      shell: efibootmgr | grep '^BootOrder' | cut -f 2 -d ' ' | cut -f 1 -d ','
+      register: first_boot_entry
+      ignore_errors: true
+      changed_when: false
+    - name: Get UKI entry
+      shell: efibootmgr | grep {{var_uki_filename}} | cut -f 1 -d ' '
+      register: uki_boot_entry
       ignore_errors: true
       changed_when: false
     - name: Get efi device
       command: findmnt -n -o SOURCE /boot/efi
       changed_when: false
-      register: result
-      when: boot_entry_check.rc != 0
+      register: efi_device
     - name: Add UKI to EFI boot entries
       command: |
-        efibootmgr -c -d {{result.stdout[:-1]}} -p {{result.stdout[-1]}} \
+        efibootmgr -c -d {{efi_device.stdout[:-1]}} -p {{efi_device.stdout[-1]}} \
           -L "{{var_uki_filename}}" -l '\EFI\debian\{{var_uki_filename}}'
       notify: Reboot system
-      when: boot_entry_check.rc != 0
+      when: uki_boot_entry.stdout | trim == ""
+    - name: First boot UKI
+      command: efibootmgr -o {{uki_boot_entry.stdout[4:8]}}
+      notify: Reboot system
+      when: first_boot_entry not in uki_boot_entry
   tags:
     - ws
     - add_uki_to_efi
