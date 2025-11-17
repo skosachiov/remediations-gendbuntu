@@ -31,6 +31,7 @@ echo "=== Add components ==="
 sed -i "s/Components:.*/Components: main contrib non-free non-free-firmware/g" /etc/apt/sources.list.d/debian.sources
 
 echo "=== Installing required packages ==="
+export DEBIAN_FRONTEND=noninteractive
 apt-get update
 apt-get install -y \
     sbsigntool \
@@ -52,7 +53,7 @@ apt-get install -y \
     btrfs-progs \
     e2fsprogs \
     libext2fs2t64 \
-    libterm-readline-perl-perl \
+    libterm-readline-gnu-perl \
     perl \
     intel-microcode \
     amd64-microcode
