@@ -52,6 +52,8 @@ apt-get install -y \
     btrfs-progs \
     e2fsprogs \
     libext2fs2t64 \
+    libterm-readline-perl \
+    perl \
     intel-microcode \
     amd64-microcode
 
