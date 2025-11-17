@@ -50,6 +50,8 @@ apt-get install -y \
     binutils \
     gnutls-bin \
     btrfs-progs \
+    e2fsprogs \
+    libext2fs2t64 \
     intel-microcode \
     amd64-microcode
 
