@@ -233,7 +233,7 @@
       ignore_errors: true
       changed_when: false
     - name: Get UKI entry
-      shell: efibootmgr | grep {{var_uki_filename}} | cut -f 1 -d ' '
+      shell: efibootmgr | grep {{var_uki_filename}} | grep -Po "^Boot\K[0-9]+"
       register: uki_boot_entry
       ignore_errors: true
       changed_when: false
@@ -248,9 +248,9 @@
       notify: Reboot system
       when: uki_boot_entry.stdout | trim == ""
     - name: First boot UKI
-      command: efibootmgr -o {{uki_boot_entry.stdout[4:8]}}
+      command: efibootmgr -o {{uki_boot_entry.stdout}}
       notify: Reboot system
-      when: first_boot_entry not in uki_boot_entry
+      when: first_boot_entry.stdout != uki_boot_entry.stdout
   tags:
     - ws
     - add_uki_to_efi
