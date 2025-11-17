@@ -247,6 +247,11 @@
           -L "{{var_uki_filename}}" -l '\EFI\debian\{{var_uki_filename}}'
       notify: Reboot system
       when: uki_boot_entry.stdout | trim == ""
+    - name: Get UKI entry
+      shell: efibootmgr | grep {{var_uki_filename}} | grep -Po "^Boot\K[0-9]+"
+      register: uki_boot_entry
+      failed_when: false
+      changed_when: false    
     - name: First boot UKI
       command: efibootmgr -o {{uki_boot_entry.stdout}}
       notify: Reboot system
