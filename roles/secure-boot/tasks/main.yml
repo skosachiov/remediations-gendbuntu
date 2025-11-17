@@ -230,12 +230,12 @@
     - name: Get first boot
       shell: efibootmgr | grep '^BootOrder' | cut -f 2 -d ' ' | cut -f 1 -d ','
       register: first_boot_entry
-      ignore_errors: true
+      failed_when: false
       changed_when: false
     - name: Get UKI entry
       shell: efibootmgr | grep {{var_uki_filename}} | grep -Po "^Boot\K[0-9]+"
       register: uki_boot_entry
-      ignore_errors: true
+      failed_when: false
       changed_when: false
     - name: Get efi device
       command: findmnt -n -o SOURCE /boot/efi
