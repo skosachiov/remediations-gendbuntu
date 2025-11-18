@@ -132,15 +132,13 @@
         dest: /boot/efi/EFI/debian/{{var_uki_filename}}
         remote_src: yes
         mode: '0644'
-      notify: Reboot system
       when: not uki_file.stat.exists
     - name: Copy systemd-boot file to EFI
       copy:
         src: /tmp/artifact/systemd-bootx64-signed.efi
-        dest: /boot/efi/EFI/systemd/systemd-bootx64.efi
+        dest: /boot/efi/EFI/systemd/systemd-bootx64-signed.efi
         remote_src: yes
         mode: '0600'
-      notify: Reboot system
       when: not uki_file.stat.exists
   when: var_secure_boot
   tags:
@@ -153,6 +151,13 @@
       package:
         name:
           - systemd-boot
+    - name: Copy systemd-boot file to EFI
+      copy:
+        src: /boot/efi/EFI/systemd/systemd-bootx64-signed.efi
+        dest: /boot/efi/EFI/systemd/systemd-bootx64.efi
+        remote_src: yes
+        mode: '0600'
+      notify: Reboot system
     - name: Ensure directory exists
       file:
         path: /boot/efi/loader/entries
