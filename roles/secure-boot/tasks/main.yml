@@ -14,6 +14,17 @@
     - ws
     - secure_boot_utils_present
 
+- name: Tss user with dynamic ID @tss_dynamic_id
+  copy:
+    dest: /usr/lib/sysusers.d/tpm2-tss.conf
+    content: |
+      #Type Name ID  GECOS                         Home directory Shell
+      u     tss  -   "Account used for TPM access" /var/lib/tpm   /usr/sbin/nologin
+  when: var_secure_boot
+  tags:
+    - ws
+    - tss_dynamic_id
+
 - name: Get secure boot status @get_secure_boot_status
   ignore_errors: "{{ansible_check_mode}}"
   block:
@@ -250,7 +261,7 @@
       shell: efibootmgr | grep {{var_uki_filename}} | grep -Po "^Boot\K[0-9]+"
       register: uki_boot_entry
       failed_when: false
-      changed_when: false    
+      changed_when: false
     - name: First boot UKI
       command: efibootmgr -o {{uki_boot_entry.stdout}}
       notify: Reboot system
