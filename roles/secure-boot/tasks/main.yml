@@ -269,19 +269,3 @@
   tags:
     - ws
     - add_uki_to_efi
-
-- name: Update /etc/issue with Ansible status
-  copy:
-    content: |
-      {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}
-      Kernel: {{ ansible_facts['kernel'] }}
-      Ansible Status: changed={{ ansible_stats.changed }} failed={{ ansible_stats.failures }} ok={{ ansible_stats.ok }} unreachable={{ ansible_stats.unreachable }} skipped={{ ansible_stats.skipped }}
-      Last run: {{ ansible_date_time.iso8601 }}
-    dest: /etc/issue
-    owner: root
-    group: root
-    mode: '0644'
-    backup: yes
-  delegate_to: localhost
-  run_once: true
-
