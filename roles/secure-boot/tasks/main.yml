@@ -161,12 +161,12 @@
         content: |
           title linux-uki
           efi /EFI/debian/{{var_uki_filename}}
-    - name: Systemd-boot config
+    - name: Systemd-boot loader config
       copy:
         dest: /boot/efi/loader/loader.conf
         content: |
           timeout 5
-          default uki
+          default linux-uki*
           editor no
   when: var_secure_boot
   tags:
