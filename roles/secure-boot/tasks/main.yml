@@ -4,6 +4,8 @@
     name:
       - mokutil
       - efitools
+      - systemd-boot
+      - systemd-boot-efi
       - systemd-boot-tools
       - systemd-ukify
       - cryptsetup
@@ -131,6 +133,13 @@
         remote_src: yes
         mode: '0644'
       when: not uki_file.stat.exists
+    - name: Copy systemd-boot file to EFI
+      copy:
+        src: /tmp/artifact/systemd-bootx64-signed.efi
+        dest: /boot/efi/EFI/systemd/systemd-bootx64.efi
+        remote_src: yes
+        mode: '0600'
+      when: not uki_file.stat.exists
   when: var_secure_boot
   tags:
     - ws
@@ -235,37 +244,37 @@
     - ws
     - uki_cryptenroll
 
-- name: Add UKI to EFI boot entries @add_uki_to_efi
+- name: Add systemd-boot to EFI boot entries @add_systemd_boot_to_efi
   block:
     - name: Get first boot
       shell: efibootmgr | grep '^BootOrder' | cut -f 2 -d ' ' | cut -f 1 -d ','
       register: first_boot_entry
       failed_when: false
       changed_when: false
-    - name: Get UKI entry
-      shell: efibootmgr | grep {{var_uki_filename}} | grep -Po "^Boot\K[0-9]+"
-      register: uki_boot_entry
+    - name: Get systemd-boot entry
+      shell: efibootmgr | grep {{var_systemd_boot_filename}} | grep -Po "^Boot\K[0-9]+"
+      register: systemd_boot_boot_entry
       failed_when: false
       changed_when: false
     - name: Get efi device
       command: findmnt -n -o SOURCE /boot/efi
       changed_when: false
       register: efi_device
-    - name: Add UKI to EFI boot entries
+    - name: Add systemd-boot to EFI boot entries
       command: |
         efibootmgr -c -d {{efi_device.stdout[:-1]}} -p {{efi_device.stdout[-1]}} \
-          -L "{{var_uki_filename}}" -l '\EFI\debian\{{var_uki_filename}}'
+          -L "{{var_systemd_boot_filename}}" -l '\EFI\systemd\{{var_systemd_boot_filename}}'
       notify: Reboot system
-      when: uki_boot_entry.stdout | trim == ""
-    - name: Get UKI entry
-      shell: efibootmgr | grep {{var_uki_filename}} | grep -Po "^Boot\K[0-9]+"
-      register: uki_boot_entry
+      when: systemd_boot_boot_entry.stdout | trim == ""
+    - name: Get systemd-boot entry
+      shell: efibootmgr | grep {{var_systemd_boot_filename}} | grep -Po "^Boot\K[0-9]+"
+      register: systemd_boot_boot_entry
       failed_when: false
       changed_when: false
-    - name: First boot UKI
-      command: efibootmgr -o {{uki_boot_entry.stdout}}
+    - name: First boot systemd-boot
+      command: efibootmgr -o {{systemd_boot_boot_entry.stdout}}
       notify: Reboot system
-      when: first_boot_entry.stdout != uki_boot_entry.stdout
+      when: first_boot_entry.stdout != systemd_boot_boot_entry.stdout
   tags:
     - ws
-    - add_uki_to_efi
+    - add_systemd_boot_to_efi
