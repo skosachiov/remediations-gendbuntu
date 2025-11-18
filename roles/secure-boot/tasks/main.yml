@@ -285,3 +285,22 @@
   tags:
     - ws
     - add_systemd_boot_to_efi
+
+- name: Grub absent @grub_absent
+  ignore_errors: "{{ansible_check_mode}}"
+  package:
+    name:
+      - shim-signed
+      - shim-unsigned
+      - grub-common
+      - grub-efi-amd64
+      - grub-efi-amd64-bin
+      - grub-efi-amd64-signed
+      - grub-efi-amd64-unsigned
+    state: absent
+  when:
+    - false
+    - var_secure_boot
+  tags:
+    - ws
+    - grub_absent
