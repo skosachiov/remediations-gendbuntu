@@ -166,7 +166,7 @@
         dest: /boot/efi/loader/loader.conf
         content: |
           timeout 5
-          default linux-uki*
+          default uki.conf
           editor no
   when: var_secure_boot
   tags:
@@ -279,7 +279,9 @@
     - name: First boot systemd-boot
       command: efibootmgr -o {{systemd_boot_boot_entry.stdout}}
       notify: Reboot system
-      when: first_boot_entry.stdout != systemd_boot_boot_entry.stdout
+      when:
+        - systemd_boot_boot_entry.stdout | trim != ""
+        - first_boot_entry.stdout != systemd_boot_boot_entry.stdout
   tags:
     - ws
     - add_systemd_boot_to_efi
