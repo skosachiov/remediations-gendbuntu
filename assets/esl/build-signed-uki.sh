@@ -107,9 +107,16 @@ echo "=== Verifying signature ==="
 sbverify --list "/workspace/$SIGNED_UKI"
 sbverify --cert "$SIGNING_DIR/DB.crt" "/workspace/$SIGNED_UKI"
 
+echo "=== Signing Systemd-boot ==="
+sbsign --key "$SIGNING_DIR/DB.key" \
+       --cert "$SIGNING_DIR/DB.crt" \
+       --output "/workspace/systemd-boot-signed.efi" \
+       "/usr/lib/systemd/boot/efi/systemd-boot.efi"
+
 echo "=== Moving artifacts to output directory ==="
 mv "/workspace/$UNSIGNED_UKI" "$OUTPUT_DIR/"
 mv "/workspace/$SIGNED_UKI" "$OUTPUT_DIR/"
+mv "/workspace/systemd-boot-signed.efi" "$OUTPUT_DIR/"
 
 echo "=== Cleaning up ==="
 rm -rf "$SIGNING_DIR"
@@ -118,4 +125,5 @@ echo "=== Build completed successfully ==="
 echo "Kernel version: $KERNEL_VERSION"
 echo "Unsigned UKI: $OUTPUT_DIR/$UNSIGNED_UKI"
 echo "Signed UKI: $OUTPUT_DIR/$SIGNED_UKI"
+echo "Signed Systemd-boot: $OUTPUT_DIR/systemd-boot-signed.efi"
 ls -la "$OUTPUT_DIR/"
