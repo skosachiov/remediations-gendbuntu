@@ -275,7 +275,7 @@
     - name: Add systemd-boot to EFI boot entries
       command: |
         efibootmgr -c -d {{efi_device.stdout[:-1]}} -p {{efi_device.stdout[-1]}} \
-          -L "{{var_systemd_boot_filename}}" -l '\EFI\systemd\{{var_systemd_boot_filename}}'
+          -L "systemd" -l '\EFI\systemd\{{var_systemd_boot_filename}}'
       notify: Reboot system
       when: systemd_boot_boot_entry.stdout | trim == ""
     - name: Get systemd-boot entry
@@ -288,7 +288,7 @@
       notify: Reboot system
       when:
         - systemd_boot_boot_entry.stdout | trim != ""
-        - first_boot_entry.stdout != systemd_boot_boot_entry.stdout
+        - first_boot_entry.stdout | trim != systemd_boot_boot_entry.stdout | trim
   tags:
     - ws
     - add_systemd_boot_to_efi
@@ -307,7 +307,7 @@
     state: absent
   when: 
     - var_secure_boot
-    - first_boot_entry.stdout == systemd_boot_boot_entry.stdout
+    - first_boot_entry.stdout | trim == systemd_boot_boot_entry.stdout | trim
   tags:
     - ws
     - grub_absent
