@@ -175,6 +175,10 @@
           timeout 5
           default uki.conf
           editor no
+        register: result
+    - name: Systemd-boot install record and default
+      shell: bootctl install; bootctl set-default "Linux Boot Manager"
+      when: result.changed
   when: var_secure_boot
   tags:
     - ws
