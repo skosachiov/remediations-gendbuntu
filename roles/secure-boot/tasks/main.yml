@@ -264,7 +264,7 @@
       failed_when: false
       changed_when: false
     - name: Get systemd-boot entry
-      shell: efibootmgr | grep {{var_systemd_boot_filename}} | grep -Po "^Boot\K[0-9]+"
+      shell: efibootmgr | grep {{var_systemd_boot_filename}} | grep -v PciRoot | grep -Po "^Boot\K[0-9]+"
       register: systemd_boot_boot_entry
       failed_when: false
       changed_when: false
@@ -273,13 +273,11 @@
       changed_when: false
       register: efi_device
     - name: Add systemd-boot to EFI boot entries
-      command: |
-        efibootmgr -c -d {{efi_device.stdout[:-1]}} -p {{efi_device.stdout[-1]}} \
-          -L "systemd" -l '\EFI\systemd\{{var_systemd_boot_filename}}'
+      command: bootctl install
       notify: Reboot system
       when: systemd_boot_boot_entry.stdout | trim == ""
     - name: Get systemd-boot entry
-      shell: efibootmgr | grep {{var_systemd_boot_filename}} | grep -Po "^Boot\K[0-9]+"
+      shell: efibootmgr | grep {{var_systemd_boot_filename}} | grep -v PciRoot | grep -Po "^Boot\K[0-9]+"
       register: systemd_boot_boot_entry
       failed_when: false
       changed_when: false
