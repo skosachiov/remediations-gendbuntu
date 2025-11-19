@@ -262,7 +262,7 @@
       failed_when: false
       changed_when: false
     - name: Get systemd-boot entry
-      shell: efibootmgr | grep {{var_systemd_boot_filename}} | grep -v PciRoot | grep -Po "^Boot\K[0-9]+"
+      shell: efibootmgr | grep {{var_systemd_boot_filename}} | grep -v PciRoot | grep -Po "^Boot\K[0-9A-F]+"
       register: systemd_boot_boot_entry
       failed_when: false
       changed_when: false
@@ -275,7 +275,7 @@
       notify: Reboot system
       when: systemd_boot_boot_entry.stdout | trim == ""
     - name: Get systemd-boot entry
-      shell: efibootmgr | grep {{var_systemd_boot_filename}} | grep -v PciRoot | grep -Po "^Boot\K[0-9]+"
+      shell: efibootmgr | grep {{var_systemd_boot_filename}} | grep -v PciRoot | grep -Po "^Boot\K[0-9A-F]+"
       register: systemd_boot_boot_entry
       failed_when: false
       changed_when: false
@@ -298,7 +298,7 @@
     failed_when: false
     changed_when: false
   - name: Get systemd-boot entry
-    shell: efibootmgr | grep {{var_systemd_boot_filename}} | grep -Po "^Boot\K[0-9]+"
+    shell: efibootmgr | grep {{var_systemd_boot_filename}} | grep -Po "^Boot\K[0-9A-F]+"
     register: systemd_boot_boot_entry
     failed_when: false
     changed_when: false
