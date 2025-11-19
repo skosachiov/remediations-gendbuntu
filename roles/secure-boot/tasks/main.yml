@@ -151,13 +151,6 @@
       package:
         name:
           - systemd-boot
-    - name: Copy systemd-boot file to EFI
-      copy:
-        src: /boot/efi/EFI/systemd/systemd-bootx64-signed.efi
-        dest: /boot/efi/EFI/systemd/systemd-bootx64.efi
-        remote_src: yes
-        mode: '0600'
-      notify: Reboot system
     - name: Ensure directory exists
       file:
         path: /boot/efi/loader/entries
@@ -179,6 +172,13 @@
     - name: Systemd-boot install record and default
       shell: bootctl install; bootctl set-default "Linux Boot Manager"
       when: result.changed
+    - name: Copy systemd-boot file to EFI
+      copy:
+        src: /boot/efi/EFI/systemd/systemd-bootx64-signed.efi
+        dest: /boot/efi/EFI/systemd/systemd-bootx64.efi
+        remote_src: yes
+        mode: '0600'
+      notify: Reboot system
   when: var_secure_boot
   tags:
     - ws
