@@ -295,19 +295,30 @@
 
 - name: Grub absent @grub_absent
   ignore_errors: "{{ansible_check_mode}}"
-  package:
-    name:
-      - shim-signed
-      - shim-unsigned
-      - grub-efi-amd64
-      - grub-efi-amd64-bin
-      - grub-efi-amd64-unsigned
-      - grub-pc
-      - grub-pc-bin
-    state: absent
-  when: 
-    - var_secure_boot
-    - first_boot_entry.stdout | trim == systemd_boot_boot_entry.stdout | trim
+  block:
+  - name: Get first boot
+    shell: efibootmgr | grep '^BootCurrent' | cut -f 2 -d ' '
+    register: current_boot_entry
+    failed_when: false
+    changed_when: false
+  - name: Get systemd-boot entry
+    shell: efibootmgr | grep {{var_systemd_boot_filename}} | grep -Po "^Boot\K[0-9]+"
+    register: systemd_boot_boot_entry
+    failed_when: false
+    changed_when: false
+  - name: Remove packages
+    package:
+      name:
+        - shim-signed
+        - shim-unsigned
+        - grub-efi-amd64
+        - grub-efi-amd64-bin
+        - grub-efi-amd64-unsigned
+        - grub-pc
+        - grub-pc-bin
+      state: absent
+    when: current_boot_entry.stdout | trim == systemd_boot_boot_entry.stdout | trim
+  when: var_secure_boot
   tags:
     - ws
     - grub_absent
