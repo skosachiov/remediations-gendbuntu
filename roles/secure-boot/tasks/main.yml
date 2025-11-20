@@ -141,6 +141,13 @@
         remote_src: yes
         mode: '0644'
       when: not uki_file.stat.exists
+    - name: Copy BOOTX64.CSV
+      copy:
+        dest: /boot/efi/EFI/debian/BOOTX64.CSV
+        content: |
+          {{var_uki_filename}},linux-uki,,This is the boot entry for linux-uki
+        mode: '0600'
+      when: not uki_file.stat.exists      
     - name: Copy SB file to EFI
       copy:
         src: /tmp/artifact/systemd-bootx64-signed.efi
@@ -329,6 +336,7 @@
         - shim-unsigned
         - grub-efi-amd64
         - grub-efi-amd64-bin
+        - grub-efi-amd64-signed
         - grub-efi-amd64-unsigned
         - grub-pc
         - grub-pc-bin
