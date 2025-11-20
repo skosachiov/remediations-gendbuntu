@@ -336,7 +336,6 @@
         - shim-unsigned
         - grub-efi-amd64
         - grub-efi-amd64-bin
-        - grub-efi-amd64-signed
         - grub-efi-amd64-unsigned
         - grub-pc
         - grub-pc-bin
