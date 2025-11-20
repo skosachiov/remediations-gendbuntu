@@ -174,7 +174,10 @@
           editor no
       register: result
     - name: Systemd-boot install record and default
-      shell: bootctl install; bootctl set-default "Linux Boot Manager"
+      shell: |
+        efibootmgr | grep -oP '^Boot\K00[0-9A-F]+' | xargs -I {} efibootmgr -b {} -B;
+        bootctl install;
+        bootctl set-default "Linux Boot Manager";
       notify: Reboot system
       when: result.changed
   when: var_secure_boot
