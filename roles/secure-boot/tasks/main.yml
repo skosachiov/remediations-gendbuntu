@@ -69,13 +69,17 @@
       loop: "{{ part_guid }}"
       changed_when: false
     - name: Process each partition
-      shell: sgdisk -i "{{ item.stdout[-1] }}" "{{ item.stdout[:-1] }}" | awk '/Partition unique GUID:/ {print $4}'
+      shell: |
+        sgdisk -i "{{ item.stdout[-1] }}" "{{ item.stdout[:-2] if 'nvme' in item.stdout else item.stdout[:-1] }}" \
+          | awk '/Partition unique GUID:/ {print $4}'
       register: current_guids
       loop: "{{ mount_devices.results }}"
       when: item.stdout != ""
       changed_when: false
     - name: Change partition GUIDs if needed
-      command: sgdisk --partition-guid={{ item.0.stdout[-1] }}:{{ item.0.item.guid }} "{{ item.0.stdout[:-1] }}"
+      command: |
+        sgdisk --partition-guid={{ item.0.stdout[-1] }}:{{ item.0.item.guid }} \
+          "{{ item.0.stdout[:-2] if 'nvme' in item.0.stdout else item.0.stdout[:-1] }}"
       loop: "{{ mount_devices.results | zip(current_guids.results) | list }}"
       when:
         - item.1.stdout | lower != item.0.item.guid | lower
