@@ -16,16 +16,6 @@
     - ws
     - secure_boot_utils_present
 
-- name: Secure boot wall @secure_boot_wall
-  ignore_errors: true
-  shell: |
-    wall "$(date)"
-    wall "$(bootctl status | head -n 10)"
-  when: var_secure_boot
-  tags:
-    - ws
-    - secure_boot_wall
-
 - name: Tss user with dynamic ID @tss_dynamic_id
   copy:
     dest: /usr/lib/sysusers.d/tpm2-tss.conf
@@ -329,39 +319,29 @@
 - name: Grub absent @grub_absent
   ignore_errors: "{{ansible_check_mode}}"
   block:
-  - name: Get first boot
-    shell: efibootmgr | grep '^BootCurrent' | cut -f 2 -d ' '
-    register: current_boot_entry
-    failed_when: false
-    changed_when: false
-  - name: Get systemd-boot entry
-    shell: efibootmgr | grep {{var_systemd_boot_filename}} | grep -Po "^Boot\K00[0-9A-F]+"
-    register: systemd_boot_boot_entry
-    failed_when: false
-    changed_when: false
-  - name: Remove packages
-    package:
-      name:
-        - shim-signed
-        - shim-unsigned
-        - grub-efi-amd64
-        - grub-efi-amd64-bin
-        - grub-efi-amd64-unsigned
-        - grub-pc
-        - grub-pc-bin
-      state: absent
-    when: current_boot_entry.stdout | trim == systemd_boot_boot_entry.stdout | trim
+    - name: Get first boot
+      shell: efibootmgr | grep '^BootCurrent' | cut -f 2 -d ' '
+      register: current_boot_entry
+      failed_when: false
+      changed_when: false
+    - name: Get systemd-boot entry
+      shell: efibootmgr | grep {{var_systemd_boot_filename}} | grep -Po "^Boot\K00[0-9A-F]+"
+      register: systemd_boot_boot_entry
+      failed_when: false
+      changed_when: false
+    - name: Remove packages
+      package:
+        name:
+          - shim-signed
+          - shim-unsigned
+          - grub-efi-amd64
+          - grub-efi-amd64-bin
+          - grub-efi-amd64-unsigned
+          - grub-pc
+          - grub-pc-bin
+        state: absent
+      when: current_boot_entry.stdout | trim == systemd_boot_boot_entry.stdout | trim
   when: var_secure_boot
   tags:
     - ws
     - grub_absent
-
-- name: Secure boot wall @secure_boot_wall
-  ignore_errors: true
-  shell: |
-    wall "$(date)"
-    wall "$(journalctl -u cron | tail)"
-  when: var_secure_boot
-  tags:
-    - ws
-    - secure_boot_wall    
