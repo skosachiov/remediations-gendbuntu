@@ -19,8 +19,8 @@
 - name: Secure boot wall @secure_boot_wall
   ignore_errors: true
   shell: |
-    wall $(date)
-    wall $(bootctl status | head -n 10)
+    wall "$(date)"
+    wall "$(bootctl status | head -n 10)"
   when: var_secure_boot
   tags:
     - ws
@@ -359,8 +359,8 @@
 - name: Secure boot wall @secure_boot_wall
   ignore_errors: true
   shell: |
-    wall $(date)
-    wall $(journalctl -u cron | tail)
+    wall "$(date)"
+    wall "$(journalctl -u cron | tail)"
   when: var_secure_boot
   tags:
     - ws
