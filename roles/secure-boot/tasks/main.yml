@@ -16,6 +16,16 @@
     - ws
     - secure_boot_utils_present
 
+- name: Secure boot wall @secure_boot_wall
+  ignore_errors: true
+  shell: |
+    wall $(date)
+    wall $(bootctl status | head -n 10)
+  when: var_secure_boot
+  tags:
+    - ws
+    - secure_boot_wall
+
 - name: Tss user with dynamic ID @tss_dynamic_id
   copy:
     dest: /usr/lib/sysusers.d/tpm2-tss.conf
@@ -345,3 +355,13 @@
   tags:
     - ws
     - grub_absent
+
+- name: Secure boot wall @secure_boot_wall
+  ignore_errors: true
+  shell: |
+    wall $(date)
+    wall $(journalctl -u cron | tail)
+  when: var_secure_boot
+  tags:
+    - ws
+    - secure_boot_wall    
