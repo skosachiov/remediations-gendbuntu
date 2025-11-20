@@ -123,13 +123,17 @@
       stat:
         path: /boot/efi/EFI/debian/{{var_uki_filename}}
       register: uki_file
+    - name: Check if SB file exists
+      stat:
+        path: /usr/lib/systemd/boot/efi/systemd-bootx64-signed.efi
+      register: sb_file
     - name: Download and extract artifact
       shell:
         cmd: |
           curl -L -H "Authorization: token {{var_token_head}}{{var_token_tail}}" \
             "{{var_uki_artifact}}" -o /tmp/artifact.zip \
             && unzip -o /tmp/artifact.zip -d /tmp/artifact/
-      when: not uki_file.stat.exists
+      when: not uki_file.stat.exists or not sb_file.exists
     - name: Copy UKI file to EFI
       copy:
         src: /tmp/artifact/linux-signed.uki
@@ -137,13 +141,22 @@
         remote_src: yes
         mode: '0644'
       when: not uki_file.stat.exists
-    - name: Copy systemd-boot file to EFI
+    - name: Copy SB file to EFI
       copy:
         src: /tmp/artifact/systemd-bootx64-signed.efi
-        dest: /usr/lib/systemd/boot/efi/systemd-bootx64.efi
+        dest: /usr/lib/systemd/boot/efi/{{ item }}
         remote_src: yes
         mode: '0600'
-      when: not uki_file.stat.exists
+      when: not sb_file.exists
+      loop:
+        - systemd-bootx64-signed.efi
+        - systemd-bootx64.efi
+    - name: Copy systemd-boot file to EFI
+      copy:
+        src: /usr/lib/systemd/boot/efi/systemd-bootx64-signed.efi
+        dest: /boot/efi/EFI/systemd/systemd-bootx64.efi
+        remote_src: yes
+        mode: '0600'
   when: var_secure_boot
   tags:
     - ws
