@@ -257,7 +257,7 @@
         cryptsetup luksDump {{crypto_luks_device}} \
           | grep -q "tpm2-pubkey-pcrs:\s*{{var_cryptenroll_tpm2_pubkey_pcrs}}$"
       register: result_pubkey
-    - name: Copy a file from the playbook's files directory
+    - name: Copy tpm2 puclic key from the playbook's files directory
       copy:
         src: "{{playbook_dir}}/assets/esl/tpm2-pcr-public-key-system.pem"
         dest: /etc/systemd/tpm2-pcr-public-key-system.pem
@@ -265,7 +265,7 @@
         group: root
         mode: '0644'
       when: var_cryptenroll_tpm2_pubkey_pcrs != ''
-    - name:
+    - name: Systemd cryptenroll
       shell: |
         systemd-cryptenroll --unlock-key-file=/root/unlock-key-file.weak \
           --wipe-slot=tpm2 --tpm2-device=auto \
