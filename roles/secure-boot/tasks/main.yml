@@ -341,7 +341,9 @@
           - grub-pc-bin
         state: absent
       when: current_boot_entry.stdout | trim == systemd_boot_boot_entry.stdout | trim
-  when: var_secure_boot
+  when:
+    - false 
+    - var_secure_boot
   tags:
     - ws
     - grub_absent
