@@ -147,7 +147,7 @@
         content: |
           {{var_uki_filename}},linux-uki,,This is the boot entry for linux-uki
         mode: '0600'
-      when: not uki_file.stat.exists      
+      when: not uki_file.stat.exists
     - name: Copy SB file to EFI
       copy:
         src: /tmp/artifact/systemd-bootx64-signed.efi
@@ -305,7 +305,19 @@
           - grub-pc
           - grub-pc-bin
         state: absent
+      register: result
       when: current_boot_entry.stdout | trim == systemd_boot_boot_entry.stdout | trim
+    - name: Remove grub efi entry get entry
+      shell: efibootmgr | grep grubx64 | grep -Po "^Boot\K00[0-9A-F]+"
+      register: grub_boot_entry
+      failed_when: false
+      changed_when: false
+      when: result.changed
+    - name: Remove grub efi entry remove entry
+      shell: efibootmgr -b {{grub_boot_entry.stdout}} -B
+      when:
+        - grub_boot_entry is defined
+        - grub_boot_entry.stdout | trim != ""
   when:
     - var_secure_boot
   tags:
