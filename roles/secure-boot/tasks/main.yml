@@ -308,7 +308,7 @@
       register: result
       when: current_boot_entry.stdout | trim == systemd_boot_boot_entry.stdout | trim
     - name: Remove grub efi entry get entry
-      shell: efibootmgr | grep grubx64 | grep -Po "^Boot\K00[0-9A-F]+"
+      shell: efibootmgr | grep -i grubx64 | grep -Po "^Boot\K00[0-9A-F]+"
       register: grub_boot_entry
       failed_when: false
       changed_when: false
