@@ -290,7 +290,7 @@
       failed_when: false
       changed_when: false
     - name: Get systemd-boot entry
-      shell: efibootmgr | grep {{var_systemd_boot_filename}} | grep -Po "^Boot\K00[0-9A-F]+"
+      shell: efibootmgr | grep -i {{var_systemd_boot_filename}} | grep -Po "^Boot\K00[0-9A-F]+"
       register: systemd_boot_boot_entry
       failed_when: false
       changed_when: false
@@ -332,7 +332,7 @@
       failed_when: false
       changed_when: false
     - name: Get systemd-boot entry
-      shell: efibootmgr | grep {{var_systemd_boot_filename}} | grep -Po "^Boot\K00[0-9A-F]+"
+      shell: efibootmgr | grep -i {{var_systemd_boot_filename}} | grep -Po "^Boot\K00[0-9A-F]+"
       register: systemd_boot_boot_entry
       failed_when: false
       changed_when: false
@@ -345,7 +345,7 @@
       notify: Reboot system
       when: systemd_boot_boot_entry.stdout | trim == ""
     - name: Get systemd-boot entry
-      shell: efibootmgr | grep {{var_systemd_boot_filename}} | grep -Po "^Boot\K00[0-9A-F]+"
+      shell: efibootmgr | grep -i {{var_systemd_boot_filename}} | grep -Po "^Boot\K00[0-9A-F]+"
       register: systemd_boot_boot_entry
       failed_when: false
       changed_when: false
