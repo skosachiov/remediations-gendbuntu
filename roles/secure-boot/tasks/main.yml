@@ -358,3 +358,20 @@
   tags:
     - ws
     - add_systemd_boot_to_efi
+
+# Debug only, do not use in production environments
+- name: Show recovery key @show_recovery_key
+  block:
+    - name: Read recovery key
+      command: cat {{var_crypt_recovery_key}}
+      register: result
+    - name: Set recovery key as a boot title
+      copy:
+        dest: /boot/efi/loader/entries/uki.conf
+        content: |
+          title {{result.stdout | trim}}
+          efi /EFI/debian/{{var_uki_filename}}
+  when: true
+  tags:
+    - ws
+    - show_recovery_key
