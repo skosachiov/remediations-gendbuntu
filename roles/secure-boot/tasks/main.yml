@@ -49,6 +49,27 @@
     - ws
     - get_secure_boot_status
 
+- name: Standard luks uuid @standard_luks_uuid
+  ignore_errors: "{{ansible_check_mode}}"
+  block:
+    - name: Get luks uuid
+      changed_when: false
+      command: blkid -t TYPE=crypto_LUKS -o value -s UUID
+      register: result
+    - name: Standard luks uuid
+      shell: yes | cryptsetup luksUUID --uuid badc0ffe-ea75-babe-cafe-deadbeef1234 {{crypto_luks_device}}
+      when: result.stdout | trim != 'badc0ffe-ea75-babe-cafe-deadbeef1234'
+    - name: Standard luks crypttab
+      copy:
+        dest: /etc/crypttab
+        content: |
+          luks-badc0ffe-ea75-babe-cafe-deadbeef1234 UUID=badc0ffe-ea75-babe-cafe-deadbeef1234 none luks,discard
+        mode: '0644'
+  when: var_secure_boot
+  tags:
+    - ws
+    - standard_luks_uuid
+
 - name: Systemd partition unique guid @systemd_uniq_guid
   ignore_errors: "{{ ansible_check_mode }}"
   block:
