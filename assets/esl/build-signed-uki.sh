@@ -67,13 +67,10 @@ fi
 
 echo "Detected kernel version: $KERNEL_VERSION"
 
-# Write crypttab
-echo 'luks-badc0ffe-ea75-babe-cafe-deadbeef1234 UUID=badc0ffe-ea75-babe-cafe-deadbeef1234 none luks,discard' > /etc/crypttab
-
 # Build initrd
 SCRIPT_DIR=$(dirname $0)
 cp -f $SCRIPT_DIR/dracut.conf /etc/
-dracut --include /etc/crypttab /etc/crypttab --no-hostonly --force --kver $KERNEL_VERSION
+dracut --no-hostonly --force --kver $KERNEL_VERSION
 
 # Start swtpm
 # modprobe tpm_vtpm_proxy
