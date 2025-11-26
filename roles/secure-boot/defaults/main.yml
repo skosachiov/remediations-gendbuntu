@@ -4,8 +4,8 @@ var_cryptenroll_tpm2_pcrs: 7+15:sha256=00000000000000000000000000000000000000000
 var_cryptenroll_tpm2_pubkey_pcrs: "11"
 # var_cryptenroll_tpm2_pubkey_pcrs: ""
 var_systemd_boot_filename: systemd-bootx64.efi
-var_uki_filename: linux-uki-signed-2025112604.efi
-var_uki_artifact: https://api.github.com/repos/skosachiov/remediations-gendbuntu/actions/artifacts/4686311654/zip
+var_uki_filename: linux-uki-signed-2025112605.efi
+var_uki_artifact: https://api.github.com/repos/skosachiov/remediations-gendbuntu/actions/artifacts/4688777748/zip
 var_token_head: github_pat_
 var_token_tail: 11ABI7QAI0Noo5mutnfZ7t_qO6kZRccqCW93vrjE7qsSTusFSrKZxiEZu0AldKvQogK7D2CQLMenfTgsns
 var_sec_officer_pubkey: https://github.com/skosachiov/remediations-gendbuntu/raw/main/assets/sample-pubkey.asc
