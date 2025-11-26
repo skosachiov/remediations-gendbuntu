@@ -59,6 +59,12 @@
     - name: Standard luks uuid
       shell: yes | cryptsetup luksUUID --uuid badc0ffe-ea75-babe-cafe-deadbeef1234 {{crypto_luks_device}}
       when: result.stdout | trim != 'badc0ffe-ea75-babe-cafe-deadbeef1234'
+    - name: Standard luks crypttab
+      copy:
+        dest: /etc/crypttab
+        content: |
+          luks-badc0ffe-ea75-babe-cafe-deadbeef1234 UUID=badc0ffe-ea75-babe-cafe-deadbeef1234 none luks,discard
+        mode: '0644'
   when: var_secure_boot
   tags:
     - ws
