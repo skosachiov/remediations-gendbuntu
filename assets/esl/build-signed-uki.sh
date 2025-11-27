@@ -87,11 +87,15 @@ echo "=== Building UKI ==="
 ukify build \
     --linux="/boot/vmlinuz-$KERNEL_VERSION" \
     --initrd="/boot/initrd.img-$KERNEL_VERSION" \
-    --cmdline="$CMDLINE" \
     --pcr-private-key="$SIGNING_DIR/tpm2-pcr-private-key-system.key" \
     --pcr-public-key="assets/esl/tpm2-pcr-public-key-system.pem" \
-    --output="/workspace/$UNSIGNED_UKI" \
-    --uname="$KERNEL_VERSION"
+    --phases='enter-initrd' \
+    --pcr-private-key="$SIGNING_DIR/tpm2-pcr-private-key-system.key" \
+    --pcr-public-key="assets/esl/tpm2-pcr-public-key-system.pem" \
+    --phases="enter-initrd:leave-initrd enter-initrd:leave-initrd:sysinit enter-initrd:leave-initrd:sysinit:ready" \
+    --uname="$KERNEL_VERSION" \
+    --cmdline="$CMDLINE" \
+    --output="/workspace/$UNSIGNED_UKI"
 
 echo "$SB_DB_KEY" > "$SIGNING_DIR/DB.key"
 chmod 600 "$SIGNING_DIR/DB.key"
