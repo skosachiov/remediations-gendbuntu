@@ -1,4 +1,4 @@
-name: debian-13-uki 
+name: debian-13-uki
 
 on:
   push:
@@ -9,11 +9,11 @@ on:
 jobs:
   build-and-sign-uki:
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-    
+
     - name: Install required packages on host
       run: |
         sudo apt-get update
@@ -23,19 +23,20 @@ jobs:
       run: |
         docker run --rm --privileged -v $(pwd):/workspace -w /workspace \
           -e SB_DB_KEY="${{ secrets.SB_DB_KEY }}" \
-          -e PCR_PRIVATE_KEY="${{ secrets.PCR_PRIVATE_KEY }}" \
+          -e PCR_PRIVATE_KEY_INITRD="${{ secrets.PCR_PRIVATE_KEY_INITRD }}" \
+          -e PCR_PRIVATE_KEY_SYSTEM="${{ secrets.PCR_PRIVATE_KEY_SYSTEM }}" \
           debian:13-slim bash -c '
           chmod +x ./assets/esl/build-signed-uki.sh
           ./assets/esl/build-signed-uki.sh
         '
-    
+
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
         name: uki-artifacts
         path: artifacts/
         retention-days: 30
-    
+
     - name: Upload to release
       if: github.event_name == 'release'
       uses: actions/upload-release-asset@v1
