@@ -309,15 +309,16 @@
       when: current_boot_entry.stdout | trim == systemd_boot_boot_entry.stdout | trim
     - name: Remove grub efi entry get entry
       shell: efibootmgr | grep -i grubx64 | grep -Po "^Boot\K00[0-9A-F]+"
-      register: grub_boot_entry
+      register: grub_boot_entries
       failed_when: false
       changed_when: false
       when: result.changed
     - name: Remove grub efi entry remove entry
-      shell: efibootmgr -b {{grub_boot_entry.stdout}} -B
+      shell: efibootmgr -b {{ item }} -B
+      loop: "{{ grub_boot_entries.stdout_lines }}"
       when:
-        - grub_boot_entry is defined
-        - grub_boot_entry.stdout | trim != ""
+        - grub_boot_entries is defined
+        - grub_boot_entries.stdout_lines | length > 0
   when:
     - var_secure_boot
   tags:
