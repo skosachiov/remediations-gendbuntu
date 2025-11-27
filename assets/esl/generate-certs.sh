@@ -33,4 +33,5 @@ sign-efi-sig-list -k PK.key -c PK.crt KEK combined-kek.esl KEK.auth
 sign-efi-sig-list -k KEK.key -c KEK.crt db combined-db.esl DB.auth
 
 # Ukify generate the certificate and keys
+ukify genkey --pcr-private-key=tpm2-pcr-private-key-initrd.pem --pcr-public-key=tpm2-pcr-public-key-initrd.pem
 ukify genkey --pcr-private-key=tpm2-pcr-private-key-system.pem --pcr-public-key=tpm2-pcr-public-key-system.pem

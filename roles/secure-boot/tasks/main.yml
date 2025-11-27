@@ -271,7 +271,7 @@
           --wipe-slot=tpm2 --tpm2-device=auto \
           --tpm2-pcrs={{var_cryptenroll_tpm2_pcrs}} \
           {% if var_cryptenroll_tpm2_pubkey_pcrs != '' and secure_boot_status %} \
-          --tpm2-public-key=/etc/systemd/tpm2-pcr-public-key-system.pem \
+          --tpm2-public-key=/etc/systemd/tpm2-pcr-public-key-initrd.pem \
           --tpm2-public-key-pcrs={{var_cryptenroll_tpm2_pubkey_pcrs}} \
           {% endif %} {{crypto_luks_device}}
       notify: Reboot system
