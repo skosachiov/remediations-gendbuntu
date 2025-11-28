@@ -10,6 +10,14 @@ cert-to-efi-sig-list PK.crt PK.esl
 cert-to-efi-sig-list KEK.crt KEK.esl
 cert-to-efi-sig-list DB.crt DB.esl
 
+# https://www.microsoft.com/pkiops/certs/MicWinProPCA2011_2011-10-19.crt
+# https://www.microsoft.com/pkiops/certs/windows%20uefi%20ca%202023.crt
+# https://www.microsoft.com/pkiops/certs/MicCorUEFCA2011_2011-06-27.crt
+# https://www.microsoft.com/pkiops/certs/microsoft%20uefi%20ca%202023.crt
+#
+# https://www.microsoft.com/pkiops/certs/MicCorKEKCA2011_2011-06-24.crt
+# https://www.microsoft.com/pkiops/certs/microsoft%20corporation%20kek%202k%20ca%202023.crt
+
 # Convert Microsoft certificates to PEM
 find ms-* -type f -name '*.crt' -exec sh -c 'openssl x509 -in "$1" -out "${1%.crt}.pem" -outform PEM' _ {} \;
 
