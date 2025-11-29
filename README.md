@@ -1,14 +1,14 @@
-[![ubuntu-20.04](https://github.com/skosachiov/remediations-gendbuntu/actions/workflows/ubuntu-20.04.yml/badge.svg)](https://github.com/skosachiov/remediations-gendbuntu/actions/workflows/ubuntu-20.04.yml)
-[![ubuntu-22.04](https://github.com/skosachiov/remediations-gendbuntu/actions/workflows/ubuntu-22.04.yml/badge.svg)](https://github.com/skosachiov/remediations-gendbuntu/actions/workflows/ubuntu-22.04.yml)
-[![ubuntu-24.04](https://github.com/skosachiov/remediations-gendbuntu/actions/workflows/ubuntu-24.04.yml/badge.svg)](https://github.com/skosachiov/remediations-gendbuntu/actions/workflows/ubuntu-24.04.yml)
-[![rocky-8](https://github.com/skosachiov/remediations-gendbuntu/actions/workflows/rocky-8.yml/badge.svg)](https://github.com/skosachiov/remediations-gendbuntu/actions/workflows/rocky-8.yml)
-[![rocky-9](https://github.com/skosachiov/remediations-gendbuntu/actions/workflows/rocky-9.yml/badge.svg)](https://github.com/skosachiov/remediations-gendbuntu/actions/workflows/rocky-9.yml)
+[![ubuntu-20.04](https://github.com/skosachiov/lcm/actions/workflows/ubuntu-20.04.yml/badge.svg)](https://github.com/skosachiov/lcm/actions/workflows/ubuntu-20.04.yml)
+[![ubuntu-22.04](https://github.com/skosachiov/lcm/actions/workflows/ubuntu-22.04.yml/badge.svg)](https://github.com/skosachiov/lcm/actions/workflows/ubuntu-22.04.yml)
+[![ubuntu-24.04](https://github.com/skosachiov/lcm/actions/workflows/ubuntu-24.04.yml/badge.svg)](https://github.com/skosachiov/lcm/actions/workflows/ubuntu-24.04.yml)
+[![rocky-8](https://github.com/skosachiov/lcm/actions/workflows/rocky-8.yml/badge.svg)](https://github.com/skosachiov/lcm/actions/workflows/rocky-8.yml)
+[![rocky-9](https://github.com/skosachiov/lcm/actions/workflows/rocky-9.yml/badge.svg)](https://github.com/skosachiov/lcm/actions/workflows/rocky-9.yml)
 
-<img src="https://github.com/skosachiov/remediations-gendbuntu/blob/main/remediations-gendbuntu.png" width="200" height="250">
+<img src="https://github.com/skosachiov/lcm/blob/main/lcm.png" width="200" height="250">
 
 # License
 
-This file is part of Remediations-gendbuntu.
+This file is part of Linux Configuration Manager (LCM).
 
 Remediations is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -254,33 +254,33 @@ If you have not created an ansible user:
 
 ## Deploy workstation in pull mode
 
-wget http://example.test/git/remediations-gendbuntu/late-script.sh
+wget http://example.test/git/lcm/late-script.sh
 sh late-script.sh
 
 ## Deploy administrative workstation in pull mode
 
 Create host flag: `touch /etc/ansible/administrative-workstation`
-wget http://example.test/git/remediations-gendbuntu/late-script.sh
+wget http://example.test/git/lcm/late-script.sh
 sh late-script.sh
 
 ## Deploy workstation mandatory access in pull mode
 
 Create host flag: `touch /etc/ansible/mandatory-access`
-wget http://example.test/git/remediations-gendbuntu/late-script.sh
+wget http://example.test/git/lcm/late-script.sh
 sh late-script.sh
 
 ## Deploy non-domain PC in push mode
 
-ansible-pull -i localhost -d /root/.ansible/pull/remediations-gendbuntu -t mob -U https://example.test/git/remediations-gendbuntu mobile-device.yml
+ansible-pull -i localhost -d /root/.ansible/pull/lcm -t mob -U https://example.test/git/lcm mobile-device.yml
 
 ## Deploy non-domain PC in pull mode
 
-wget http://example.test/git/remediations-gendbuntu/late-script-mob.sh
+wget http://example.test/git/lcm/late-script-mob.sh
 sh late-script-mob.sh
 
 ## Install workstation with preseed.cfg (all data on the disk will be lost)
 
-auto=true priority=critical url=https://github.com/skosachiov/remediations-gendbuntu/raw/main/assets/preseed.cfg
+auto=true priority=critical url=https://github.com/skosachiov/lcm/raw/main/assets/preseed.cfg
 
 ## Check Workstation security in push mode
 
@@ -301,12 +301,12 @@ Create flag: `touch /etc/ansible/dist-upgrade`
 ## All participants
 
 - Clone github repo (once)
-`git clone git@github.com:skosachiov/remediations-gendbuntu.git`
+`git clone git@github.com:skosachiov/lcm.git`
  or local repo (see man gitolite3)
-`git clone gitolite3@ansible.si.mi:remediations-gendbuntu`
+`git clone gitolite3@ansible.si.mi:lcm`
 
 - Change folder
-`cd remediations-gendbuntu`
+`cd lcm`
 
 - Edit git config (once)
 `git config --global user.email absolon.faucher@si.mi`

@@ -5,4 +5,4 @@
 # This avoids stopping the ansible-playbook due to defunct friezes.
 #
 
-ANSIBLE_HOST_KEY_CHECKING=False /bin/bash -c 'while mapfile -n 25 ary && ((${#ary[@]})); do echo "${ary[@]}" | tr -d " " > /tmp/hosts.chunk; timeout 600 /usr/bin/ansible-playbook -v -b -i /tmp/hosts.chunk -u ansible -e "var_url_deb=https://server/files/pkg.deb" /var/www/html/git/remediations-gendbuntu/utils/unique-tasks/install-url-deb.yml; done < /tmp/hosts'
+ANSIBLE_HOST_KEY_CHECKING=False /bin/bash -c 'while mapfile -n 25 ary && ((${#ary[@]})); do echo "${ary[@]}" | tr -d " " > /tmp/hosts.chunk; timeout 600 /usr/bin/ansible-playbook -v -b -i /tmp/hosts.chunk -u ansible -e "var_url_deb=https://server/files/pkg.deb" /var/www/html/git/lcm/utils/unique-tasks/install-url-deb.yml; done < /tmp/hosts'

@@ -1,5 +1,5 @@
-# git clone  gitolite3@paris-ansible.si.mi:remediations-gendbuntu
-# cd remediations-gendbuntu
+# git clone  gitolite3@paris-ansible.si.mi:lcm
+# cd lcm
 # git config core.fileMode false
 #
-*/14 * * * * root bash -c "cd /var/www/html/git/remediations-gendbuntu; git pull origin master; chmod a+r *"
+*/14 * * * * root bash -c "cd /var/www/html/git/lcm; git pull origin master; chmod a+r *"

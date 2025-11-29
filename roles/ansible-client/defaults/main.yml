@@ -2,7 +2,7 @@ var_ansible_username: ansible
 var_ansible_group: ansible
 var_ansible_uid: 900
 var_ansible_gid: 900
-var_ansible_repo: "remediations-gendbuntu"
+var_ansible_repo: "lcm"
 var_ansible_devel_repo: "remediations-devel"
 var_ansible_playbook: ""
 var_ansible_git: "https://{{var_ansible_fqdn}}/git/{{var_ansible_repo}}"

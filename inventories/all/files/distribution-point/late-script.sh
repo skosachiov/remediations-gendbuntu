@@ -81,9 +81,9 @@ if ! grep -q "localhost ansible_connection=local" "/etc/ansible/hosts"; then
 fi
 
 # if ! grep -q "ansible-pull" "/etc/cron.d/ansible-pull"; then
-if ! grep -q "remediations-gendbuntu" "/etc/cron.d/ansible-pull"; then
+if ! grep -q "lcm" "/etc/cron.d/ansible-pull"; then
 	echo '@reboot root bash -c "sleep 60 && uname -a | logger -n '${fqdn}'"' > /etc/cron.d/ansible-pull
-	echo '@reboot root bash -c "sleep 60 && /usr/bin/ansible-pull -i localhost -U https://'${fqdn}'/git/remediations-gendbuntu | logger -n '${fqdn}'"' >> /etc/cron.d/ansible-pull
+	echo '@reboot root bash -c "sleep 60 && /usr/bin/ansible-pull -i localhost -U https://'${fqdn}'/git/lcm | logger -n '${fqdn}'"' >> /etc/cron.d/ansible-pull
 	echo '# EOF' >> /etc/cron.d/ansible-pull
 fi
 

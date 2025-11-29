@@ -59,7 +59,7 @@ if ! grep -q "localhost ansible_connection=local" "/etc/ansible/hosts"; then
 fi
 
 if ! grep -q "ansible-pull" "/etc/cron.d/ansible-pull"; then
-	echo '35 13 * * * root bash -c "/usr/bin/ansible-pull -i localhost -d /root/.ansible/pull/remediations-gendbuntu -U https://'${fqdn_mob}'/git/remediations-gendbuntu"' > /etc/cron.d/ansible-pull 
+	echo '35 13 * * * root bash -c "/usr/bin/ansible-pull -i localhost -d /root/.ansible/pull/lcm -U https://'${fqdn_mob}'/git/lcm"' > /etc/cron.d/ansible-pull 
 	echo '# EOF' >> /etc/cron.d/ansible-pull
 fi
 

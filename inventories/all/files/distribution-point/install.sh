@@ -19,7 +19,7 @@ cp -f gpg.key $apachedir/repos/
 cp -f preseed.cfg $apachedir/d-i/squeeze/
 cp -f late-script.sh $apachedir/d-i/squeeze/
 # make-ssl-cert generate-default-snakeoil --force-overwrite
-# cp -f /etc/ssl/certs/ssl-cert-snakeoil.pem $gitdir/remediations-gendbuntu/
+# cp -f /etc/ssl/certs/ssl-cert-snakeoil.pem $gitdir/lcm/
 
 cp -f usage-report.py $cgibin/
 chmod a+x $cgibin/usage-report.py
