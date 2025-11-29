@@ -1,3 +1,5 @@
+# Linux Configuration Manager (LCM)
+
 [![ubuntu-20.04](https://github.com/skosachiov/lcm/actions/workflows/ubuntu-20.04.yml/badge.svg)](https://github.com/skosachiov/lcm/actions/workflows/ubuntu-20.04.yml)
 [![ubuntu-22.04](https://github.com/skosachiov/lcm/actions/workflows/ubuntu-22.04.yml/badge.svg)](https://github.com/skosachiov/lcm/actions/workflows/ubuntu-22.04.yml)
 [![ubuntu-24.04](https://github.com/skosachiov/lcm/actions/workflows/ubuntu-24.04.yml/badge.svg)](https://github.com/skosachiov/lcm/actions/workflows/ubuntu-24.04.yml)
