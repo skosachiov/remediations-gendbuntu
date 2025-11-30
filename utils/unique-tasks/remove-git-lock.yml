@@ -5,7 +5,7 @@
   tasks:
 
   - name: Remove git lock
-    shell: /bin/bash -c '/usr/bin/find /root/.ansible/pull/remediations-gendbunru/.git/ -name *.lock -mtime +1 -exec rm -f {} \;'
+    shell: /bin/bash -c '/usr/bin/find /root/.ansible/pull/lcm/.git/ -name *.lock -mtime +1 -exec rm -f {} \;'
     tags:
       - ws
       - sec
