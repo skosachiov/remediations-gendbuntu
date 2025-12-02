@@ -11,6 +11,7 @@
         state: directory
         owner: www-data
     - name: Sync some files with ansible server Get url @sync_some_files
+      ignore_errors: true
       get_url:
         url: https://{{var_ansible_fqdn}}/security/oval/oval-definitions-buster.xml
         dest: /var/www/html/security/oval/

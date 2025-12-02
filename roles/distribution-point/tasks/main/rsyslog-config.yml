@@ -21,7 +21,7 @@
         marker_end: END_NETWORK
         insertafter: ^\$IncludeConfig
         block: |
-          $AllowedSender UDP, 127.0.0.1, 10.0.0.0/8
+          $AllowedSender UDP, 127.0.0.1, 10.0.0.0/8, 192.168.0.0/16
           #
           $template TraditionalFileFormat,"%TIMESTAMP% %FROMHOST-IP% %syslogtag%%msg:::sp-if-no-1st-sp%%msg:::drop-last-lf%\n"
           *.* /var/log/network.log;TraditionalFileFormat
