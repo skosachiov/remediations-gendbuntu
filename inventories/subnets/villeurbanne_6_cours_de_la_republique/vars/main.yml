@@ -15,7 +15,7 @@ var_cups_printers:
   - { uri: 'ipp://toulouse-prn.si.mi/prn', auth: negotiate, model: 'everywhere' }
 var_domain_admin_groups: ['gend_admins']
 var_clamav_server: toulouse-clamav.si.mi
-var_site_address: "toulouse_23_boulevard_de_l_embouchure"
+var_site_address: "villeurbanne_6_cours_de_la_republique"
 var_company: nuclear
 var_dp_fqdn: "{{var_ansible_fqdn}}"
 var_dp_rsyslog_server: "{{var_ansible_fqdn}}"

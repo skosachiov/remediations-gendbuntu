@@ -14,7 +14,7 @@ var_cups_printers:
   - { uri: 'ipp://rennes-prn.si.mi/prn', auth: negotiate, model: 'everywhere' }
 var_domain_admin_groups: ['gend_admins']
 var_clamav_server: paris-clamav.si.mi
-var_site_address: "rennes_22_boulevard_de_la_tour_d_auvergne"
+var_site_address: "toulon_72_avenue_de_l_infanterie_de_marine"
 var_company: nuclear
 var_dp_fqdn: "{{var_ansible_fqdn}}"
 var_dp_rsyslog_server: "{{var_ansible_fqdn}}"

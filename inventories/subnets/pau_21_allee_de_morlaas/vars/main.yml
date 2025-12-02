@@ -14,7 +14,7 @@ var_cups_printers:
   - { uri: 'ipp://nancy-prn.si.mi/prn', auth: negotiate, model: 'everywhere' }
 var_domain_admin_groups: ['gend_admins']
 var_clamav_server: paris-clamav.si.mi
-var_site_address: "nancy_38_boulevard_lobau"
+var_site_address: "pau_21_allee_de_morlaas"
 var_company: maritime
 var_dp_fqdn: "{{var_ansible_fqdn}}"
 var_dp_rsyslog_server: "{{var_ansible_fqdn}}"

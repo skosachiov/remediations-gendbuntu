@@ -14,7 +14,7 @@ var_cups_printers:
   - { uri: 'ipp://paris-prn.si.mi/prn', auth: negotiate, model: 'everywhere' }
 var_domain_admin_groups: ['gend_admins']
 var_clamav_server: paris-clamav.si.mi
-var_site_address: "lille_8_10_boulevard_de_la_liberte"
+var_site_address: "le_mans_3_impasse_des_remparts"
 var_company: ordnance
 var_dp_fqdn: "{{var_ansible_fqdn}}"
 var_dp_rsyslog_server: "{{var_ansible_fqdn}}"

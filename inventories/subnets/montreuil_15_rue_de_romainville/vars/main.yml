@@ -14,7 +14,7 @@ var_cups_printers:
   - { uri: 'ipp://lyon-prn.si.mi/prn', auth: negotiate, model: 'everywhere' }
 var_domain_admin_groups: ['gend_admins']
 var_clamav_server: lyon-clamav.si.mi
-var_site_address: "lyon_40_rue_marius_berliet"
+var_site_address: "montreuil_15_rue_de_romainville"
 var_company: ordnance
 var_dp_fqdn: "{{var_ansible_fqdn}}"
 var_dp_rsyslog_server: "{{var_ansible_fqdn}}"

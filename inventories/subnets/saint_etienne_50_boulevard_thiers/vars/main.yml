@@ -14,7 +14,7 @@ var_cups_printers:
   - { uri: 'ipp://reims-prn.si.mi/prn', auth: negotiate, model: 'everywhere' }
 var_domain_admin_groups: ['gend_admins']
 var_clamav_server: reims-clamav.si.mi
-var_site_address: "reims_40_boulevard_roederer"
+var_site_address: "saint_etienne_50_boulevard_thiers"
 var_company: nuclear
 var_dp_fqdn: "{{var_ansible_fqdn}}"
 var_dp_rsyslog_server: "{{var_ansible_fqdn}}"

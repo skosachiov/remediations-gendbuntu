@@ -14,7 +14,7 @@ var_cups_printers:
   - { uri: 'ipp://paris-prn.si.mi/followme', auth: negotiate, model: 'everywhere' }
 var_domain_admin_groups: ['gend_admins']
 var_clamav_server: paris-clamav.si.mi
-var_site_address: "nantes_6_place_waldeck_rousseau"
+var_site_address: "perpignan_7_route_de_barcelone"
 var_company: ordnance
 var_dp_fqdn: "{{var_ansible_fqdn}}"
 var_dp_rsyslog_server: "{{var_ansible_fqdn}}"
