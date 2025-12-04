@@ -1,10 +1,11 @@
 # Linux Configuration Manager (LCM)
 
-[![ubuntu-20.04](https://github.com/skosachiov/lcm/actions/workflows/ubuntu-20.04.yml/badge.svg)](https://github.com/skosachiov/lcm/actions/workflows/ubuntu-20.04.yml)
+[![debian-12](https://github.com/skosachiov/lcm/actions/workflows/debian-12.yml/badge.svg)](https://github.com/skosachiov/lcm/actions/workflows/debian-12.yml)
+[![debian-13](https://github.com/skosachiov/lcm/actions/workflows/debian-13.yml/badge.svg)](https://github.com/skosachiov/lcm/actions/workflows/debian-13.yml)
 [![ubuntu-22.04](https://github.com/skosachiov/lcm/actions/workflows/ubuntu-22.04.yml/badge.svg)](https://github.com/skosachiov/lcm/actions/workflows/ubuntu-22.04.yml)
 [![ubuntu-24.04](https://github.com/skosachiov/lcm/actions/workflows/ubuntu-24.04.yml/badge.svg)](https://github.com/skosachiov/lcm/actions/workflows/ubuntu-24.04.yml)
-[![rocky-8](https://github.com/skosachiov/lcm/actions/workflows/rocky-8.yml/badge.svg)](https://github.com/skosachiov/lcm/actions/workflows/rocky-8.yml)
 [![rocky-9](https://github.com/skosachiov/lcm/actions/workflows/rocky-9.yml/badge.svg)](https://github.com/skosachiov/lcm/actions/workflows/rocky-9.yml)
+[![rocky-10](https://github.com/skosachiov/lcm/actions/workflows/rocky-10.yml/badge.svg)](https://github.com/skosachiov/lcm/actions/workflows/rocky-10.yml)
 
 <img src="https://github.com/skosachiov/lcm/blob/main/lcm.png" width="200" height="250">
 
