@@ -1,0 +1,19 @@
+name: debian-12
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+
+  test:
+    runs-on: ubuntu-latest
+    container: debian:12
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v3
+      - run: sudo apt -y install ansible
+      - run: ansible-playbook -b --check --connection=local -i 127.0.0.1, workstation.yml
+ 
