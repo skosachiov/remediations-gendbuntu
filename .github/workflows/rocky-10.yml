@@ -16,5 +16,5 @@ jobs:
       - uses: actions/checkout@v3
       - run: dnf -y install epel-release --nogpgcheck
       - run: dnf -y install openssh-server --nogpgcheck
-      - run: dnf -y install ansible-core --nogpgcheck
+      - run: dnf -y install ansible-core ansible-collection-community-general --nogpgcheck
       - run: ansible-playbook -b --check --connection=local -i 127.0.0.1, workstation.yml
