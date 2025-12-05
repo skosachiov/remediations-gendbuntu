@@ -10,7 +10,7 @@
 - name: Ansible package is present @ansible_package_is_present
   package:
     name:
-      - ansible
+      - ansible-core
     state: present
   tags:
     - ws
