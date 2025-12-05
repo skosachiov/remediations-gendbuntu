@@ -1,8 +1,7 @@
 - name: Cron monthly @cron_monthly
   changed_when: false
   ignore_errors: yes
-  syslogger:
-    msg: "cron_monthly: you are here"
+  command: 'logger "cron_monthly: you are here"'
   tags:
     - ws
     - cron_monthly

@@ -41,8 +41,7 @@
 
 - name: Do not continue if server load is high @default
   failed_when: true
-  syslogger:
-    msg: "do not continue if server load is high"
+  command: 'logger "do not continue if server load is high"'
   when: var_time_starttransfer|float > 2.500000
   tags: always
 

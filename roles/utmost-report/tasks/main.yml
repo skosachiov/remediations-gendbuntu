@@ -3,5 +3,4 @@
 - name: Print main ansible facts @basic_security_facts
   changed_when: false
   ignore_errors: yes
-  syslogger:
-    msg: "utmost_report: you are here"
+  command: 'logger "utmost_report: you are here"'

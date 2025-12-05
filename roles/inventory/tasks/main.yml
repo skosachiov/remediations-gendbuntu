@@ -114,8 +114,7 @@
     - name: Print main ansible facts @basic_ansible_facts
       changed_when: false
       failed_when: false
-      syslogger:
-        msg:  "basic_ansible_facts: {{basic_ansible_facts}}"
+      command: 'logger "basic_ansible_facts: {{basic_ansible_facts}}"'
   tags:
     - ws
     - basic_ansible_facts
@@ -252,8 +251,7 @@
     - name: Print main ansible facts @basic_security_facts
       changed_when: false
       ignore_errors: true
-      syslogger:
-        msg: "basic_security_facts: {{basic_security_facts}}"
+      command: 'logger "basic_security_facts: {{basic_security_facts}}"'
   rescue:
     - name: Print basic security facts Failed
       debug:
@@ -281,8 +279,7 @@
     - name: Packages full inventory Syslogger @monitored_packages
       changed_when: false
       ignore_errors: true
-      syslogger:
-        msg: "ansible_facts_packages: {{monitored_pkgs}}"
+      command: 'logger "ansible_facts_packages: {{monitored_pkgs}}"'
   tags:
     - ws
     - monitored_packages
@@ -312,8 +309,7 @@
       when: locally_installed_packages is defined
     - name: Locally installed packages Syslogger @monitored_packages
       changed_when: false
-      syslogger:
-        msg: "locally_installed: {{locally_installed}}"
+      command: 'logger "locally_installed: {{locally_installed}}"'
       when: locally_installed is defined
   when: ansible_pkg_mgr == 'apt'
   tags:

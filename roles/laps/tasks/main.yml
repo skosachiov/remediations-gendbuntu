@@ -58,8 +58,7 @@
       with_items: "{{tmpfiles.files}}"
     - name: Local admin password solution Logger @local_admin_password_solution
       changed_when: false
-      syslogger:
-        msg: "laps: {{ansible_hostname}} {{item.stdout}}"
+      command: 'logger "laps: {{ansible_hostname}} {{item.stdout}}"'
       with_items: "{{result.results}}"
   rescue:
     - name: Local admin password solution Failed

@@ -1,6 +1,6 @@
 var_installation_type: workstation
 
-var_subnet: paris_36_rue_du_bastion
+var_subnet: saint_denis_4_passage_du_cimetiere
 
 var_ansible_server: paris-ansible
 var_ansible_server_network: 10.10.10.0/24

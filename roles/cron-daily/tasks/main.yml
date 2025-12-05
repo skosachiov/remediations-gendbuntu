@@ -1,8 +1,7 @@
 - name: Cron daily @cron_daily
   changed_when: false
   ignore_errors: yes
-  syslogger:
-    msg: "cron_daily: you are here"
+  command: 'logger "cron_daily: you are here"'
   tags:
     - ws
     - cron_daily

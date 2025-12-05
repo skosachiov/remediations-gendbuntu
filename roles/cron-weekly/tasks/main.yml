@@ -1,8 +1,7 @@
 - name: Cron weekly @cron_weekly
   changed_when: false
   ignore_errors: yes
-  syslogger:
-    msg: "cron_weekly: you are here"
+  command: 'logger "cron_weekly: you are here"'
   tags:
     - ws
     - cron_weekly
