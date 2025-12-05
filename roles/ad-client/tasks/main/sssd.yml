@@ -101,7 +101,9 @@
       package:
         name: authselect-compat
         state: present
-      when: ansible_pkg_mgr == 'dnf'
+      when: 
+        - ansible_pkg_mgr == 'dnf'
+        - ansible_os_family == "RedHat" and ansible_distribution_major_version | int < 10
     - name: Pam mkhomedir rpm @pam_mkhomedir
       shell: authconfig --enablemkhomedir --update
       when: ansible_pkg_mgr == 'dnf'
