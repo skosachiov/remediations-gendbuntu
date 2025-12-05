@@ -35,6 +35,7 @@
     - set_access_control_table
 
 - name: Enable sshd pam_access @enable_sshd_pam_access
+  ignore_errors: "{{ansible_check_mode}}"
   lineinfile:
     dest: /etc/pam.d/sshd
     regexp: ^#?\s*account\s*required\s*pam_access.so
