@@ -69,6 +69,7 @@
       - vim
       - exfat-fuse
       - ntfs-3g
+      - python3-apt
     state: latest
   ignore_errors: yes
   tags:
