@@ -8,7 +8,7 @@ on:
 
 jobs:
 
-  test:
+  ansible-check:
     runs-on: ubuntu-latest
     container: rockylinux/rockylinux:10
     timeout-minutes: 30

@@ -8,7 +8,7 @@ on:
 
 jobs:
 
-  test:
+  ansible-check:
     runs-on: ubuntu-latest
     container: debian:13
     timeout-minutes: 30
