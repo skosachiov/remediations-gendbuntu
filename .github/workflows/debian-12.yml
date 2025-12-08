@@ -2,7 +2,8 @@ name: debian-12
 
 on:
   push:
-    branches: [main]
+    tags:
+      - "*"
   pull_request:
     branches: [main]
 
@@ -18,4 +19,3 @@ jobs:
       - run: apt -y install python3-apt
       - run: apt -y install ansible
       - run: ansible-playbook -b --check --connection=local -i 127.0.0.1, workstation.yml
- 
