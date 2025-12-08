@@ -11,13 +11,13 @@ cert-to-efi-sig-list KEK.crt KEK.esl
 cert-to-efi-sig-list DB.crt DB.esl
 
 # mkdir ms-db ms-KEK
-# curl https://www.microsoft.com/pkiops/certs/MicWinProPCA2011_2011-10-19.crt -o "ms-db/windows uefi ca 2023.pem"
-# curl https://www.microsoft.com/pkiops/certs/windows%20uefi%20ca%202023.crt -o "ms-db/microsoft uefi ca 2023.pem"
-# curl https://www.microsoft.com/pkiops/certs/MicCorUEFCA2011_2011-06-27.crt -o "ms-db/MicCorUEFCA2011_2011-06-27.pem"
-# curl https://www.microsoft.com/pkiops/certs/microsoft%20uefi%20ca%202023.crt -o "ms-db/MicWinProPCA2011_2011-10-19.pem"
+# curl https://www.microsoft.com/pkiops/certs/MicWinProPCA2011_2011-10-19.crt -o "ms-db/windows uefi ca 2023.crt"
+# curl https://www.microsoft.com/pkiops/certs/windows%20uefi%20ca%202023.crt -o "ms-db/microsoft uefi ca 2023.crt"
+# curl https://www.microsoft.com/pkiops/certs/MicCorUEFCA2011_2011-06-27.crt -o "ms-db/MicCorUEFCA2011_2011-06-27.crt"
+# curl https://www.microsoft.com/pkiops/certs/microsoft%20uefi%20ca%202023.crt -o "ms-db/MicWinProPCA2011_2011-10-19.crt"
 #
-# curl https://www.microsoft.com/pkiops/certs/MicCorKEKCA2011_2011-06-24.crt -o "ms-KEK/MicCorKEKCA2011_2011-06-24.pem"
-# curl https://www.microsoft.com/pkiops/certs/microsoft%20corporation%20kek%202k%20ca%202023.crt -o "ms-KEK/microsoft corporation kek 2k ca 2023.pem"
+# curl https://www.microsoft.com/pkiops/certs/MicCorKEKCA2011_2011-06-24.crt -o "ms-KEK/MicCorKEKCA2011_2011-06-24.crt"
+# curl https://www.microsoft.com/pkiops/certs/microsoft%20corporation%20kek%202k%20ca%202023.crt -o "ms-KEK/microsoft corporation kek 2k ca 2023.crt"
 
 # Convert Microsoft certificates to PEM
 find ms-* -type f -name '*.crt' -exec sh -c 'openssl x509 -in "$1" -out "${1%.crt}.pem" -outform PEM' _ {} \;

@@ -34,6 +34,7 @@ echo "=== Installing required packages ==="
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
 apt-get install -y \
+    efitools \
     sbsigntool \
     linux-image-amd64 \
     linux-headers-amd64 \
