@@ -45,7 +45,6 @@ apt-get install -y \
     dracut \
     clevis \
     clevis-dracut \
-    clevis-initramfs \
     clevis-luks \
     clevis-systemd \
     clevis-tpm2 \
