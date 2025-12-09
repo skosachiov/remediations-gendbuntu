@@ -43,6 +43,13 @@ apt-get install -y \
     systemd-boot-efi \
     cryptsetup \
     dracut \
+    clevis \
+    clevis-dracut \
+    clevis-initramfs \
+    clevis-luks \
+    clevis-systemd \
+    clevis-tpm2 \
+    clevis-udisks2 \
     systemd-cryptsetup \
     tpm2-tools \
     tpm2-tss-engine-tools \
