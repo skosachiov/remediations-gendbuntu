@@ -4,8 +4,8 @@ var_cryptenroll_tpm2_pcrs: 7+15:sha256=00000000000000000000000000000000000000000
 var_cryptenroll_tpm2_pubkey_pcrs: "11"
 # var_cryptenroll_tpm2_pubkey_pcrs: ""
 var_systemd_boot_filename: systemd-bootx64.efi
-var_uki_filename: linux-uki-signed-2025112901.efi
-var_uki_artifact: https://api.github.com/repos/skosachiov/lcm/actions/artifacts/4813544608/zip
+var_uki_filename: linux-uki-signed-2025112902.efi
+var_uki_artifact: https://api.github.com/repos/skosachiov/lcm/actions/artifacts/4815776120/zip
 var_token_head: github_pat_
 var_token_tail: 11ABI7QAI0Noo5mutnfZ7t_qO6kZRccqCW93vrjE7qsSTusFSrKZxiEZu0AldKvQogK7D2CQLMenfTgsns
 var_sec_officer_pubkey: https://github.com/skosachiov/lcm/raw/main/assets/sample-pubkey.asc
