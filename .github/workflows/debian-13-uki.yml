@@ -1,6 +1,7 @@
 name: debian-13-uki
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - "*"
