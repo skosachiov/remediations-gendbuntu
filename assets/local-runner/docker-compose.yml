@@ -7,7 +7,8 @@ services:
     build:
       context: ./apache
       dockerfile: Dockerfile
-    image: ${IMAGE}
+      args:
+        - IMAGE=${IMAGE}
     container_name: apache
     volumes:
       - /tmp/html:/var/www/html
@@ -19,7 +20,8 @@ services:
     build:
       context: ./uki-builder
       dockerfile: Dockerfile
-    image: ${IMAGE}
+      args:
+        - IMAGE=${IMAGE}      
     container_name: uki-builder
     volumes:
       - /tmp/html:/var/www/html
