@@ -26,5 +26,6 @@ services:
     container_name: uki-builder
     volumes:
       - /tmp/html:/var/www/html
+      - ../build-signed-uki.sh:/build-signed-uki.sh
     network_mode: host
-    command: ["../build-signed-uki.sh"]
+    command: ["/build-signed-uki.sh"]
