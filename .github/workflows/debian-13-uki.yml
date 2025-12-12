@@ -28,8 +28,8 @@ jobs:
           -e PCR_PRIVATE_KEY_INITRD="${{ secrets.PCR_PRIVATE_KEY_INITRD }}" \
           -e PCR_PRIVATE_KEY_SYSTEM="${{ secrets.PCR_PRIVATE_KEY_SYSTEM }}" \
           debian:13-slim bash -c '
-          chmod +x ./assets/esl/build-signed-uki.sh
-          ./assets/esl/build-signed-uki.sh
+          chmod +x ./assets/build-signed-uki.sh
+          ./assets/build-signed-uki.sh
         '
 
     - name: Upload artifacts

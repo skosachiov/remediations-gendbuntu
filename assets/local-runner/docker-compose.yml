@@ -13,6 +13,7 @@ services:
     volumes:
       - /tmp/html:/var/www/html
     network_mode: host
+    command: ["apache2ctl", "-D", "FOREGROUND"]
 
   uki-builder:
     env_file:
@@ -26,3 +27,4 @@ services:
     volumes:
       - /tmp/html:/var/www/html
     network_mode: host
+    command: ["../build-signed-uki.sh"]
