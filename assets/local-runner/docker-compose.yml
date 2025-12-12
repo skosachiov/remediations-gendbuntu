@@ -35,7 +35,7 @@ services:
     network_mode: host
     command: >
       /bin/bash -c "
-      cp -f /lcm/assets/preseed.cfg; 
+      cp -f /lcm/assets/preseed.cfg /var/www/html/; 
       cd /lcm/assets/esl;
       export SB_DB_KEY=$(cat DB.key);
       export PCR_PRIVATE_KEY_INITRD=$(cat tpm2-pcr-private-key-initrd.key);
@@ -44,5 +44,5 @@ services:
       assets/build-signed-uki.sh;
       cp -f /lcm/artifacts/* /var/www/html/;
       rm -f /var/www/html/zip;
-      zip -A -j /var/www/html/zip /var/www/html/*
+      zip -A -j /var/www/html/zip /var/www/html/*.uki /var/www/html/*.efi 
       "

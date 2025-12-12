@@ -360,3 +360,6 @@ Create flag: `touch /etc/ansible/dist-upgrade`
 - Push to the git repo. After that, the tasks will be received and executed by all workstations through the ansible-pull mechanism.
 `git push --all origin`
 
+## Local uki builder
+
+`podman-compose up -d --build --no-cache`
