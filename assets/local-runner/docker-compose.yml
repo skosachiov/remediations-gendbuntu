@@ -1,3 +1,7 @@
+# cd assets/local-runner
+# podman-compose up -d --build --no-cache
+# ... url=http://localhost:8080/preseed.cfg
+
 version: '3.8'
 
 services:
