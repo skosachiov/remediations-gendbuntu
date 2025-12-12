@@ -26,6 +26,7 @@ services:
     container_name: uki-builder
     volumes:
       - /tmp/html:/var/www/html
+      - /tmp/workspace:/workspace
       - ../../../lcm:/lcm
     network_mode: host
     command: >
