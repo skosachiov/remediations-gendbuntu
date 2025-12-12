@@ -37,5 +37,5 @@ services:
       export PCR_PRIVATE_KEY_SYSTEM=$(cat tpm2-pcr-private-key-system.key) &&
       cd /lcm &&
       assets/build-signed-uki.sh &&
-      cp -f /artifacts/* /var/www/html/
+      cp -f /lcm/artifacts/* /var/www/html/
       "
