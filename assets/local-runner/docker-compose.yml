@@ -6,8 +6,8 @@ services:
       - .env
     build:
       context: ./apache
-      args:
-        IMAGE: ${IMAGE}
+      dockerfile: Dockerfile
+    image: ${IMAGE}
     container_name: apache
     volumes:
       - /tmp/html:/var/www/html
@@ -18,8 +18,8 @@ services:
       - .env
     build:
       context: ./uki-builder
-      args:
-        IMAGE: ${IMAGE}
+      dockerfile: Dockerfile
+    image: ${IMAGE}
     container_name: uki-builder
     volumes:
       - /tmp/html:/var/www/html
