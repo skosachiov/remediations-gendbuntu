@@ -35,12 +35,13 @@ services:
     network_mode: host
     command: >
       /bin/bash -c "
-      cd /lcm/assets/esl &&
-      export SB_DB_KEY=$(cat DB.key) &&
-      export PCR_PRIVATE_KEY_INITRD=$(cat tpm2-pcr-private-key-initrd.key) &&
-      export PCR_PRIVATE_KEY_SYSTEM=$(cat tpm2-pcr-private-key-system.key) &&
-      cd /lcm &&
-      assets/build-signed-uki.sh &&
-      cp -f /lcm/artifacts/* /var/www/html/ &&
+      cd /lcm/assets/esl;
+      export SB_DB_KEY=$(cat DB.key);
+      export PCR_PRIVATE_KEY_INITRD=$(cat tpm2-pcr-private-key-initrd.key);
+      export PCR_PRIVATE_KEY_SYSTEM=$(cat tpm2-pcr-private-key-system.key);
+      cd /lcm;
+      assets/build-signed-uki.sh;
+      cp -f /lcm/artifacts/* /var/www/html/;
+      rm -f /tmp/html/zip;
       zip -A -j /tmp/html/zip /tmp/html/*
       "
