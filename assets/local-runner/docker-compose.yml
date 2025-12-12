@@ -5,18 +5,18 @@ services:
     env_file:
       - .env
     image: ${IMAGE}
+    build: ./apache
     container_name: apache
     volumes:
       - /tmp/html:/var/www/html
     network_mode: host
-    restart: 'no'
 
   uki-builder:
     env_file:
       - .env
     image: ${IMAGE}
+    build: ./uki-builder
     container_name: uki-builder
     volumes:
       - /tmp/html:/var/www/html
     network_mode: host
-    restart: 'no'
