@@ -5,7 +5,10 @@ services:
     env_file:
       - .env
     image: ${IMAGE}
-    build: ./apache
+    build:
+      context: ./apache
+      args:
+        IMAGE: ${IMAGE}
     container_name: apache
     volumes:
       - /tmp/html:/var/www/html
@@ -15,7 +18,10 @@ services:
     env_file:
       - .env
     image: ${IMAGE}
-    build: ./uki-builder
+    build:
+      context: ./uki-builder
+      args:
+        IMAGE: ${IMAGE}
     container_name: uki-builder
     volumes:
       - /tmp/html:/var/www/html
