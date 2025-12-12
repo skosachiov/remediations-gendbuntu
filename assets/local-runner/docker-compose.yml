@@ -43,5 +43,6 @@ services:
       cd /lcm;
       assets/build-signed-uki.sh;
       cp -f /lcm/artifacts/* /var/www/html/;
+      rm -f /var/www/html/zip;
       zip -A -j /var/www/html/zip /var/www/html/*
       "
