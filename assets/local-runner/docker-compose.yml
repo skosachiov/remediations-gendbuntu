@@ -4,7 +4,6 @@ services:
   apache:
     env_file:
       - .env
-    image: ${IMAGE}
     build:
       context: ./apache
       args:
@@ -17,7 +16,6 @@ services:
   uki-builder:
     env_file:
       - .env
-    image: ${IMAGE}
     build:
       context: ./uki-builder
       args:
